@@ -15,6 +15,7 @@
 
     <script>
 
+        //it seems silly using array :( , let me replace them by an object later
         var layer_defs = new Array();
         var net = new Array();
         var trainer = new Array();
@@ -24,17 +25,19 @@
         var mother_defs, motherNet;
         mother_defs = [];
         mother_defs.push({ type: 'input', out_sx: 32, out_sy: 32, out_depth: 3 });//the mother net needs an input layer by default
-        
 
 
-        //there are already two children networks by defauly
+
+        //I wanna implement just two networks by default and allow users to change the number of children networks,
+        //but there are still some bugs with the code. So for now, there are already five networks by defaualt, users
+        //cannot change the number of networks but can change the details of them, like filter numbers of each net at each conv layer
         t[0] = "layer_defs[0] = [];\n\
         layer_defs[0].push({type:'input', out_sx:32, out_sy:32, out_depth:3});\n\
         layer_defs[0].push({type:'conv', sx:5, filters:16, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[0].push({type:'pool', sx:2, stride:2});\n\
         layer_defs[0].push({type:'conv', sx:5, filters:10, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[0].push({type:'pool', sx:2, stride:2});\n\
-        layer_defs[0].push({type:'conv', sx:5, filters:20, stride:1, pad:2, activation:'relu'});\n\
+        layer_defs[0].push({type:'conv', sx:5, filters:5, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[0].push({type:'pool', sx:2, stride:2});\n\
         layer_defs[0].push({type:'softmax', num_classes:10});\n\
         \n\
@@ -50,7 +53,7 @@
         layer_defs[1].push({type:'pool', sx:2, stride:2});\n\
         layer_defs[1].push({type:'conv', sx:5, filters:20, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[1].push({type:'pool', sx:2, stride:2});\n\
-        layer_defs[1].push({type:'conv', sx:5, filters:10, stride:1, pad:2, activation:'relu'});\n\
+        layer_defs[1].push({type:'conv', sx:5, filters:6, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[1].push({type:'pool', sx:2, stride:2});\n\
         layer_defs[1].push({type:'softmax', num_classes:10});\n\
         \n\
@@ -62,11 +65,11 @@
 
         t[2] = "layer_defs[2] = [];\n\
         layer_defs[2].push({type:'input', out_sx:32, out_sy:32, out_depth:3});\n\
-        layer_defs[2].push({type:'conv', sx:5, filters:10, stride:1, pad:2, activation:'relu'});\n\
+        layer_defs[2].push({type:'conv', sx:5, filters:9, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[2].push({type:'pool', sx:2, stride:2});\n\
-        layer_defs[2].push({type:'conv', sx:5, filters:20, stride:1, pad:2, activation:'relu'});\n\
+        layer_defs[2].push({type:'conv', sx:5, filters:15, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[2].push({type:'pool', sx:2, stride:2});\n\
-        layer_defs[2].push({type:'conv', sx:5, filters:10, stride:1, pad:2, activation:'relu'});\n\
+        layer_defs[2].push({type:'conv', sx:5, filters:7, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[2].push({type:'pool', sx:2, stride:2});\n\
         layer_defs[2].push({type:'softmax', num_classes:10});\n\
         \n\
@@ -78,11 +81,11 @@
 
         t[3] = "layer_defs[3] = [];\n\
         layer_defs[3].push({type:'input', out_sx:32, out_sy:32, out_depth:3});\n\
-        layer_defs[3].push({type:'conv', sx:5, filters:10, stride:1, pad:2, activation:'relu'});\n\
+        layer_defs[3].push({type:'conv', sx:5, filters:8, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[3].push({type:'pool', sx:2, stride:2});\n\
-        layer_defs[3].push({type:'conv', sx:5, filters:20, stride:1, pad:2, activation:'relu'});\n\
+        layer_defs[3].push({type:'conv', sx:5, filters:15, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[3].push({type:'pool', sx:2, stride:2});\n\
-        layer_defs[3].push({type:'conv', sx:5, filters:10, stride:1, pad:2, activation:'relu'});\n\
+        layer_defs[3].push({type:'conv', sx:5, filters:8, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[3].push({type:'pool', sx:2, stride:2});\n\
         layer_defs[3].push({type:'softmax', num_classes:10});\n\
         \n\
@@ -92,14 +95,14 @@
         trainer[3] = new convnetjs.SGDTrainer(net[3], {method:'adadelta', batch_size:4, l2_decay:0.0001});\n\
         ";
 
-        
+
         t[4] = "layer_defs[4] = [];\n\
         layer_defs[4].push({type:'input', out_sx:32, out_sy:32, out_depth:3});\n\
-        layer_defs[4].push({type:'conv', sx:5, filters:10, stride:1, pad:2, activation:'relu'});\n\
+        layer_defs[4].push({type:'conv', sx:5, filters:7, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[4].push({type:'pool', sx:2, stride:2});\n\
         layer_defs[4].push({type:'conv', sx:5, filters:20, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[4].push({type:'pool', sx:2, stride:2});\n\
-        layer_defs[4].push({type:'conv', sx:5, filters:10, stride:1, pad:2, activation:'relu'});\n\
+        layer_defs[4].push({type:'conv', sx:5, filters:9, stride:1, pad:2, activation:'relu'});\n\
         layer_defs[4].push({type:'pool', sx:2, stride:2});\n\
         layer_defs[4].push({type:'softmax', num_classes:10});\n\
         \n\
@@ -108,8 +111,8 @@
         \n\
         trainer[4] = new convnetjs.SGDTrainer(net[4], {method:'adadelta', batch_size:4, l2_decay:0.0001});\n\
         ";
-        
-        
+
+
 
         var step_num = 0;
         var maxmin = cnnutil.maxmin;
@@ -215,10 +218,12 @@
 
             //we built mother network here based on layer definitions of each child network
             //we look at all the children networks at all convolutional layers (so we skip Input, pooling and softmax layers)
-            //, and add the one with fewest filters into the mother network 
-            for (var i = 1; ( i < layer_defs[0].length - 1) || ( i < layer_defs[1].length - 1) || ( i < layer_defs[2].length - 1) || (i < layer_defs[3].length - 1) || ( i < layer_defs[4].length - 1); i += 2) {
+            //, and add the one with fewest filters into the mother network.
+            ////loop for all positions but skip the input layer and softmax layer
+            for (var i = 1; (i < layer_defs[0].length - 1) || (i < layer_defs[1].length - 1) || (i < layer_defs[2].length - 1) || (i < layer_defs[3].length - 1) || (i < layer_defs[4].length - 1); i += 2) {
+                var temp_filterNum = 10000;//hope it's big enough
+                //loop for each network
                 for (var j = 0; net[j]; j++) {
-                    var temp_filterNum = 10000;
                     if (layer_defs[j][i].type === 'conv' && layer_defs[j][i].filters < temp_filterNum && layer_defs[j][i].filters > 0) {
                         temp_filterNum = layer_defs[j][i].filters;
                     }
@@ -226,30 +231,30 @@
                 mother_defs.push({ type: 'conv', sx: 5, filters: temp_filterNum, stride: 1, pad: 2, activation: 'relu' });
                 mother_defs.push({ type: 'pool', sx: 2, stride: 2 });//add a pooling layer after every conv layer by default
             }
-            mother_defs.push({type:'softmax', num_classes:10});
+            mother_defs.push({ type: 'softmax', num_classes: 10 });
             motherNet = new convnetjs.Net();
             motherNet.makeLayers(mother_defs);//implement it
 
             //for now, we show the motherNet by simply print each layer
             var m2t = document.getElementById("MotherNet_vis");
             m2t.innerHTML = '';
-            for(var i=0;mother_defs[i];i++){
-                if(i==0){
-                    var mt = 'Input layer:' + 'out_sx:' + mother_defs[0].out_sx + ' out_sy:' + mother_defs[0].out_sy + ' out_depth:' + mother_defs[0].out_depth ;
+            for (var i = 0; mother_defs[i]; i++) {
+                if (i == 0) {
+                    var mt = 'Input layer:' + 'out_sx:' + mother_defs[0].out_sx + ' out_sy:' + mother_defs[0].out_sy + ' out_depth:' + mother_defs[0].out_depth;
                     m2t.appendChild(document.createTextNode(mt));
                     m2t.appendChild(document.createElement('br'));
                 }
-                else if(mother_defs[i].type==='conv'){
+                else if (mother_defs[i].type === 'conv') {
                     var mt = 'Convolutional layer:' + ' sx:' + mother_defs[i].sx + ' filters:' + mother_defs[i].filters + ' stride:' + mother_defs[i].stride + ' pad:' + mother_defs[i].pad + ' activation:' + mother_defs[i].activation;
                     m2t.appendChild(document.createTextNode(mt));
                     m2t.appendChild(document.createElement('br'));
                 }
-                else if(mother_defs[i].type==='pool'){
+                else if (mother_defs[i].type === 'pool') {
                     var mt = 'Pooling layer:' + ' sx:' + mother_defs[i].sx + ' stride:' + mother_defs[i].stride;
                     m2t.appendChild(document.createTextNode(mt));
                     m2t.appendChild(document.createElement('br'));
                 }
-                else if(i==mother_defs.length-1){
+                else if (i == mother_defs.length - 1) {
                     var mt = 'Softmax layer: number of classes: 10';//since we are using cifar10
                     m2t.appendChild(document.createTextNode(mt));
                 }
@@ -267,7 +272,7 @@
         var start_fun = function () {
             if (loaded[0] && loaded[test_batch]) {
                 console.log('starting!');
-                setInterval(load_and_step, 0); 
+                setInterval(load_and_step, 0);
             }
             else { setTimeout(start_fun, 200); } // keep checking
         }
@@ -359,7 +364,7 @@
 
 
             // visualize training status
-            var train_elt = document.getElementById("trainstats");
+            var train_elt = document.getElementById("trainstatus");
             train_elt.innerHTML = '';
             for (var i = 0; net[i]; i++) {
                 var T = 'Forward time of network' + i + ' per example: ' + stats[i].fwd_time + 'ms';
@@ -395,12 +400,6 @@
             train_elt.appendChild(document.createTextNode(T));
             train_elt.appendChild(document.createElement('br'));
 
-            /*
-            // run prediction on test set
-            if ((step_num % 100 === 0 && step_num > 0) || step_num === 100) {
-                test_predict();
-            }
-            */
             step_num++;
         }
 
@@ -422,8 +421,7 @@
 
             step_num = 0;
 
-            mother_defs = [];
-            mother_defs.push({ type: 'input', out_sx: 32, out_sy: 32, out_depth: 3 });
+
         }
 
         var change_net = function () {
@@ -436,9 +434,13 @@
 
 
             //I'm lazy now, so just paste the code above :(
-            for (var i = 1; ( i < layer_defs[0].length - 1) || ( i < layer_defs[1].length - 1) || ( i < layer_defs[2].length - 1) || (i < layer_defs[3].length - 1) || ( i < layer_defs[4].length - 1); i += 2) {
+            mother_defs = [];
+            mother_defs.push({ type: 'input', out_sx: 32, out_sy: 32, out_depth: 3 });
+            //loop for all positions but skip the input layer and softmax layer
+            for (var i = 1; (i < layer_defs[0].length - 1) || (i < layer_defs[1].length - 1) || (i < layer_defs[2].length - 1) || (i < layer_defs[3].length - 1) || (i < layer_defs[4].length - 1); i += 2) {
+                var temp_filterNum = 10000;//hope it's big enough
+                //loop for each network
                 for (var j = 0; net[j]; j++) {
-                    var temp_filterNum = 10000;
                     if (layer_defs[j][i].type === 'conv' && layer_defs[j][i].filters < temp_filterNum && layer_defs[j][i].filters > 0) {
                         temp_filterNum = layer_defs[j][i].filters;
                     }
@@ -446,30 +448,30 @@
                 mother_defs.push({ type: 'conv', sx: 5, filters: temp_filterNum, stride: 1, pad: 2, activation: 'relu' });
                 mother_defs.push({ type: 'pool', sx: 2, stride: 2 });//add a pooling layer after every conv layer by default
             }
-            mother_defs.push({type:'softmax', num_classes:10});
+            mother_defs.push({ type: 'softmax', num_classes: 10 });
             motherNet = new convnetjs.Net();
             motherNet.makeLayers(mother_defs);//implement it
 
             //for now, we show the motherNet by simply print each layer
             var m2t = document.getElementById("MotherNet_vis");
             m2t.innerHTML = '';
-            for(var i=0;mother_defs[i];i++){
-                if(i==0){
-                    var mt = 'Input layer:' + 'out_sx:' + mother_defs[0].out_sx + ' out_sy:' + mother_defs[0].out_sy + ' out_depth:' + mother_defs[0].out_depth ;
+            for (var i = 0; mother_defs[i]; i++) {
+                if (i == 0) {
+                    var mt = 'Input layer:' + 'out_sx:' + mother_defs[0].out_sx + ' out_sy:' + mother_defs[0].out_sy + ' out_depth:' + mother_defs[0].out_depth;
                     m2t.appendChild(document.createTextNode(mt));
                     m2t.appendChild(document.createElement('br'));
                 }
-                else if(mother_defs[i].type==='conv'){
+                else if (mother_defs[i].type === 'conv') {
                     var mt = 'Convolutional layer:' + ' sx:' + mother_defs[i].sx + ' filters:' + mother_defs[i].filters + ' stride:' + mother_defs[i].stride + ' pad:' + mother_defs[i].pad + ' activation:' + mother_defs[i].activation;
                     m2t.appendChild(document.createTextNode(mt));
                     m2t.appendChild(document.createElement('br'));
                 }
-                else if(mother_defs[i].type==='pool'){
+                else if (mother_defs[i].type === 'pool') {
                     var mt = 'Pooling layer:' + ' sx:' + mother_defs[i].sx + ' stride:' + mother_defs[i].stride;
                     m2t.appendChild(document.createTextNode(mt));
                     m2t.appendChild(document.createElement('br'));
                 }
-                else if(i==mother_defs.length-1){
+                else if (i == mother_defs.length - 1) {
                     var mt = 'Softmax layer: number of classes: 10';//since we are using cifar10
                     m2t.appendChild(document.createTextNode(mt));
                 }
@@ -488,7 +490,7 @@
     <div id="wrap">
 
         <h1>Train Stats</h1>
-        <div id="trainstats"></div>
+        <div id="trainstatus"></div>
 
         <h1>Instantiate Networks and Trainers</h1>
         <div>
