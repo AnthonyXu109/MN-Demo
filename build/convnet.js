@@ -525,9 +525,16 @@ var convnetjs = convnetjs || { REVISION: 'ALPHA' };
     this.filters = [];
     for(var i=0;i<this.out_depth ;i++) { this.filters.push(new Vol(1, 1, this.num_inputs)); }
     this.biases = new Vol(1, 1, this.out_depth, bias);
+
   }
 
   FullyConnLayer.prototype = {
+    getFilters: function(){
+      return this.filters;
+    },
+    setFilters: function(newFilters){
+      this.filters=newFilters;
+    },
     forward: function(V, is_training) {
       this.in_act = V;
       var A = new Vol(1, 1, this.out_depth, 0.0);
