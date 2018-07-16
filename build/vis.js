@@ -95,8 +95,11 @@ var cnnvis = (function(exports){
     this.miny = 9999;
     this.numlines = 0;
 
-    this.numlines = legend.length;
+    for(var i=0;i<7;i++){
+      console.log(legend[i]);
+    }
     this.legend = legend;
+    this.numlines = this.legend.length;
     this.styles = ["red", "blue", "green", "black", "magenta", "cyan", "purple", "aqua", "olive", "lime", "navy"];
     // 17 basic colors: aqua, black, blue, fuchsia, gray, green, lime, maroon, navy, olive, orange, purple, red, silver, teal, white, and yellow
   }
@@ -143,6 +146,7 @@ var cnnvis = (function(exports){
         ctx.moveTo(xpos, pad);
         ctx.lineTo(xpos, H-pad);
         ctx.fillText(f2t(i/ng*this.step_horizon/1000)+'k',xpos,H-pad+14);
+        console.log(this.numlines);
       }
       for(var i=0;i<=ng;i++) {
         var ypos = i/ng*(H-2*pad)+pad;
@@ -156,9 +160,9 @@ var cnnvis = (function(exports){
       if(N<2) return;
 
       // draw legend
-      for(var k=0;k<this.numlines;k++) {
+      for(var k=0;k<this.legend.length;k++) {
         ctx.fillStyle = this.styles[k % this.styles.length];
-        ctx.fillText(this.legend[k], W-pad-100, pad+20+k*16);
+        ctx.fillText(this.legend[k], W-pad-50, pad+k*16);
       }
       ctx.fillStyle = "black";
 
@@ -168,7 +172,7 @@ var cnnvis = (function(exports){
         var ty = H - ((y-s.miny) / (s.maxy-s.miny) * (H-pad*2) + pad);
         return {tx:tx, ty:ty}
       }
-      for(var k=0;k<this.numlines;k++) {
+      for(var k=0;k<this.legend.length;k++) {
 
         ctx.strokeStyle = this.styles[k % this.styles.length];
         ctx.beginPath()

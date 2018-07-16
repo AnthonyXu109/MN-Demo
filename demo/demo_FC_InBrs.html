@@ -6,6 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="author" content="Chang">
 
+    <style>
+        #lossgraph {
+            /*border: 1px solid #F0F;*/
+            width: 100%;
+        }
+    </style>
 
     <script src="jquery-1.8.3.min.js"></script>
     <script src="../build/vis.js"></script>
@@ -21,6 +27,7 @@
         var hatchedNet = new Array();
         var trainer = new Array();
         var t = new Array();
+        var legend = new Array();
 
         //I will take care of the training of mother network later. For now, just the building process.
         var mother_defs, motherNet;
@@ -62,11 +69,11 @@
 
         t[2] = "layer_defs[2] = [];\n\
         layer_defs[2].push({type:'input', out_sx:28, out_sy:28, out_depth:1});\n\
-        layer_defs[2].push({type:'fc', num_neurons:60, activation:'tanh'});\n\
-        layer_defs[2].push({type:'fc', num_neurons:50, activation:'tanh'});\n\
-        layer_defs[2].push({type:'fc', num_neurons:60, activation:'tanh'});\n\
-        layer_defs[2].push({type:'fc', num_neurons:60, activation:'tanh'});\n\
-        layer_defs[2].push({type:'fc', num_neurons:60, activation:'tanh'});\n\
+        layer_defs[2].push({type:'fc', num_neurons:160, activation:'tanh'});\n\
+        layer_defs[2].push({type:'fc', num_neurons:150, activation:'tanh'});\n\
+        layer_defs[2].push({type:'fc', num_neurons:160, activation:'tanh'});\n\
+        layer_defs[2].push({type:'fc', num_neurons:160, activation:'tanh'});\n\
+        layer_defs[2].push({type:'fc', num_neurons:160, activation:'tanh'});\n\
         layer_defs[2].push({type:'softmax', num_classes:10});\n\
         \n\
         net[2] = new convnetjs.Net();\n\
@@ -199,7 +206,14 @@
                 hatchedNet[i] = new convnetjs.Net();
                 hatchedNet[i].makeLayers(hatched_defs[i]);
                 trainer[i + 6] = new convnetjs.SGDTrainer(hatchedNet[i], { method: 'adadelta', batch_size: 20, l2_decay: 0.001 });
+                legend[i]='childNet '+i;
+                legend[t.length+1+i]='hatchedNet '+i;
             }
+            legend[t.length]='motherNet';
+
+            // for(var i=0;legend[i];i++){
+            //     console.log(legend[i]);
+            // }
 
 
             //we built mother network here based on layer definitions of each child network
@@ -262,21 +276,21 @@
         var start_fun = function () {
             if (loaded[0] && loaded[test_batch]) {
                 console.log('starting!');
-                setInterval(load_and_step, 50);
+                setInterval(load_and_step, 10);
             }
             else { setTimeout(start_fun, 200); } // keep checking
-            setInterval(widenNets(motherNet,hatchedNet), 1000); //use Mother Network to update hatched networks every 1 sec
+            setInterval(widenNets(motherNet, hatchedNet), 1000); //use Mother Network to update hatched networks every 1 sec
         }
-/*
-        //hatched part
-        var bg_start_fun = function () {
-            if (loaded[test_batch]) {
-                console.log('BG starting!');
-                setInterval(bg_load_and_step, 100);
-            }
-            else { setTimeout(bg_start_fun, 200); }
-        }
-*/
+        /*
+                //hatched part
+                var bg_start_fun = function () {
+                    if (loaded[test_batch]) {
+                        console.log('BG starting!');
+                        setInterval(bg_load_and_step, 100);
+                    }
+                    else { setTimeout(bg_start_fun, 200); }
+                }
+        */
         var load_data_batch = function (batch_num) {
             // Load the dataset with JS in background
             data_img_elts[batch_num] = new Image();
@@ -353,6 +367,7 @@
             bg_step(sample);
         }
 
+        var lossGraph = new cnnvis.MultiGraph(legend,);
         var xLossWindow = new Array();
         var wLossWindow = new Array();
         var trainAccWindow = new Array();
@@ -465,9 +480,9 @@
             trainAccWindow[5].add(train_acc[5]);
             //temp hatchedNet part
             for (var i = 0; hatchedNet[i]; i++) {
-                yhat[i+6] = hatchedNet[i].getPrediction();
-                train_acc[i+6] = yhat[i+6] === y ? 1.0 : 0.0;
-                trainAccWindow[i+6].add(train_acc[i+6]);
+                yhat[i + 6] = hatchedNet[i].getPrediction();
+                train_acc[i + 6] = yhat[i + 6] === y ? 1.0 : 0.0;
+                trainAccWindow[i + 6].add(train_acc[i + 6]);
             }
 
 
@@ -482,8 +497,8 @@
             var T = 'Forward time of MotherNetwork per example: ' + stats[5].fwd_time + 'ms';
             train_elt.appendChild(document.createTextNode(T));
             train_elt.appendChild(document.createElement('br'));
-            for (var i=0; hatchedNet[i]; i++){
-                var T = 'Forward time of hatched network' + i + ' per example: ' + stats[i+6].fwd_time + 'ms';
+            for (var i = 0; hatchedNet[i]; i++) {
+                var T = 'Forward time of hatched network' + i + ' per example: ' + stats[i + 6].fwd_time + 'ms';
                 train_elt.appendChild(document.createTextNode(T));
                 train_elt.appendChild(document.createElement('br'));
             }
@@ -495,8 +510,8 @@
             var T = 'Backprop time of MotherNetwork per example: ' + stats[5].bwd_time + 'ms';
             train_elt.appendChild(document.createTextNode(T));
             train_elt.appendChild(document.createElement('br'));
-            for(var i=0;hatchedNet[i];i++){
-                var T = 'Backprop time of hatched network' + i + ' per example: ' + stats[i+6].bwd_time + 'ms';
+            for (var i = 0; hatchedNet[i]; i++) {
+                var T = 'Backprop time of hatched network' + i + ' per example: ' + stats[i + 6].bwd_time + 'ms';
                 train_elt.appendChild(document.createTextNode(T));
                 train_elt.appendChild(document.createElement('br'));
             }
@@ -508,8 +523,8 @@
             var T = 'Classification loss of MotherNetwork: ' + f2t(xLossWindow[5].get_average());
             train_elt.appendChild(document.createTextNode(T));
             train_elt.appendChild(document.createElement('br'));
-            for(var i = 0; hatchedNet[i];i++){
-                var T = 'Classification loss of hatched network' + i + ' : ' + f2t(xLossWindow[i+6].get_average());
+            for (var i = 0; hatchedNet[i]; i++) {
+                var T = 'Classification loss of hatched network' + i + ' : ' + f2t(xLossWindow[i + 6].get_average());
                 train_elt.appendChild(document.createTextNode(T));
                 train_elt.appendChild(document.createElement('br'));
             }
@@ -521,8 +536,8 @@
             var T = 'L2 Weight decay loss of MotherNetwork: ' + f2t(wLossWindow[5].get_average());
             train_elt.appendChild(document.createTextNode(T));
             train_elt.appendChild(document.createElement('br'));
-            for(var i =0;hatchedNet[i];i++){
-                var T = 'L2 Weight decay loss of hatched network' + i + ' : ' + f2t(wLossWindow[i+6].get_average());
+            for (var i = 0; hatchedNet[i]; i++) {
+                var T = 'L2 Weight decay loss of hatched network' + i + ' : ' + f2t(wLossWindow[i + 6].get_average());
                 train_elt.appendChild(document.createTextNode(T));
                 train_elt.appendChild(document.createElement('br'));
             }
@@ -534,8 +549,8 @@
             var T = 'Training accuracy of MotherNetwork: ' + f2t(trainAccWindow[5].get_average());
             train_elt.appendChild(document.createTextNode(T));
             train_elt.appendChild(document.createElement('br'));
-            for(var i=0;hatchedNet[i];i++){
-                var T = 'Training accuracy of hatched network' + i + ' : ' + f2t(trainAccWindow[i+6].get_average());
+            for (var i = 0; hatchedNet[i]; i++) {
+                var T = 'Training accuracy of hatched network' + i + ' : ' + f2t(trainAccWindow[i + 6].get_average());
                 train_elt.appendChild(document.createTextNode(T));
                 train_elt.appendChild(document.createElement('br'));
             }
@@ -547,8 +562,8 @@
             var T = 'Validation accuracy of MotherNetwork: ' + f2t(valAccWindow[5].get_average());
             train_elt.appendChild(document.createTextNode(T));
             train_elt.appendChild(document.createElement('br'));
-            for(var i=0;hatchedNet[i];i++){
-                var T = 'Validation accuracy of hatched network' + i + ' : ' + f2t(valAccWindow[i+6].get_average());
+            for (var i = 0; hatchedNet[i]; i++) {
+                var T = 'Validation accuracy of hatched network' + i + ' : ' + f2t(valAccWindow[i + 6].get_average());
                 train_elt.appendChild(document.createTextNode(T));
                 train_elt.appendChild(document.createElement('br'));
             }
@@ -556,92 +571,115 @@
             train_elt.appendChild(document.createTextNode(T));
             train_elt.appendChild(document.createElement('br'));
 
+
+            // log progress to graph, (full loss)
+            if (step_num % 100 === 0) {
+                var Y = new Array();
+                for (var i = 0; i < 2 * hatchedNet.length + 1; i++) {
+                    var xa = xLossWindow[i].get_average();
+                    var xw = wLossWindow[i].get_average();
+                    if (xa >= 0 && xw >= 0){ // if they are -1 it means not enough data was accumulated yet for estimates
+                        Y[i]=xa+xw;
+                    }
+                }
+                lossGraph.add(step_num, Y);
+                lossGraph.drawSelf(document.getElementById("lossgraph"));
+
+                // if(x6>=0&&w6>=0){
+                //     lossGraph.add(step_num,x6+w6);
+                //     lossGraph.drawSelf(document.getElementById("lossgraph"));
+                // }
+            }
+
+
             step_num++;
         }
 
-/*
-        var bg_step = function (sample) {
-            var x = sample.x;
-            var y = sample.label;
-            var stats = new Array();
-            var lossx = new Array();
-            var lossw = new Array();
 
 
-            if (sample.isval) {
-                var yhat = new Array();
-                var val_acc = new Array();
-                // use x to build our estimate of validation error
-                for (var i = 0; hatchedNet[i]; i++) {
-                    hatchedNet[i].forward(x);
-                    yhat[i] = hatchedNet[i].getPrediction();
-                    val_acc[i] = yhat[i] === y ? 1.0 : 0.0;
-                    bg_valAccWindow[i].add(val_acc[i]);
+        /*
+                var bg_step = function (sample) {
+                    var x = sample.x;
+                    var y = sample.label;
+                    var stats = new Array();
+                    var lossx = new Array();
+                    var lossw = new Array();
+        
+        
+                    if (sample.isval) {
+                        var yhat = new Array();
+                        var val_acc = new Array();
+                        // use x to build our estimate of validation error
+                        for (var i = 0; hatchedNet[i]; i++) {
+                            hatchedNet[i].forward(x);
+                            yhat[i] = hatchedNet[i].getPrediction();
+                            val_acc[i] = yhat[i] === y ? 1.0 : 0.0;
+                            bg_valAccWindow[i].add(val_acc[i]);
+                        }
+                        return;
+                    }
+        
+                    // train on it with networks
+                    for (var i = 0; hatchedNet[i]; i++) {
+                        stats[i] = trainer[i + 6].train(x, y);
+                        lossx[i] = stats[i].cost_loss;
+                        lossw[i] = stats[i].l2_decay_loss;
+                        bg_xLossWindow[i].add(lossx[i]);
+                        bg_wLossWindow[i].add(lossw[i]);
+                    }
+        
+                    // keep track of stats such as the average training error and loss
+                    var yhat = new Array();
+                    var train_acc = new Array();
+                    for (var i = 0; hatchedNet[i]; i++) {
+                        yhat[i] = hatchedNet[i].getPrediction();
+                        train_acc[i] = yhat[i] === y ? 1.0 : 0.0;
+                        bg_trainAccWindow[i].add(train_acc[i]);
+                    }
+        
+        
+                    // visualize training status
+                    var train_elt = document.getElementById("HatchedNets_trainstats");
+                    train_elt.innerHTML = '';
+                    for (var i = 0; hatchedNet[i]; i++) {
+                        var T = 'Forward time of hatched network' + i + ' per example: ' + stats[i].fwd_time + 'ms';
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+                    }
+                    for (var i = 0; hatchedNet[i]; i++) {
+                        var T = 'Backprop time of hatched network' + i + ' per example: ' + stats[i].bwd_time + 'ms';
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+                    }
+                    for (var i = 0; hatchedNet[i]; i++) {
+                        var T = 'Classification loss of hatched network' + i + ' : ' + f2t(bg_xLossWindow[i].get_average());
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+                    }
+                    for (var i = 0; hatchedNet[i]; i++) {
+                        var T = 'L2 Weight decay loss of hatched network' + i + ' : ' + f2t(bg_wLossWindow[i].get_average());
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+                    }
+                    for (var i = 0; hatchedNet[i]; i++) {
+                        var T = 'Training accuracy of hatched network' + i + ' : ' + f2t(bg_trainAccWindow[i].get_average());
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+                    }
+                    for (var i = 0; hatchedNet[i]; i++) {
+                        var T = 'Validation accuracy of hatched network' + i + ' : ' + f2t(bg_valAccWindow[i].get_average());
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+                    }
+        
                 }
-                return;
-            }
-
-            // train on it with networks
-            for (var i = 0; hatchedNet[i]; i++) {
-                stats[i] = trainer[i + 6].train(x, y);
-                lossx[i] = stats[i].cost_loss;
-                lossw[i] = stats[i].l2_decay_loss;
-                bg_xLossWindow[i].add(lossx[i]);
-                bg_wLossWindow[i].add(lossw[i]);
-            }
-
-            // keep track of stats such as the average training error and loss
-            var yhat = new Array();
-            var train_acc = new Array();
-            for (var i = 0; hatchedNet[i]; i++) {
-                yhat[i] = hatchedNet[i].getPrediction();
-                train_acc[i] = yhat[i] === y ? 1.0 : 0.0;
-                bg_trainAccWindow[i].add(train_acc[i]);
-            }
-
-
-            // visualize training status
-            var train_elt = document.getElementById("HatchedNets_trainstats");
-            train_elt.innerHTML = '';
-            for (var i = 0; hatchedNet[i]; i++) {
-                var T = 'Forward time of hatched network' + i + ' per example: ' + stats[i].fwd_time + 'ms';
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            for (var i = 0; hatchedNet[i]; i++) {
-                var T = 'Backprop time of hatched network' + i + ' per example: ' + stats[i].bwd_time + 'ms';
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            for (var i = 0; hatchedNet[i]; i++) {
-                var T = 'Classification loss of hatched network' + i + ' : ' + f2t(bg_xLossWindow[i].get_average());
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            for (var i = 0; hatchedNet[i]; i++) {
-                var T = 'L2 Weight decay loss of hatched network' + i + ' : ' + f2t(bg_wLossWindow[i].get_average());
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            for (var i = 0; hatchedNet[i]; i++) {
-                var T = 'Training accuracy of hatched network' + i + ' : ' + f2t(bg_trainAccWindow[i].get_average());
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            for (var i = 0; hatchedNet[i]; i++) {
-                var T = 'Validation accuracy of hatched network' + i + ' : ' + f2t(bg_valAccWindow[i].get_average());
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-
-        }
-*/
+        */
 
         //build the hatched networks
         function randomFrom(lowerValue, upperValue) {
-                return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
-            }
-        function widenNets(motherNet,hatchedNet){
+            return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
+        }
+        function widenNets(motherNet, hatchedNet) {
             //For the original part in MN, just copy them
             for (var l = 1; l < motherNet.layers.length; l++) { //loop by each layer in MN
                 if (motherNet.layers[l].layer_type === 'fc') {
@@ -657,7 +695,7 @@
             }
             //For the widened part, use the random select
             for (var h = 0; hatchedNet[h]; h++) { //build each hatchedNet one by one
-                for (var l = 1; l < motherNet.layers.length; l++) { //loop by each layer in MN except for the last one
+                for (var l = 1; l < motherNet.layers.length - 1; l++) { //loop by each fc layer in MN except for the last one
                     if (motherNet.layers[l].layer_type === 'fc') {
                         var rdmSlct = 0;
                         var copyCount = new Array(motherNet.layers[l].filters.length), i = copyCount.length; //count how many times has a filter in a certain layer of MN been copied
@@ -786,6 +824,14 @@
         <h1>Train Stats</h1>
         <div id="trainstats"></div>
 
+        <div>
+            <h1>Loss:</h1>
+            <br >
+            <canvas id="lossgraph" style="width:1000px;height:500px;">
+            </canvas>
+            <br />
+        </div>
+
 
         <h1>Instantiate Networks and Trainers</h1>
         <div>
@@ -807,8 +853,6 @@
             <h1>Generated MotherNet</h1>
             <div id="MotherNet_vis"></div>
         </div>
-        <h1>Train Stats of Hatched Nets</h1>
-        <div id="HatchedNets_trainstats"></div>
 
     </div>
 
