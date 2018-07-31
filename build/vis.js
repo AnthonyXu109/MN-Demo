@@ -141,12 +141,14 @@ var cnnvis = (function(exports){
       ctx.strokeStyle = "#999";
       ctx.beginPath();
       var ng = 10;
+      
       for(var i=0;i<=ng;i++) {
         var xpos = i/ng*(W-2*pad)+pad;
         ctx.moveTo(xpos, pad);
         ctx.lineTo(xpos, H-pad);
-        ctx.fillText(f2t(i/ng*this.step_horizon/1000)+'k',xpos,H-pad+14);
-        console.log(this.numlines);
+        
+          ctx.fillText(f2t(i/ng*this.step_horizon/1000)+'k',xpos,H-pad+14);
+        //console.log(this.numlines);
       }
       for(var i=0;i<=ng;i++) {
         var ypos = i/ng*(H-2*pad)+pad;
@@ -154,6 +156,7 @@ var cnnvis = (function(exports){
         ctx.lineTo(W-pad, ypos);
         ctx.fillText(f2t((ng-i)/ng*(this.maxy-this.miny) + this.miny), 0, ypos);
       }
+      if(i/ng*this.step_horizon/1000 > 0.1)
       ctx.stroke();
 
       var N = this.pts.length;

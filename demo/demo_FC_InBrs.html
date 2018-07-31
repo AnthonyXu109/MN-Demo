@@ -7,9 +7,34 @@
     <meta name="author" content="Chang">
 
     <style>
-        #lossgraph {
-            /*border: 1px solid #F0F;*/
-            width: 100%;
+        #netDef2 {
+            position: absolute;
+            left: 270px;
+            top: 8px;
+        }
+
+        #netDef3 {
+            position: absolute;
+            left: 530px;
+            top: 8px;
+        }
+
+        #netDef4 {
+            position: absolute;
+            left: 790px;
+            top: 8px;
+        }
+
+        #netDef5 {
+            position: absolute;
+            left: 1050px;
+            top: 8px;
+        }
+    </style>
+
+    <style>
+        .axis .domain {
+            display: none;
         }
     </style>
 
@@ -18,8 +43,29 @@
     <script src="../build/util.js"></script>
     <script src="../build/convnet.js"></script>
     <script src="../demo/mnist_labels.js"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+
+
 
     <script>
+        var netIndex = 1;
+        var layerIndex = new Array(5);//cuz there are up to 5 child/hatched nets
+        for (var i = 0; i < 5; i++) { layerIndex[i] = 10 + 10 * i + 2; }
+        var neuronIndex = 30;
+        var layerLog = new Array(5);//cuz there are up to 5 child/hatched nets
+        for (var i = 0; i < 5; i++) { layerLog[i] = 2; }
+        function addOne(layerID) {
+            var temp = layerID - 1;
+            var num = document.getElementById(temp);
+            num.value = parseInt(num.value) + 1;
+        }
+        function minusOne(layerID) {
+            var temp = layerID - 1;
+            var num = document.getElementById(temp);
+            if (num.value > 0) {
+                num.value = parseInt(num.value) - 1;
+            }
+        }
 
         var layer_defs = new Array();
         var net = new Array();
@@ -28,8 +74,52 @@
         var trainer = new Array();
         var t = new Array();
         var legend = new Array();
+        var startHatching = false;
+        var Fwd = new Array();
+        var STEP = 0;
+        var Baseline_EA = 0;
+        var MN_EA = 0;
+        var trainStart_CN = new Array(5);
+        var trainEnd_CN = new Array(5);
+        var training_CN = new Array(5);
+        var trainStart_MN = 0;
+        var trainEnd_MN = 0;
+        var training_MN = 0;
+        var trainStart_HN = new Array(5);
+        var trainEnd_HN = new Array(5);
+        var training_HN = new Array(5);
+        var Accuracy30_Time = new Array(11);
+        for (var i = 0; i < 11; i++) {
+            Accuracy30_Time[i] = 0;
+        }
+        var Accuracy50_Time = new Array(11);
+        for (var i = 0; i < 11; i++) {
+            Accuracy50_Time[i] = 0;
+        }
+        var Accuracy70_Time = new Array(11);
+        for (var i = 0; i < 11; i++) {
+            Accuracy70_Time[i] = 0;
+        }
+        var Accuracy90_Time = new Array(11);
+        for (var i = 0; i < 11; i++) {
+            Accuracy90_Time[i] = 0;
+        }
+        var AccuracyCvg_Time = new Array(11);
+        for (var i = 0; i < 11; i++) {
+            AccuracyCvg_Time[i] = 0;
+        }
+        //for(var i = 0; i < 5 ; i++) {trainStart_HN[i] = new Date().getTime();}
+        var MN_convergence = false;
+        var CN_convergence = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            CN_convergence[i] = false;
+        }
+        var HN_convergence = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            HN_convergence[i] = false;
+        }
 
-        //I will take care of the training of mother network later. For now, just the building process.
+        //initialize MN
         var mother_defs, motherNet;
         mother_defs = [];
         mother_defs.push({ type: 'input', out_sx: 28, out_sy: 28, out_depth: 1 });//the mother net needs an input layer by default
@@ -39,47 +129,47 @@
         //there are already three children networks by default
         t[0] = "layer_defs[0] = [];\n\
         layer_defs[0].push({type:'input', out_sx:28, out_sy:28, out_depth:1});\n\
-        layer_defs[0].push({type:'fc', num_neurons:50, activation:'tanh'});\n\
-        layer_defs[0].push({type:'fc', num_neurons:50, activation:'tanh'});\n\
-        layer_defs[0].push({type:'fc', num_neurons:50, activation:'tanh'});\n\
-        layer_defs[0].push({type:'fc', num_neurons:50, activation:'tanh'});\n\
-        layer_defs[0].push({type:'fc', num_neurons:50, activation:'tanh'});\n\
+        layer_defs[0].push({type:'fc', num_neurons:50, activation:'relu'});\n\
+        layer_defs[0].push({type:'fc', num_neurons:50, activation:'relu'});\n\
+        layer_defs[0].push({type:'fc', num_neurons:50, activation:'relu'});\n\
+        layer_defs[0].push({type:'fc', num_neurons:50, activation:'relu'});\n\
+        layer_defs[0].push({type:'fc', num_neurons:50, activation:'relu'});\n\
         layer_defs[0].push({type:'softmax', num_classes:10});\n\
         \n\
         net[0] = new convnetjs.Net();\n\
         net[0].makeLayers(layer_defs[0]);\n\
         \n\
-        trainer[0] = new convnetjs.SGDTrainer(net[0], {method:'adadelta', batch_size:20, l2_decay:0.001});\n\
+        trainer[0] = new convnetjs.Trainer(net[0], {method:'adadelta', batch_size:50, l2_decay:0.001});\n\
         ";
 
         t[1] = "layer_defs[1] = [];\n\
         layer_defs[1].push({type:'input', out_sx:28, out_sy:28, out_depth:1});\n\
-        layer_defs[1].push({type:'fc', num_neurons:550, activation:'tanh'});\n\
-        layer_defs[1].push({type:'fc', num_neurons:540, activation:'tanh'});\n\
-        layer_defs[1].push({type:'fc', num_neurons:550, activation:'tanh'});\n\
-        layer_defs[1].push({type:'fc', num_neurons:540, activation:'tanh'});\n\
-        layer_defs[1].push({type:'fc', num_neurons:550, activation:'tanh'});\n\
+        layer_defs[1].push({type:'fc', num_neurons:70, activation:'relu'});\n\
+        layer_defs[1].push({type:'fc', num_neurons:70, activation:'relu'});\n\
+        layer_defs[1].push({type:'fc', num_neurons:70, activation:'relu'});\n\
+        layer_defs[1].push({type:'fc', num_neurons:70, activation:'relu'});\n\
+        layer_defs[1].push({type:'fc', num_neurons:70, activation:'relu'});\n\
         layer_defs[1].push({type:'softmax', num_classes:10});\n\
         \n\
         net[1] = new convnetjs.Net();\n\
         net[1].makeLayers(layer_defs[1]);\n\
         \n\
-        trainer[1] = new convnetjs.SGDTrainer(net[1], {method:'adadelta', batch_size:20, l2_decay:0.001});\n\
+        trainer[1] = new convnetjs.Trainer(net[1], {method:'adadelta', batch_size:50, l2_decay:0.001});\n\
         ";
 
         t[2] = "layer_defs[2] = [];\n\
         layer_defs[2].push({type:'input', out_sx:28, out_sy:28, out_depth:1});\n\
-        layer_defs[2].push({type:'fc', num_neurons:160, activation:'tanh'});\n\
-        layer_defs[2].push({type:'fc', num_neurons:150, activation:'tanh'});\n\
-        layer_defs[2].push({type:'fc', num_neurons:160, activation:'tanh'});\n\
-        layer_defs[2].push({type:'fc', num_neurons:160, activation:'tanh'});\n\
-        layer_defs[2].push({type:'fc', num_neurons:160, activation:'tanh'});\n\
+        layer_defs[2].push({type:'fc', num_neurons:60, activation:'relu'});\n\
+        layer_defs[2].push({type:'fc', num_neurons:60, activation:'relu'});\n\
+        layer_defs[2].push({type:'fc', num_neurons:60, activation:'relu'});\n\
+        layer_defs[2].push({type:'fc', num_neurons:60, activation:'relu'});\n\
+        layer_defs[2].push({type:'fc', num_neurons:60, activation:'relu'});\n\
         layer_defs[2].push({type:'softmax', num_classes:10});\n\
         \n\
         net[2] = new convnetjs.Net();\n\
         net[2].makeLayers(layer_defs[2]);\n\
         \n\
-        trainer[2] = new convnetjs.SGDTrainer(net[2], {method:'adadelta', batch_size:20, l2_decay:0.001});\n\
+        trainer[2] = new convnetjs.Trainer(net[2], {method:'adadelta', batch_size:50, l2_decay:0.001});\n\
         ";
 
         var step_num = 0;
@@ -110,7 +200,7 @@
             var n = b * 3000 + k;
 
             // load more batches over time
-            if (step_num % 5000 === 0 && step_num > 0) {
+            if (step_num % 3000 === 0 && step_num > 0) {
                 for (var i = 0; i < num_batches; i++) {
                     if (!loaded[i]) {
                         load_data_batch(i);
@@ -206,10 +296,10 @@
                 hatchedNet[i] = new convnetjs.Net();
                 hatchedNet[i].makeLayers(hatched_defs[i]);
                 trainer[i + 6] = new convnetjs.SGDTrainer(hatchedNet[i], { method: 'adadelta', batch_size: 20, l2_decay: 0.001 });
-                legend[i]='childNet '+i;
-                legend[t.length+1+i]='hatchedNet '+i;
+                legend[i] = 'childNet ' + i;
+                //legend[t.length + 1 + i] = 'hatchedNet ' + i;
             }
-            legend[t.length]='motherNet';
+            legend[t.length] = 'motherNet';
 
             // for(var i=0;legend[i];i++){
             //     console.log(legend[i]);
@@ -235,12 +325,12 @@
                         temp_neuronNum = layer_defs[j][i].num_neurons;
                     }
                 }
-                mother_defs.push({ type: 'fc', num_neurons: temp_neuronNum, activation: 'tanh' });
+                mother_defs.push({ type: 'fc', num_neurons: temp_neuronNum, activation: 'relu' });
             }
             mother_defs.push({ type: 'softmax', num_classes: 10 });
             motherNet = new convnetjs.Net();
             motherNet.makeLayers(mother_defs);//implement it
-            trainer[5] = new convnetjs.SGDTrainer(motherNet, { method: 'adadelta', batch_size: 20, l2_decay: 0.001 });
+            trainer[5] = new convnetjs.Trainer(motherNet, { method: 'adadelta', batch_size: 10, l2_decay: 0.001 });
 
             //for now, we show the motherNet by simply print each layer
             var m2t = document.getElementById("MotherNet_vis");
@@ -269,17 +359,23 @@
             load_data_batch(test_batch); // async load test set (batch 6)
             load_bg_data_batch(0);
             load_bg_data_batch(test_batch);
+            for (var i = 0; i < 5; i++) { trainStart_CN[i] = new Date().getTime(); }
+            trainStart_MN = new Date().getTime();
             start_fun();
             //bg_start_fun();
+
+
+
+
         });
 
         var start_fun = function () {
             if (loaded[0] && loaded[test_batch]) {
                 console.log('starting!');
-                setInterval(load_and_step, 10);
+                setInterval(load_and_step, 0);
             }
             else { setTimeout(start_fun, 200); } // keep checking
-            setInterval(widenNets(motherNet, hatchedNet), 1000); //use Mother Network to update hatched networks every 1 sec
+            //setInterval(widenNets(motherNet, hatchedNet), 1000); //use Mother Network to update hatched networks every 1 sec
         }
         /*
                 //hatched part
@@ -337,15 +433,15 @@
         var load_and_step = function () {
             if (paused) return;
 
-            if (embed_samples.length === 0) { // happens once
-                for (var k = 0; k < 200; k++) {
-                    var s = sample_training_instance();
-                    embed_samples.push(s);
-                    // render x and save it too
-                    var I = render_act(s.x);
-                    embed_imgs.push(I);
-                }
-            }
+            // if (embed_samples.length === 0) { // happens once
+            //     for (var k = 0; k < 200; k++) {
+            //         var s = sample_training_instance();
+            //         embed_samples.push(s);
+            //         // render x and save it too
+            //         var I = render_act(s.x);
+            //         embed_imgs.push(I);
+            //     }
+            // }
             var sample = sample_training_instance();
             step(sample); // process this image
         }
@@ -367,12 +463,13 @@
             bg_step(sample);
         }
 
-        var lossGraph = new cnnvis.MultiGraph(legend,);
+        //var lossGraph = new cnnvis.MultiGraph(legend, );
         var xLossWindow = new Array();
         var wLossWindow = new Array();
         var trainAccWindow = new Array();
         var valAccWindow = new Array();
         var testAccWindow = new Array();
+        var MNtempAcc = 0;//log the temporary accuracy of MN every 500 steps
         for (var i = 0; i < 5; i++) {
             xLossWindow[i] = new cnnutil.Window(100);
             wLossWindow[i] = new cnnutil.Window(100);
@@ -409,7 +506,42 @@
         }
 
 
+
+
+
+
+
+
+
+
+
+
         var step = function (sample) {
+
+            if (step_num % 500 === 0 && step_num > 0) {
+                //     console.log(motherNet.layers[3].filters);
+                // for (var i = 0; hatchedNet[i]; i++) {
+                //     console.log(hatchedNet[i].layers[3].filters);
+                //     console.log('');
+                // }
+                widenNets(motherNet, hatchedNet);
+                //     var Test = sample_training_instance().x;
+                //     // for (var i = 0; net[i]; i++) {
+                //     //     console.log(net[i].getPrediction());
+                //     // }
+                //     console.log(motherNet.forward(Test) === hatchedNet[1].forward(Test));
+                //     console.log(motherNet.layers[3].filters);
+                // for (var i = 0; hatchedNet[i]; i++) {
+                //     console.log(hatchedNet[i].layers[3].filters);
+                // }
+                // console.log('');
+                //     console.log('');
+            }
+
+
+
+
+
             var x = sample.x;
             var y = sample.label;
             var stats = new Array();
@@ -571,119 +703,134 @@
             train_elt.appendChild(document.createTextNode(T));
             train_elt.appendChild(document.createElement('br'));
 
+            //judege the convergence of MN
+            if (step_num % 500 == 0 && step_num > 0) {
+                if (step_num - MNtempAcc < 0.1) {
+                    startHatching = true;
+                }
+            }
+            //update MNtempAcc every 500 steps
+            if (step_num % 500 == 0) {
+                MNtempAcc = trainAccWindow[5].get_average();
+            }
 
-            // log progress to graph, (full loss)
-            if (step_num % 100 === 0) {
-                var Y = new Array();
-                for (var i = 0; i < 2 * hatchedNet.length + 1; i++) {
-                    var xa = xLossWindow[i].get_average();
-                    var xw = wLossWindow[i].get_average();
-                    if (xa >= 0 && xw >= 0){ // if they are -1 it means not enough data was accumulated yet for estimates
-                        Y[i]=xa+xw;
+            // // log progress to graph, (full loss)
+            // if (step_num % 100 === 0 && step_num >= 200) {
+            //     var Y = new Array();
+            //     for (var i = 0; i < net.length; i++) {
+            //         var xa = xLossWindow[i].get_average();
+            //         var xw = wLossWindow[i].get_average();
+            //         if (xa >= 0 && xw >= 0) { // if they are -1 it means not enough data was accumulated yet for estimates
+            //             Y[i] = xa + xw;
+            //         }
+            //     }
+            //     if (xLossWindow[5].get_average() >= 0 && wLossWindow[5].get_average() >= 0) {
+            //         Y.push(xLossWindow[5].get_average() + wLossWindow[5].get_average());
+            //     }
+            //     // for (var i = 0; i < hatchedNet.length; i++) {
+            //     //     Y.push(xLossWindow[i + 6].get_average() + wLossWindow[i + 6].get_average());
+            //     // }
+            //     lossGraph.add(step_num, Y);
+            //     lossGraph.drawSelf(document.getElementById("lossgraph"));
+
+
+            // }
+
+            // if(isNaN(hatchedNet[1].layers[3].filters[1].w[1])){
+            //     console.log(step_num);
+            // }
+
+            //compute the ensemble averaging accuracy
+            Baseline_EA = 0;
+            for (var i = 0; net[i]; i++) {
+                Baseline_EA += trainAccWindow[i].get_average();
+            }
+            Baseline_EA /= net.length;
+            MN_EA = 0;
+            for (var i = 0; hatchedNet[i]; i++) {
+                MN_EA += trainAccWindow[i + 6].get_average();
+            }
+            MN_EA /= hatchedNet.length;
+
+            //compute training time
+            //30% acc time
+            if (Accuracy30_Time[0] === 0 || Accuracy30_Time[1] === 0 || Accuracy30_Time[2] === 0) {
+                for (var n = 0; net[n]; n++) {
+                    if (trainAccWindow[n].get_average() > 0.3 && trainAccWindow[n].get_average() < 0.5 && Accuracy30_Time[n] === 0) {
+
+                        trainEnd_CN[n] = new Date().getTime();
+                        Accuracy30_Time[n] = trainEnd_CN[n] - trainStart_CN[n];
+                        console.log(Accuracy30_Time[n]);
                     }
                 }
-                lossGraph.add(step_num, Y);
-                lossGraph.drawSelf(document.getElementById("lossgraph"));
+            }
+            if (trainAccWindow[5].get_average() > 0.3 && trainAccWindow[5].get_average() < 0.5 && Accuracy30_Time[5] === 0) {
 
-                // if(x6>=0&&w6>=0){
-                //     lossGraph.add(step_num,x6+w6);
-                //     lossGraph.drawSelf(document.getElementById("lossgraph"));
-                // }
+                trainEnd_MN = new Date().getTime();
+                Accuracy30_Time[5] = trainEnd_MN - trainStart_MN;
+
+            }
+
+            //50% acc time
+            for (var n = 0; net[n]; n++) {
+                if (trainAccWindow[n].get_average() > 0.5 && trainAccWindow[n].get_average() < 0.7 && Accuracy50_Time[n] === 0) {
+                    trainEnd_CN[n] = new Date().getTime();
+                    Accuracy50_Time[n] = trainEnd_CN[n] - trainStart_CN[n];
+                }
+            }
+            if (trainAccWindow[5].get_average() > 0.5 && trainAccWindow[5].get_average() < 0.7 && Accuracy50_Time[5] === 0) {
+                trainEnd_MN = new Date().getTime();
+                Accuracy50_Time[5] = trainEnd_MN - trainStart_MN;
+            }
+
+            //70% acc time
+            for (var n = 0; net[n]; n++) {
+                if (trainAccWindow[n].get_average() > 0.7 && trainAccWindow[n].get_average() < 0.9 && Accuracy70_Time[n] === 0) {
+                    trainEnd_CN[n] = new Date().getTime();
+                    Accuracy70_Time[n] = trainEnd_CN[n] - trainStart_CN[n];
+                }
+            }
+            if (trainAccWindow[5].get_average() > 0.7 && trainAccWindow[5].get_average() < 0.9 && Accuracy70_Time[5] === 0) {
+                trainEnd_MN = new Date().getTime();
+                Accuracy70_Time[5] = trainEnd_MN - trainStart_MN;
+            }
+
+            //90% acc time
+            for (var n = 0; net[n]; n++) {
+                if (trainAccWindow[n].get_average() > 0.9 && Accuracy90_Time[n] === 0) {
+                    trainEnd_CN[n] = new Date().getTime();
+                    Accuracy90_Time[n] = trainEnd_CN[n] - trainStart_CN[n];
+                }
+            }
+            if (trainAccWindow[5].get_average() > 0.9 && Accuracy90_Time[5] === 0) {
+                trainEnd_MN = new Date().getTime();
+                Accuracy90_Time[5] = trainEnd_MN - trainStart_MN;
             }
 
 
+
+
+
+
+
             step_num++;
+            STEP = step_num;
+
+            //console.log(Accuracy30_Time[5]);
         }
 
 
 
-        /*
-                var bg_step = function (sample) {
-                    var x = sample.x;
-                    var y = sample.label;
-                    var stats = new Array();
-                    var lossx = new Array();
-                    var lossw = new Array();
-        
-        
-                    if (sample.isval) {
-                        var yhat = new Array();
-                        var val_acc = new Array();
-                        // use x to build our estimate of validation error
-                        for (var i = 0; hatchedNet[i]; i++) {
-                            hatchedNet[i].forward(x);
-                            yhat[i] = hatchedNet[i].getPrediction();
-                            val_acc[i] = yhat[i] === y ? 1.0 : 0.0;
-                            bg_valAccWindow[i].add(val_acc[i]);
-                        }
-                        return;
-                    }
-        
-                    // train on it with networks
-                    for (var i = 0; hatchedNet[i]; i++) {
-                        stats[i] = trainer[i + 6].train(x, y);
-                        lossx[i] = stats[i].cost_loss;
-                        lossw[i] = stats[i].l2_decay_loss;
-                        bg_xLossWindow[i].add(lossx[i]);
-                        bg_wLossWindow[i].add(lossw[i]);
-                    }
-        
-                    // keep track of stats such as the average training error and loss
-                    var yhat = new Array();
-                    var train_acc = new Array();
-                    for (var i = 0; hatchedNet[i]; i++) {
-                        yhat[i] = hatchedNet[i].getPrediction();
-                        train_acc[i] = yhat[i] === y ? 1.0 : 0.0;
-                        bg_trainAccWindow[i].add(train_acc[i]);
-                    }
-        
-        
-                    // visualize training status
-                    var train_elt = document.getElementById("HatchedNets_trainstats");
-                    train_elt.innerHTML = '';
-                    for (var i = 0; hatchedNet[i]; i++) {
-                        var T = 'Forward time of hatched network' + i + ' per example: ' + stats[i].fwd_time + 'ms';
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-                    }
-                    for (var i = 0; hatchedNet[i]; i++) {
-                        var T = 'Backprop time of hatched network' + i + ' per example: ' + stats[i].bwd_time + 'ms';
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-                    }
-                    for (var i = 0; hatchedNet[i]; i++) {
-                        var T = 'Classification loss of hatched network' + i + ' : ' + f2t(bg_xLossWindow[i].get_average());
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-                    }
-                    for (var i = 0; hatchedNet[i]; i++) {
-                        var T = 'L2 Weight decay loss of hatched network' + i + ' : ' + f2t(bg_wLossWindow[i].get_average());
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-                    }
-                    for (var i = 0; hatchedNet[i]; i++) {
-                        var T = 'Training accuracy of hatched network' + i + ' : ' + f2t(bg_trainAccWindow[i].get_average());
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-                    }
-                    for (var i = 0; hatchedNet[i]; i++) {
-                        var T = 'Validation accuracy of hatched network' + i + ' : ' + f2t(bg_valAccWindow[i].get_average());
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-                    }
-        
-                }
-        */
 
-        //build the hatched networks
-        function randomFrom(lowerValue, upperValue) {
-            return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
-        }
+        //widening function
         function widenNets(motherNet, hatchedNet) {
+            // console.log(motherNet.layers[3].filters);
+            // for (var i = 0; hatchedNet[i]; i++) {
+            //     console.log(hatchedNet[i].layers[3].filters);
+            // }
             //For the original part in MN, just copy them
-            for (var l = 1; l < motherNet.layers.length; l++) { //loop by each layer in MN
+            for (var l = 1; l < motherNet.layers.length - 3; l++) { //loop by each hidden fc layer in MN
                 if (motherNet.layers[l].layer_type === 'fc') {
-                    console.log(l);
                     for (var f = 0; f < motherNet.layers[l].filters.length; f++) { //loop by each "filter" in a certain fc layer
                         for (var i = 0; i < motherNet.layers[l].filters[f].w.length; i++) { //loop by each weight in a certain "filter"
                             for (var j = 0; hatchedNet[j]; j++) { //copy the weight to every hatchedNet
@@ -693,9 +840,10 @@
                     }
                 }
             }
+
             //For the widened part, use the random select
-            for (var h = 0; hatchedNet[h]; h++) { //build each hatchedNet one by one
-                for (var l = 1; l < motherNet.layers.length - 1; l++) { //loop by each fc layer in MN except for the last one
+            for (var h = 0; hatchedNet[h]; h++) { //widen each hatchedNet one by one
+                for (var l = 1; l < motherNet.layers.length - 3; l++) { //loop by each fc layer in MN except for the last one
                     if (motherNet.layers[l].layer_type === 'fc') {
                         var rdmSlct = 0;
                         var copyCount = new Array(motherNet.layers[l].filters.length), i = copyCount.length; //count how many times has a filter in a certain layer of MN been copied
@@ -707,20 +855,125 @@
                                 copyPosition[j][k] = 0;
                             }
                         }
-                        for (var f = motherNet.layers[l].filters.length; f < hatchedNet[h].layers[l].filters.length; f++) { //build the widened part in a certain layer
-                            rdmSlct = randomFrom(0, motherNet.layers[l].filters.length); //randomly select a filter in the layer l of MN
-                            //console.log(copyPosition[rdmSlct][f - motherNet.layers[l].filters.length]+','+rdmSlct+','+(f - motherNet.layers[l].filters.length));
-                            hatchedNet[h].layers[l].filters[f] = motherNet.layers[l].filters[rdmSlct]; //copy it to the filter f in the widened part of layer l in hatchedNet
-                            copyCount[rdmSlct]++; //log the copyCount
-                            copyPosition[rdmSlct][f - motherNet.layers[l].filters.length] = 1; //log the copy position
+                        if (motherNet.layers[l].filters.length < hatchedNet[h].layers[l].filters.length) {
+                            for (var f = motherNet.layers[l].filters.length; f < hatchedNet[h].layers[l].filters.length; f++) { //build the widened part in a certain layer
+                                //console.log(f);
+                                rdmSlct = randomFrom(0, motherNet.layers[l].filters.length); //randomly select a filter in the layer l of MN
+                                //console.log(copyPosition[rdmSlct][f - motherNet.layers[l].filters.length]+','+rdmSlct+','+(f - motherNet.layers[l].filters.length));
+                                hatchedNet[h].layers[l].filters[f] = hatchedNet[h].layers[l].filters[rdmSlct]; //copy it to the filter f in the widened part of layer l in hatchedNet
+                                copyCount[rdmSlct]++; //log the copyCount
+                                copyPosition[rdmSlct][f - motherNet.layers[l].filters.length] = 1; //log the copy position
+                            }
                         }
+
                         if (motherNet.layers[l + 2].layer_type === 'fc') {
-                            for (var nxt = 0; nxt < motherNet.layers[l + 2].filters.length; nxt++) { //deal with the next layer
-                                for (var f = 0; f < motherNet.layers[l].filters.length; f++) { //for the copied filter f in layer l, we divide the counter part, weight f in every filter of layer l+1 of MN original part, by copyCount+1
-                                    if (copyCount[f] > 0) {
+                            for (var f = 0; f < motherNet.layers[l].filters.length; f++) { //for the copied filter f in layer l, we divide the counter part, weight f in every filter of layer l+1 of MN original part, by copyCount+1
+                                if (copyCount[f] > 0) {
+                                    for (var nxt = 0; nxt < motherNet.layers[l + 2].filters.length; nxt++) { //deal with the next layer
                                         hatchedNet[h].layers[l + 2].filters[nxt].w[f] /= (copyCount[f] + 1);
                                         for (var i = motherNet.layers[l].filters.length; i < hatchedNet[h].layers[l].filters.length; i++) { //for the filters in widened part who copied the filter f in MN, we use the updated filter in MN original part to update them
                                             if (copyPosition[f][i - motherNet.layers[l].filters.length] === 1) {
+                                                hatchedNet[h].layers[l + 2].filters[nxt].w[i] = hatchedNet[h].layers[l + 2].filters[nxt].w[f];
+                                                if (step_num > 700 && step_num < 900) { console.log(hatchedNet[h].layers[l + 2].filters[nxt].w[i]); }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        //build the hatched networks
+        //generate a random integer
+        function randomFrom(lowerValue, upperValue) {
+            return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
+        }
+        //Hatch function
+        function Hatch(motherNet, hatchedNet) {
+            //For the original part in MN, just copy them
+            for (var l = 0; l < motherNet.layers.length - 3; l++) { //loop by each hidden fc layer in MN
+                if (motherNet.layers[l].layer_type === 'fc') {
+                    console.log(l);
+                    for (var f = 0; f < motherNet.layers[l].filters.length; f++) { //loop by each "filter" in a certain fc layer
+                        for (var i = 0; i < motherNet.layers[l].filters[f].w.length; i++) { //loop by each weight in a certain "filter"
+                            for (var j = 0; hatchedNet[j]; j++) { //copy the weight to every hatchedNet
+                                hatchedNet[j].layers[l].filters[f].w[i] = motherNet.layers[l].filters[f].w[i];
+                            }
+                        }
+                    }
+                }
+                else {
+                    console.log(motherNet.layers[l].layer_type);
+                }
+            }
+            //deepen hatchedNets now
+            var Len = motherNet.layers[motherNet.layers.length - 4].filters.length;//the size of the last fc layer in MN. (every fc layer is followed by an activation layer and another fc layer is inserted before softmax without activation(this fc layer should be ignored))
+            for (var h = 0; hatchedNet[h]; h++) {//loop by every hatchedNet
+                if (motherNet.layers.length < hatchedNet[h].layers.length) {//find a hatchedNet needed to be deepen
+                    for (var l = motherNet.layers.length - 2; l < hatchedNet[h].layers.length - 3; l++) {//loop by every deepened hidden layer in HN
+                        if (hatchedNet[h].layers[l].layer_type === 'fc') {
+                            for (var f = 0; f < hatchedNet[h].layers[l].filters.length; f++) {//loop by every "filter" in deepened layer l in HN
+                                for (var p = 0; p < hatchedNet[h].layers[l].filters[f].length; p++) {//loop by every parameter in filter f
+                                    hatchedNet[h].layers[l].filters[f].w[p] = 0;
+                                }
+                                if (f < Len) {
+                                    hatchedNet[h].layers[l].filters[f].w[f] = 1;
+                                }
+                            }
+                        }
+                    }
+                    //preserve the output and pad 0
+                    for (var F = 0; F < hatchedNet[h].layers[hatchedNet[h].layers.length - 2].filters.length; F++) {
+                        for (var P = 0; P < hatchedNet[h].layers[hatchedNet[h].layers.length - 2].filters[F].length; P++) {
+                            if (P < motherNet.layers[motherNet.layers.length - 2].filters[F].length) {
+                                hatchedNet[h].layers[hatchedNet[h].layers.length - 2].filters[F].w[P] = motherNet.layers[motherNet.layers.length - 2].filters[F].w[P];
+                            }
+                            hatchedNet[h].layers[hatchedNet[h].layers.length - 2].filters[F].w[P] = 0;
+                        }
+                    }
+                }
+            }
+
+            //For the widened part, use the random select
+            for (var h = 0; hatchedNet[h]; h++) { //widen each hatchedNet one by one
+                var L = 0;
+                for (var l = 1; l < hatchedNet[h].layers.length - 3; l++) { //loop by each fc layer in HN except for the last one
+                    if (l <= motherNet.layers.length - 4) {
+                        L = l;
+                    }
+                    else { //L represents the last hidden layer in MN if l has been bigger than MN's length(without softmax and the inserted fc)
+                        L = motherNet.layers.length - 4;
+                    }
+                    if (hatchedNet[h].layers[l].layer_type === 'fc') {
+                        var rdmSlct = 0;
+                        var copyCount = new Array(motherNet.layers[L].filters.length), i = copyCount.length; //count how many times has a filter in a certain layer of MN part been copied
+                        while (i--) { copyCount[i] = 0; } //initialize them with 0
+                        var copyPosition = new Array(motherNet.layers[L].filters.length); //log the position in hatchedNet which copied the a certain filter of MN
+                        for (var j = 0; j < copyPosition.length; j++) { //initialize them with 0
+                            copyPosition[j] = new Array(hatchedNet[h].layers[l].filters.length - motherNet.layers[l].filters.length);
+                            for (var k = 0; k < copyPosition[j].length; k++) {
+                                copyPosition[j][k] = 0;
+                            }
+                        }
+                        for (var f = motherNet.layers[L].filters.length; f < hatchedNet[h].layers[l].filters.length; f++) { //build the widened part in a certain layer
+                            rdmSlct = randomFrom(0, motherNet.layers[L].filters.length); //randomly select a filter in the layer l of MN
+                            //console.log(copyPosition[rdmSlct][f - motherNet.layers[l].filters.length]+','+rdmSlct+','+(f - motherNet.layers[l].filters.length));
+                            hatchedNet[h].layers[l].filters[f] = hatchedNet[h].layers[l].filters[rdmSlct]; //copy it to the filter f in the widened part of layer l in hatchedNet
+                            copyCount[rdmSlct]++; //log the copyCount
+                            copyPosition[rdmSlct][f - motherNet.layers[L].filters.length] = 1; //log the copy position
+                        }
+                        if (hatchedNet[h].layers[l + 2].layer_type === 'fc') {
+                            for (var nxt = 0; nxt < motherNet.layers[l + 2].filters.length; nxt++) { //deal with the next layer
+                                for (var f = 0; f < motherNet.layers[L].filters.length; f++) { //for the copied filter f in layer l, we divide the counter part, weight f in every filter of layer l+1 of MN original part, by copyCount+1
+                                    if (copyCount[f] > 0) {
+                                        hatchedNet[h].layers[l + 2].filters[nxt].w[f] /= (copyCount[f] + 1);
+                                        for (var i = motherNet.layers[L].filters.length; i < hatchedNet[h].layers[l].filters.length; i++) { //for the filters in widened part who copied the filter f in MN, we use the updated filter in MN original part to update them
+                                            if (copyPosition[f][i - motherNet.layers[L].filters.length] === 1) {
                                                 hatchedNet[h].layers[l + 2].filters[i] = hatchedNet[h].layers[l + 2].filters[nxt];
                                             }
                                         }
@@ -731,6 +984,7 @@
                     }
                 }
             }
+            console.log('      ' + STEP);
         }
 
 
@@ -810,8 +1064,31 @@
 
         }
 
+        function htmlDecode(input) {
+            var doc = new DOMParser().parseFromString(input, "text/html");
+            return doc.documentElement.textContent;
+        }
+
+        function newLayer(networkIndex) {
+            var lyPos = document.getElementById("netDef" + networkIndex);
+            var newLayerHtml = 'layer' + layerLog[networkIndex - 1]++ + ' has &lt;input type=&quot;button&quot; value=&quot;-&quot; onclick=&quot;minusOne(' + netIndex + layerLog[netIndex - 1] + ')&quot;> &lt;input type=text id=' + layerIndex[netIndex - 1]++ + ' value=' + neuronIndex + ' style=&quot;width:30px;&quot;> &lt;input type=&quot;button&quot; value=&quot;+&quot; onclick=&quot;addOne(' + netIndex + layerLog[netIndex - 1] + ')&quot;> neurons &lt;script>layerLog++;console.log(layerLog);&lt;/script>&lt;br/>';
+            console.log(htmlDecode(newLayerHtml));
+            lyPos.insertAdjacentHTML('afterbegin', htmlDecode(newLayerHtml));
+        }
+
+        function newNetwork() {
+            netIndex++;
+            var ntPos = document.getElementById("netDef" + netIndex);
+            var newNetworkHtml = 'layer1 has &lt;input type="button" value="-" onclick="minusOne(' + netIndex + 2 + ')" > &lt;input type="text" id=' + netIndex + 1 + ' value=30 style="width:30px;" > &lt;input type="button" value="+" onclick="addOne(' + netIndex + 2 + ')"> neurons&lt;br/> &lt;input type=button onclick="newLayer(' + netIndex + ')" value=Add_layer>&lt;br/>childNet' + netIndex + '&lt;br/>';
+            console.log(htmlDecode(newNetworkHtml));
+            ntPos.insertAdjacentHTML('afterbegin', htmlDecode(newNetworkHtml));
+        }
+
+
 
     </script>
+
+
 </head>
 
 
@@ -819,18 +1096,49 @@
 
 <body>
 
+    <div id="netDef1">
+        layer1 has
+        <input type="button" value="-" onclick="minusOne(12)" />
+        <input type="text" id=11 value=30 style="width:30px;" />
+        <input type="button" value="+" onclick="addOne(12)" /> neurons
+        <br/>
+        <input type=button onclick="newLayer(1)" value=Add_layer>
+        <br/> childNet1
+    </div>
+    <div id="netDef2"></div>
+    <div id="netDef3"></div>
+    <div id="netDef4"></div>
+    <div id="netDef5"></div>
+
+
+    <br/>
+    <input type=button onclick="newNetwork()" value=Add_networks>
+
+
     <div id="wrap">
+
+        <!-- <div>
+            <h1>Loss:</h1>
+            <br>
+            <canvas id="lossgraph" style="width:800px;height:400px;">
+            </canvas>
+            <br />
+        </div> -->
+
+        <div id="container1" style="height: 500px; width:800px"></div>
+        <br/>
+        <div id="container2" style="height: 500px; width:800px"></div>
+        <br/>
+        <div id="container3" style="height: 500px; width:1100px;"></div>
+        <br/>
+        <div id="container4" style="height: 500px; width:1100px"></div>
+        <br/>
+
+
+
 
         <h1>Train Stats</h1>
         <div id="trainstats"></div>
-
-        <div>
-            <h1>Loss:</h1>
-            <br >
-            <canvas id="lossgraph" style="width:1000px;height:500px;">
-            </canvas>
-            <br />
-        </div>
 
 
         <h1>Instantiate Networks and Trainers</h1>
@@ -859,5 +1167,427 @@
 </body>
 
 
+
+
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
+<script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+<script type="text/javascript">
+
+
+    require.config({
+        paths: {
+            'echarts': 'http://echarts.baidu.com/build/dist',
+
+        }
+    });
+
+    require(['echarts'], DrawCharts);
+
+    function chart1(ec) {
+        var TimeCompare = echarts.init(document.getElementById("container2"));
+        var app = {};
+        option1 = null;
+        app.title = '堆叠柱状图';
+
+        option1 = {
+            title: {
+                text: 'Training Time',
+                subtext: ''
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            legend: {
+                data: ['MN', 'HN1', 'HN2', 'HN3', 'CN1', 'CN2', 'CN3']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: ['0.3 Accuracy', '0.5 Accuracy', '0.7 Accuracy', '0.9 Accuracy', 'Converge']
+                }
+            ],
+            yAxis: [
+                {
+                    name: 'sec',
+                    type: 'value'
+                }
+            ],
+            series: [
+                // {
+                //     name: 'MN',
+                //     type: 'bar',
+                //     //stack: 'motherNet',
+                //     data: [120, 130, 145, 165, 195]
+                // },
+                {
+                    name: 'MN',
+                    type: 'bar',
+                    stack: 'motherNet',
+                    data: [0, 0, 0, 0, 60]
+                },
+                {
+                    name: 'HN1',
+                    type: 'bar',
+                    stack: 'motherNet',
+                    data: [0, 0, 0, 0, 20]
+                },
+                {
+                    name: 'HN2',
+                    type: 'bar',
+                    stack: 'motherNet',
+                    data: [0, 0, 0, 0, 30]
+                },
+                {
+                    name: 'HN3',
+                    type: 'bar',
+                    data: [0, 0, 0, 0, 25],
+                    stack: 'motherNet'
+                },
+                {
+                    name: 'CN1',
+                    type: 'bar',
+                    stack: 'baseLine',
+                    data: [0, 0, 0, 0, 70]
+                },
+                {
+                    name: 'CN2',
+                    type: 'bar',
+                    stack: 'baseLine',
+                    data: [0, 0, 0, 0, 60]
+                },
+                {
+                    name: 'CN3',
+                    type: 'bar',
+                    stack: 'baseLine',
+                    data: [0, 0, 0, 0, 55]
+                }
+            ]
+        };
+        setInterval(function () {
+            option1.series[0].data[0] = Accuracy30_Time[5] / 1000;
+            option1.series[4].data[0] = Accuracy30_Time[0] / 1000;
+            option1.series[5].data[0] = Accuracy30_Time[1] / 1000;
+            option1.series[6].data[0] = Accuracy30_Time[2] / 1000;
+
+
+            option1.series[0].data[1] = Accuracy50_Time[5] / 1000;
+            option1.series[4].data[1] = Accuracy50_Time[0] / 1000;
+            option1.series[5].data[1] = Accuracy50_Time[1] / 1000;
+            option1.series[6].data[1] = Accuracy50_Time[2] / 1000;
+
+
+            option1.series[0].data[2] = Accuracy70_Time[5] / 1000;
+            option1.series[4].data[2] = Accuracy70_Time[0] / 1000;
+            option1.series[5].data[2] = Accuracy70_Time[1] / 1000;
+            option1.series[6].data[2] = Accuracy70_Time[2] / 1000;
+
+            option1.series[0].data[3] = Accuracy90_Time[5] / 1000;
+            option1.series[4].data[3] = Accuracy90_Time[0] / 1000;
+            option1.series[5].data[3] = Accuracy90_Time[1] / 1000;
+            option1.series[6].data[3] = Accuracy90_Time[2] / 1000;
+            //console.log(option1.series[0].data[0]);
+            TimeCompare.setOption(option1, true);
+        }, 2000);
+        ;
+        if (option1 && typeof option1 === "object") {
+            TimeCompare.setOption(option1, true);
+        }
+    }
+
+    function chart2(ec) {
+        var AccLsStp = echarts.init(document.getElementById("container1"));
+        var app = {};
+        option = null;
+        option = {
+            title: {
+                text: 'Live Training',
+                subtext: ''
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: '#d41934'
+                    }
+                }
+            },
+            legend: {
+                data: ['accuracy', 'loss']
+            },
+            toolbox: {
+                show: false,
+                feature: {
+                    dataView: { readOnly: false },
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            dataZoom: {
+                show: false,
+                start: 0,
+                end: 60000
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    name: 'step',
+                    boundaryGap: true,
+                    data: (function () {
+                        var res = [];
+                        var len = 10;
+                        while (len--) {
+                            res.unshift(0);
+                        }
+                        return res;
+                    })()
+                },
+                {
+                    type: 'category',
+                    boundaryGap: true,
+                    data: (function () {
+                        var res = [];
+                        var len = 10;
+                        while (len--) {
+                            res.push(0);
+                        }
+                        return res;
+                    })()
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    scale: true,
+                    name: 'accuracy',
+                    max: 1,
+                    min: 0,
+                    boundaryGap: [0.2, 0.2]
+                },
+                {
+                    type: 'value',
+                    scale: true,
+                    name: 'loss',
+                    max: 3,
+                    min: 0,
+                    boundaryGap: [0.2, 0.2]
+                }
+            ],
+            series: [
+                {
+                    name: 'loss',
+                    type: 'bar',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    data: (function () {
+                        var res = [];
+                        var len = 10;
+                        while (len--) {
+                            res.push(0);
+                        }
+                        return res;
+                    })()
+                },
+                {
+                    name: 'accuracy',
+                    type: 'line',
+                    data: (function () {
+                        var res = [];
+                        var len = 0;
+                        while (len < 10) {
+                            res.push(0);
+                            len++;
+                        }
+                        return res;
+                    })()
+                }
+            ]
+        };
+
+        app.count = 0;
+        setInterval(function () {
+            axisData = STEP;
+            var data0 = option.series[0].data;
+            var data1 = option.series[1].data;
+            data0.shift();
+            data0.push(xLossWindow[5].get_average() + wLossWindow[5].get_average());
+            data1.shift();
+            data1.push(trainAccWindow[5].get_average());
+
+            option.xAxis[0].data.shift();
+            option.xAxis[0].data.push(axisData);
+            option.xAxis[1].data.shift();
+            option.xAxis[1].data.push(++app.count);
+
+            AccLsStp.setOption(option);
+        }, 2000);
+        ;
+        if (option && typeof option === "object") {
+            AccLsStp.setOption(option, true);
+        }
+    }
+
+    function chart3(ec) {
+        var MNmthd = echarts.init(document.getElementById("container3"));
+        var app = {};
+        option = null;
+        var option = {
+            title: {
+                text: 'General Accuracy',
+                subtext: ''
+            },
+            tooltip: {
+                formatter: "{a} <br/>{b} : {c}%"
+            },
+            series: [
+                {
+                    name: 'General Accuracy',
+                    type: 'gauge',
+                    detail: { formatter: '{value}%' },
+                    center: ['30%', '50%'],
+                    data: [{ value: 0, name: 'MN method' }]
+                },
+                {
+                    name: 'General Accuracy',
+                    type: 'gauge',
+                    detail: { formatter: '{value}%' },
+                    center: ['70%', '50%'],
+                    data: [{ value: 0, name: 'baseline method' }]
+                }
+            ]
+        };
+
+        setInterval(function () {
+            option.series[0].data[0].value = (MN_EA * 100).toFixed(2) - 0;
+            option.series[1].data[0].value = (Baseline_EA * 100).toFixed(2) - 0;
+            MNmthd.setOption(option, true);
+        }, 2000);
+        ;
+        if (option && typeof option === "object") {
+            MNmthd.setOption(option, true);
+        }
+    }
+
+    function chart4(ec) {
+        var timeCmpr = echarts.init(document.getElementById("container4"));
+        var app = {};
+        option4 = null;
+        app.title = '环形图';
+
+        option4 = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: ['Mother Net', 'Hatched Net1', 'Hatched Net2', 'Hatched Net3',]
+            },
+            series: [
+                {
+                    name: 'Training Time',
+                    type: 'pie',
+                    center: ['30%', '50%'],
+                    radius: ['50%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            show: true,
+                            textStyle: {
+                                fontSize: '30',
+                                fontWeight: 'bold'
+                            }
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: [
+                        { value: 0, name: 'Mother Net' },
+                        { value: 0, name: 'Hatched Net1' },
+                        { value: 0, name: 'Hatched Net2' },
+                        { value: 0, name: 'Hatched Net3' },
+                        { value: 600, name: '' }
+                    ]
+                },
+                {
+                    name: 'Training Time',
+                    type: 'pie',
+                    center: ['70%', '50%'],
+                    radius: ['50%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            show: true,
+                            textStyle: {
+                                fontSize: '30',
+                                fontWeight: 'bold'
+                            }
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data: [
+                        { value: 0, name: 'Mother Net' },
+                        { value: 0, name: 'Hatched Net1' },
+                        { value: 0, name: 'Hatched Net2' },
+                        { value: 0, name: 'Hatched Net3' },
+                        { value: 600, name: '' }
+                    ]
+                }
+            ]
+        };
+        setInterval(function () {
+            if (MN_convergence == false) {
+                option4.series[0].data[0].value += 2;
+                option4.series[0].data[4].value -= 2;
+            }
+            timeCmpr.setOption(option4, true);
+        }, 2000);
+        ;
+        if (option4 && typeof option4 === "object") {
+            timeCmpr.setOption(option4, true);
+        }
+    }
+
+
+    function DrawCharts(ec) {
+        chart1(ec);
+        chart2(ec);
+        chart3(ec);
+        chart4(ec);
+    }
+</script>
 
 </html>
