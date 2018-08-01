@@ -118,6 +118,15 @@
         for (var i = 0; i < 5; i++) {
             HN_convergence[i] = false;
         }
+        var CN_convergeACC = new Array(5);
+        for(var i=0;i<5;i++){
+            CN_convergeACC[i]=0;
+        }
+        var MN_convergeACC = 0;
+        var HN_convergeACC = new Array(5);
+        for(var i=0;i<5;i++){
+            HN_convergeACC[i]=0;
+        }
 
         //initialize MN
         var mother_defs, motherNet;
@@ -574,27 +583,50 @@
                 return;
             }
 
+            //Now, we train MN method and baseline method at the same time, but we train networks in both of these methods sequentially
             // train on it with networks
             for (var i = 0; net[i]; i++) {
-                stats[i] = trainer[i].train(x, y);
-                lossx[i] = stats[i].cost_loss;
-                lossw[i] = stats[i].l2_decay_loss;
-                xLossWindow[i].add(lossx[i]);
-                wLossWindow[i].add(lossw[i]);
+                if (i === 0 && CN_convergence[0] === false) {
+                    stats[i] = trainer[i].train(x, y);
+                    lossx[i] = stats[i].cost_loss;
+                    lossw[i] = stats[i].l2_decay_loss;
+                    xLossWindow[i].add(lossx[i]);
+                    wLossWindow[i].add(lossw[i]);
+                }
+                else if (i > 0 && CN_convergence[i - 1] === true && CN_convergence[i] === false) {
+                    stats[i] = trainer[i].train(x, y);
+                    lossx[i] = stats[i].cost_loss;
+                    lossw[i] = stats[i].l2_decay_loss;
+                    xLossWindow[i].add(lossx[i]);
+                    wLossWindow[i].add(lossw[i]);
+                }
             }
             //the MN part
-            stats[5] = trainer[5].train(x, y);
-            lossx[5] = stats[5].cost_loss;
-            lossw[5] = stats[5].l2_decay_loss;
-            xLossWindow[5].add(lossx[5]);
-            wLossWindow[5].add(lossw[5]);
+            if (MN_convergence === false) {
+                stats[5] = trainer[5].train(x, y);
+                lossx[5] = stats[5].cost_loss;
+                lossw[5] = stats[5].l2_decay_loss;
+                xLossWindow[5].add(lossx[5]);
+                wLossWindow[5].add(lossw[5]);
+            }
             //temp hatchedNet part
-            for (var i = 0; hatchedNet[i]; i++) {
-                stats[i + 6] = trainer[i + 6].train(x, y);
-                lossx[i + 6] = stats[i + 6].cost_loss;
-                lossw[i + 6] = stats[i + 6].l2_decay_loss;
-                xLossWindow[i + 6].add(lossx[i + 6]);
-                wLossWindow[i + 6].add(lossw[i + 6]);
+            else if (MN_convergence === true) {
+                for (var i = 0; hatchedNet[i]; i++) {
+                    if (i === 0 && HN_convergence[0] === false) {
+                        stats[i + 6] = trainer[i + 6].train(x, y);
+                        lossx[i + 6] = stats[i + 6].cost_loss;
+                        lossw[i + 6] = stats[i + 6].l2_decay_loss;
+                        xLossWindow[i + 6].add(lossx[i + 6]);
+                        wLossWindow[i + 6].add(lossw[i + 6]);
+                    }
+                    else if (i > 0 && HN_convergence[i - 1] === true && HN_convergence[i] === false) {
+                        stats[i + 6] = trainer[i + 6].train(x, y);
+                        lossx[i + 6] = stats[i + 6].cost_loss;
+                        lossw[i + 6] = stats[i + 6].l2_decay_loss;
+                        xLossWindow[i + 6].add(lossx[i + 6]);
+                        wLossWindow[i + 6].add(lossw[i + 6]);
+                    }
+                }
             }
 
 
@@ -617,102 +649,92 @@
                 trainAccWindow[i + 6].add(train_acc[i + 6]);
             }
 
-
-            // visualize training status
-            var train_elt = document.getElementById("trainstats");
-            train_elt.innerHTML = '';
-            for (var i = 0; net[i]; i++) {
-                var T = 'Forward time of network' + i + ' per example: ' + stats[i].fwd_time + 'ms';
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            var T = 'Forward time of MotherNetwork per example: ' + stats[5].fwd_time + 'ms';
-            train_elt.appendChild(document.createTextNode(T));
-            train_elt.appendChild(document.createElement('br'));
-            for (var i = 0; hatchedNet[i]; i++) {
-                var T = 'Forward time of hatched network' + i + ' per example: ' + stats[i + 6].fwd_time + 'ms';
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            for (var i = 0; net[i]; i++) {
-                var T = 'Backprop time of network' + i + ' per example: ' + stats[i].bwd_time + 'ms';
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            var T = 'Backprop time of MotherNetwork per example: ' + stats[5].bwd_time + 'ms';
-            train_elt.appendChild(document.createTextNode(T));
-            train_elt.appendChild(document.createElement('br'));
-            for (var i = 0; hatchedNet[i]; i++) {
-                var T = 'Backprop time of hatched network' + i + ' per example: ' + stats[i + 6].bwd_time + 'ms';
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            for (var i = 0; net[i]; i++) {
-                var T = 'Classification loss of network' + i + ' : ' + f2t(xLossWindow[i].get_average());
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            var T = 'Classification loss of MotherNetwork: ' + f2t(xLossWindow[5].get_average());
-            train_elt.appendChild(document.createTextNode(T));
-            train_elt.appendChild(document.createElement('br'));
-            for (var i = 0; hatchedNet[i]; i++) {
-                var T = 'Classification loss of hatched network' + i + ' : ' + f2t(xLossWindow[i + 6].get_average());
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            for (var i = 0; net[i]; i++) {
-                var T = 'L2 Weight decay loss of network' + i + ' : ' + f2t(wLossWindow[i].get_average());
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            var T = 'L2 Weight decay loss of MotherNetwork: ' + f2t(wLossWindow[5].get_average());
-            train_elt.appendChild(document.createTextNode(T));
-            train_elt.appendChild(document.createElement('br'));
-            for (var i = 0; hatchedNet[i]; i++) {
-                var T = 'L2 Weight decay loss of hatched network' + i + ' : ' + f2t(wLossWindow[i + 6].get_average());
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            for (var i = 0; net[i]; i++) {
-                var T = 'Training accuracy of network' + i + ' : ' + f2t(trainAccWindow[i].get_average());
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            var T = 'Training accuracy of MotherNetwork: ' + f2t(trainAccWindow[5].get_average());
-            train_elt.appendChild(document.createTextNode(T));
-            train_elt.appendChild(document.createElement('br'));
-            for (var i = 0; hatchedNet[i]; i++) {
-                var T = 'Training accuracy of hatched network' + i + ' : ' + f2t(trainAccWindow[i + 6].get_average());
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            for (var i = 0; net[i]; i++) {
-                var T = 'Validation accuracy of network' + i + ' : ' + f2t(valAccWindow[i].get_average());
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            var T = 'Validation accuracy of MotherNetwork: ' + f2t(valAccWindow[5].get_average());
-            train_elt.appendChild(document.createTextNode(T));
-            train_elt.appendChild(document.createElement('br'));
-            for (var i = 0; hatchedNet[i]; i++) {
-                var T = 'Validation accuracy of hatched network' + i + ' : ' + f2t(valAccWindow[i + 6].get_average());
-                train_elt.appendChild(document.createTextNode(T));
-                train_elt.appendChild(document.createElement('br'));
-            }
-            var T = 'Examples seen: ' + step_num;
-            train_elt.appendChild(document.createTextNode(T));
-            train_elt.appendChild(document.createElement('br'));
-
-            //judege the convergence of MN
-            if (step_num % 500 == 0 && step_num > 0) {
-                if (step_num - MNtempAcc < 0.1) {
-                    startHatching = true;
-                }
-            }
-            //update MNtempAcc every 500 steps
-            if (step_num % 500 == 0) {
-                MNtempAcc = trainAccWindow[5].get_average();
-            }
+            /*
+                        // visualize training status
+                        var train_elt = document.getElementById("trainstats");
+                        train_elt.innerHTML = '';
+                        for (var i = 0; net[i]; i++) {
+                            var T = 'Forward time of network' + i + ' per example: ' + stats[i].fwd_time + 'ms';
+                            train_elt.appendChild(document.createTextNode(T));
+                            train_elt.appendChild(document.createElement('br'));
+                        }
+                        var T = 'Forward time of MotherNetwork per example: ' + stats[5].fwd_time + 'ms';
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+                        for (var i = 0; hatchedNet[i]; i++) {
+                            var T = 'Forward time of hatched network' + i + ' per example: ' + stats[i + 6].fwd_time + 'ms';
+                            train_elt.appendChild(document.createTextNode(T));
+                            train_elt.appendChild(document.createElement('br'));
+                        }
+                        for (var i = 0; net[i]; i++) {
+                            var T = 'Backprop time of network' + i + ' per example: ' + stats[i].bwd_time + 'ms';
+                            train_elt.appendChild(document.createTextNode(T));
+                            train_elt.appendChild(document.createElement('br'));
+                        }
+                        var T = 'Backprop time of MotherNetwork per example: ' + stats[5].bwd_time + 'ms';
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+                        for (var i = 0; hatchedNet[i]; i++) {
+                            var T = 'Backprop time of hatched network' + i + ' per example: ' + stats[i + 6].bwd_time + 'ms';
+                            train_elt.appendChild(document.createTextNode(T));
+                            train_elt.appendChild(document.createElement('br'));
+                        }
+                        for (var i = 0; net[i]; i++) {
+                            var T = 'Classification loss of network' + i + ' : ' + f2t(xLossWindow[i].get_average());
+                            train_elt.appendChild(document.createTextNode(T));
+                            train_elt.appendChild(document.createElement('br'));
+                        }
+                        var T = 'Classification loss of MotherNetwork: ' + f2t(xLossWindow[5].get_average());
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+                        for (var i = 0; hatchedNet[i]; i++) {
+                            var T = 'Classification loss of hatched network' + i + ' : ' + f2t(xLossWindow[i + 6].get_average());
+                            train_elt.appendChild(document.createTextNode(T));
+                            train_elt.appendChild(document.createElement('br'));
+                        }
+                        for (var i = 0; net[i]; i++) {
+                            var T = 'L2 Weight decay loss of network' + i + ' : ' + f2t(wLossWindow[i].get_average());
+                            train_elt.appendChild(document.createTextNode(T));
+                            train_elt.appendChild(document.createElement('br'));
+                        }
+                        var T = 'L2 Weight decay loss of MotherNetwork: ' + f2t(wLossWindow[5].get_average());
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+                        for (var i = 0; hatchedNet[i]; i++) {
+                            var T = 'L2 Weight decay loss of hatched network' + i + ' : ' + f2t(wLossWindow[i + 6].get_average());
+                            train_elt.appendChild(document.createTextNode(T));
+                            train_elt.appendChild(document.createElement('br'));
+                        }
+                        for (var i = 0; net[i]; i++) {
+                            var T = 'Training accuracy of network' + i + ' : ' + f2t(trainAccWindow[i].get_average());
+                            train_elt.appendChild(document.createTextNode(T));
+                            train_elt.appendChild(document.createElement('br'));
+                        }
+                        var T = 'Training accuracy of MotherNetwork: ' + f2t(trainAccWindow[5].get_average());
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+                        for (var i = 0; hatchedNet[i]; i++) {
+                            var T = 'Training accuracy of hatched network' + i + ' : ' + f2t(trainAccWindow[i + 6].get_average());
+                            train_elt.appendChild(document.createTextNode(T));
+                            train_elt.appendChild(document.createElement('br'));
+                        }
+                        for (var i = 0; net[i]; i++) {
+                            var T = 'Validation accuracy of network' + i + ' : ' + f2t(valAccWindow[i].get_average());
+                            train_elt.appendChild(document.createTextNode(T));
+                            train_elt.appendChild(document.createElement('br'));
+                        }
+                        var T = 'Validation accuracy of MotherNetwork: ' + f2t(valAccWindow[5].get_average());
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+                        for (var i = 0; hatchedNet[i]; i++) {
+                            var T = 'Validation accuracy of hatched network' + i + ' : ' + f2t(valAccWindow[i + 6].get_average());
+                            train_elt.appendChild(document.createTextNode(T));
+                            train_elt.appendChild(document.createElement('br'));
+                        }
+                        var T = 'Examples seen: ' + step_num;
+                        train_elt.appendChild(document.createTextNode(T));
+                        train_elt.appendChild(document.createElement('br'));
+            */
 
             // // log progress to graph, (full loss)
             // if (step_num % 100 === 0 && step_num >= 200) {
@@ -742,15 +764,21 @@
 
             //compute the ensemble averaging accuracy
             Baseline_EA = 0;
-            for (var i = 0; net[i]; i++) {
-                Baseline_EA += trainAccWindow[i].get_average();
+            if (CN_convergence[0] && CN_convergence[1] && CN_convergence[2]) {
+                for (var i = 0; net[i]; i++) {
+                    Baseline_EA += CN_convergeACC[i];
+                    //console.log(Baseline_EA);
+                }
+                Baseline_EA /= net.length;
             }
-            Baseline_EA /= net.length;
             MN_EA = 0;
-            for (var i = 0; hatchedNet[i]; i++) {
-                MN_EA += trainAccWindow[i + 6].get_average();
+            if (HN_convergence[0] && HN_convergence[1] && HN_convergence[2]) {
+                for (var i = 0; hatchedNet[i]; i++) {
+                    MN_EA += HN_convergeACC[i];
+                    //console.log(trainAccWindow[i + 6].get_average());
+                }
+                MN_EA /= hatchedNet.length;
             }
-            MN_EA /= hatchedNet.length;
 
             //compute training time
             //30% acc time
@@ -760,7 +788,7 @@
 
                         trainEnd_CN[n] = new Date().getTime();
                         Accuracy30_Time[n] = trainEnd_CN[n] - trainStart_CN[n];
-                        console.log(Accuracy30_Time[n]);
+                        //console.log(Accuracy30_Time[n]);
                     }
                 }
             }
@@ -809,14 +837,28 @@
 
 
 
-
+            //judge the convergence
+            for (var i = 0; net[i]; i++) {
+                if (trainAccWindow[i].get_average() > 0.9 && CN_convergence[i] === false) {
+                    CN_convergence[i] = true;
+                    CN_convergeACC[i] = trainAccWindow[i].get_average();
+                }
+            }
+            if (trainAccWindow[5].get_average() > 0.9 && MN_convergence === false) {
+                MN_convergence = true;
+                MN_convergeACC = trainAccWindow[5].get_average();
+            }
+            for (var i = 0; hatchedNet[i]; i++) {
+                if (trainAccWindow[i + 6].get_average() > 0.9 && HN_convergence[i] === false) {
+                    HN_convergence[i] = true;
+                    HN_convergeACC[i] = trainAccWindow[i + 6].get_average();
+                }
+            }
 
 
 
             step_num++;
             STEP = step_num;
-
-            //console.log(Accuracy30_Time[5]);
         }
 
 
@@ -984,7 +1026,6 @@
                     }
                 }
             }
-            console.log('      ' + STEP);
         }
 
 
@@ -1125,13 +1166,13 @@
             <br />
         </div> -->
 
-        <div id="container1" style="height: 500px; width:800px"></div>
+        <div id="container1" style="height: 500px; width:800px; margin:0 auto;"></div>
         <br/>
-        <div id="container2" style="height: 500px; width:800px"></div>
+        <div id="container4" style="height: 500px; width:1100px; margin:0 auto;"></div>
         <br/>
-        <div id="container3" style="height: 500px; width:1100px;"></div>
+        <div id="container3" style="height: 500px; width:1100px; margin:0 auto;"></div>
         <br/>
-        <div id="container4" style="height: 500px; width:1100px"></div>
+        <div id="container2" style="height: 500px; width:1100px; margin:0 auto;"></div>
         <br/>
 
 
@@ -1341,9 +1382,9 @@
                 }
             },
             dataZoom: {
-                show: false,
+                show: true,
                 start: 0,
-                end: 60000
+                end: 100
             },
             xAxis: [
                 {
@@ -1412,7 +1453,7 @@
                         var res = [];
                         var len = 0;
                         while (len < 10) {
-                            res.push(0);
+                            res.push(0.1);
                             len++;
                         }
                         return res;
@@ -1427,9 +1468,31 @@
             var data0 = option.series[0].data;
             var data1 = option.series[1].data;
             data0.shift();
-            data0.push(xLossWindow[5].get_average() + wLossWindow[5].get_average());
+            if (MN_convergence === false) {
+                data0.push(xLossWindow[5].get_average() + wLossWindow[5].get_average());
+            }
+            else if (MN_convergence === true && HN_convergence[0] === false) {
+                data0.push(xLossWindow[6].get_average() + wLossWindow[6].get_average());
+            }
+            else if (HN_convergence[0] === true && HN_convergence[1] === false) {
+                data0.push(xLossWindow[7].get_average() + wLossWindow[7].get_average());
+            }
+            else if (HN_convergence[1] === true && HN_convergence[2] === false) {
+                data0.push(xLossWindow[8].get_average() + wLossWindow[8].get_average());
+            }
             data1.shift();
-            data1.push(trainAccWindow[5].get_average());
+            if (MN_convergence === false) {
+                data1.push(trainAccWindow[5].get_average());
+            }
+            else if (MN_convergence === true && HN_convergence[0] === false) {
+                data1.push(trainAccWindow[6].get_average());
+            }
+            else if (HN_convergence[0] === true && HN_convergence[1] === false) {
+                data1.push(trainAccWindow[7].get_average());
+            }
+            else if (HN_convergence[1] === true && HN_convergence[2] === false) {
+                data1.push(trainAccWindow[8].get_average());
+            }
 
             option.xAxis[0].data.shift();
             option.xAxis[0].data.push(axisData);
@@ -1456,27 +1519,177 @@
             tooltip: {
                 formatter: "{a} <br/>{b} : {c}%"
             },
+            grid: {
+                width: 200,
+                height: 95
+            },
             series: [
                 {
                     name: 'General Accuracy',
                     type: 'gauge',
+                    radius: '75%',
                     detail: { formatter: '{value}%' },
-                    center: ['30%', '50%'],
+                    center: ['25%', '50%'],
+                    startAngle: 180,
+                    endAngle: 0,
+                    axisLine: {
+                        lineStyle: {
+                            width: 4,
+                            color: [
+                                [1, 'rgb(12,84,83)']
+                            ]
+                        },
+                    },
+                    splitLine: {
+                        length: -6,
+                        lineStyle: {
+                            color: 'rgb(12,84,83)',
+                            width: 4
+                        }
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                    axisTick: {
+                        splitNumber: 1,
+                        lineStyle: {
+                            opacity: 0,
+                        }
+                    },
+                    detail: {
+                        show: false
+                    },
+                    pointer: {
+                        show: false
+                    }
+                },
+                {
+                    name: 'General Accuracy of MN method',
+                    type: 'gauge',
+                    radius: '70%',
+                    center: ['25%', '50%'],
+                    startAngle: 180,
+                    endAngle: 0,
+                    axisLine: {
+                        lineStyle: {
+                            opacity: 0
+                        },
+                    },
+                    splitLine: {
+                        length: 20,
+                    },
+                    axisLabel: {
+                        distance: -80,
+                        color: 'rgb(12,84,83)',
+                        fontSize: 24,
+                        formatter: function (param) {
+                            if ((param % 50) == 0) {
+                                return param
+                            }
+                        }
+                    },
+                    detail: {
+                        show: false,
+                        formatter: '{value}%',
+                        //backgroundColor:'#fff'
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: 'rgb(12,84,83)'
+                        }
+                    },
+                    pointer: {
+                        width: 10,
+                        length: '90%'
+                    },
                     data: [{ value: 0, name: 'MN method' }]
                 },
                 {
                     name: 'General Accuracy',
                     type: 'gauge',
+                    radius: '75%',
                     detail: { formatter: '{value}%' },
-                    center: ['70%', '50%'],
-                    data: [{ value: 0, name: 'baseline method' }]
+                    center: ['75%', '50%'],
+                    startAngle: 180,
+                    endAngle: 0,
+                    axisLine: {
+                        lineStyle: {
+                            width: 4,
+                            color: [
+                                [1, 'rgb(12,84,83)']
+                            ]
+                        },
+                    },
+                    splitLine: {
+                        length: -6,
+                        lineStyle: {
+                            color: 'rgb(12,84,83)',
+                            width: 4
+                        }
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                    axisTick: {
+                        splitNumber: 1,
+                        lineStyle: {
+                            opacity: 0,
+                        }
+                    },
+                    detail: {
+                        show: false
+                    },
+                    pointer: {
+                        show: false
+                    }
+                },
+                {
+                    name: 'General Accuracy of Baseline method',
+                    type: 'gauge',
+                    radius: '70%',
+                    center: ['75%', '50%'],
+                    startAngle: 180,
+                    endAngle: 0,
+                    axisLine: {
+                        lineStyle: {
+                            opacity: 0
+                        },
+                    },
+                    splitLine: {
+                        length: 20,
+                    },
+                    axisLabel: {
+                        distance: -80,
+                        color: 'rgb(12,84,83)',
+                        fontSize: 24,
+                        formatter: function (param) {
+                            if ((param % 50) == 0) {
+                                return param
+                            }
+                        }
+                    },
+                    detail: {
+                        show: false,
+                        formatter: '{value}%',
+                        //backgroundColor:'#fff'
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: 'rgb(12,84,83)'
+                        }
+                    },
+                    pointer: {
+                        width: 10,
+                        length: '90%'
+                    },
+                    data: [{ value: 0, name: 'Baseline method' }]
                 }
             ]
         };
 
         setInterval(function () {
-            option.series[0].data[0].value = (MN_EA * 100).toFixed(2) - 0;
-            option.series[1].data[0].value = (Baseline_EA * 100).toFixed(2) - 0;
+            option.series[1].data[0].value = (MN_EA * 100).toFixed(2) - 0;
+            option.series[3].data[0].value = (Baseline_EA * 100).toFixed(2) - 0;
             MNmthd.setOption(option, true);
         }, 2000);
         ;
@@ -1492,6 +1705,10 @@
         app.title = '环形图';
 
         option4 = {
+            title: {
+                text: 'Training Time',
+                subtext: 'Mother Net method vs Baseline method'
+            },
             tooltip: {
                 trigger: 'item',
                 formatter: "{a} <br/>{b}: {c} ({d}%)"
@@ -1499,11 +1716,12 @@
             legend: {
                 orient: 'vertical',
                 x: 'left',
-                data: ['Mother Net', 'Hatched Net1', 'Hatched Net2', 'Hatched Net3',]
+                y: 'center',
+                data: ['Mother Net', 'Hatched Net1', 'Hatched Net2', 'Hatched Net3', 'Child Net1', 'Child Net2', 'Child Net3']
             },
             series: [
                 {
-                    name: 'Training Time',
+                    name: 'Training Time of MN method',
                     type: 'pie',
                     center: ['30%', '50%'],
                     radius: ['50%', '70%'],
@@ -1531,11 +1749,11 @@
                         { value: 0, name: 'Hatched Net1' },
                         { value: 0, name: 'Hatched Net2' },
                         { value: 0, name: 'Hatched Net3' },
-                        { value: 600, name: '' }
+                        { value: 360, name: '' }
                     ]
                 },
                 {
-                    name: 'Training Time',
+                    name: 'Training Time of baseline method',
                     type: 'pie',
                     center: ['70%', '50%'],
                     radius: ['50%', '70%'],
@@ -1559,22 +1777,45 @@
                         }
                     },
                     data: [
-                        { value: 0, name: 'Mother Net' },
-                        { value: 0, name: 'Hatched Net1' },
-                        { value: 0, name: 'Hatched Net2' },
-                        { value: 0, name: 'Hatched Net3' },
-                        { value: 600, name: '' }
+                        { value: 0, name: 'Child Net1' },
+                        { value: 0, name: 'Child Net2' },
+                        { value: 0, name: 'Child Net3' },
+                        { value: 360, name: '' }
                     ]
                 }
             ]
         };
         setInterval(function () {
-            if (MN_convergence == false) {
-                option4.series[0].data[0].value += 2;
-                option4.series[0].data[4].value -= 2;
+            if (MN_convergence === false) {
+                option4.series[0].data[0].value += 1;
+                option4.series[0].data[4].value -= 1;
+            }
+            else if (MN_convergence === true && HN_convergence[0] === false) {
+                option4.series[0].data[1].value += 1;
+                option4.series[0].data[4].value -= 1;
+            }
+            else if (HN_convergence[0] === true && HN_convergence[1] === false) {
+                option4.series[0].data[2].value += 1;
+                option4.series[0].data[4].value -= 1;
+            }
+            else if (HN_convergence[1] === true && HN_convergence[2] === false) {
+                option4.series[0].data[3].value += 1;
+                option4.series[0].data[4].value -= 1;
+            }
+            if (CN_convergence[0] === false) {
+                option4.series[1].data[0].value += 1;
+                option4.series[1].data[3].value -= 1;
+            }
+            else if (CN_convergence[0] === true && CN_convergence[1] === false) {
+                option4.series[1].data[1].value += 1;
+                option4.series[1].data[3].value -= 1;
+            }
+            else if (CN_convergence[1] === true && CN_convergence[2] === false) {
+                option4.series[1].data[2].value += 1;
+                option4.series[1].data[3].value -= 1;
             }
             timeCmpr.setOption(option4, true);
-        }, 2000);
+        }, 1000);
         ;
         if (option4 && typeof option4 === "object") {
             timeCmpr.setOption(option4, true);
@@ -1583,7 +1824,7 @@
 
 
     function DrawCharts(ec) {
-        chart1(ec);
+        //chart1(ec);
         chart2(ec);
         chart3(ec);
         chart4(ec);
