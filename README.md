@@ -1,9 +1,10 @@
 # Queriosity-Demo
-Front-end of Queriosity demo
+A showcase of MotherNetwork
 
 This demo is built based on ConvNetJS library.
 
-For now, this demo just contains a barebone of html. It allows users to specify up to 5 children networks and generate a mother network based on them. There are already three children networks by default.
-The demo can show the training status of children networks but hasn't train the mother network. The training happens in your browser.
+After user specify three ensembles of networks, the MotherNetwork will be generated and both the MotherNetwork method and the Baseline method will start training at the same time. But in both of these methods, nets are trained sequentially.
 
-To run this demo locally, you need to add "--allow-file-access-from-files" to the property of your Chrome. You can run it directly in Firefox.
+Chart1 shows the training accuracy of networks while training(Child net1-3, Mother Network and Hatched Net1-3);
+Chart2 shows the training time of each of these net until converges;
+Chart3 shows the general accuracy of MotherNetwork method and Baseline method after all the networks are convergenced.
