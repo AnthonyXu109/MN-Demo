@@ -21,7 +21,7 @@ var cnnutil = (function(exports){
       }
     },
     get_average: function() {
-      if(this.v.length < this.minsize) return -1;
+      if(this.v.length < this.minsize) return 0.1;
       else return this.sum/this.v.length;
     },
     reset: function(x) {

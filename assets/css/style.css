@@ -1,0 +1,367 @@
+/*================================
+    GENERAL STYLES
+==================================*/
+
+@import url(http://fonts.googleapis.com/css?family=Roboto); /* GOOGLE FREE FONTS */
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+.zoom a:hover{
+    text-decoration: none;
+    color: #006666;
+}
+
+.zoom a{
+    text-decoration: underline;
+    color: #006666;
+}
+
+.info a{
+    color: #339966;
+    text-decoration: none;
+
+}
+
+.info a:hover{
+    color: #006666;
+    text-decoration: none;
+}
+.info a:focus{
+    color: #006666;
+    text-decoration: none;
+    outline: none;
+}
+
+
+.zoom{
+    color: #006666;
+}
+
+section {
+    padding-top: 80px;
+    padding-bottom: 120px;
+}
+
+.head-set {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.pad-bottom {
+    padding-bottom: 60px;
+}
+/*================================
+    NAVBAR STYLES
+==================================*/
+.navbar-default {
+    /*background-color: rgba(0, 102, 102 ,0.8);*/
+    background-color: rgba(0, 102, 102 ,1.0);
+    border-color: transparent;
+}
+
+.menu-items > li > a{
+    color:#CCFFCC !important;
+}
+.menu-items > li > a:hover{
+    color: #006666 !important;
+    background-color: #CCFFCC !important;
+}
+
+.navbar-brand {
+    padding: 7px;
+}
+.navbar-default .navbar-toggle .icon-bar {
+    background-color:#fff;
+}
+#concept{
+    padding:0px;
+}
+
+/*================================
+    HOME SECTION STYLES
+==================================*/
+
+/*STYLE OF BACKGROUND IMAGE*/
+#home {
+    background: url(../img/queriosity_background.png) no-repeat center center; /*Full Witdth background image*/
+    background-attachment: fixed;
+    padding: 10;
+    -webkit-background-size: cover;
+    background-size: cover;
+    -moz-background-size: cover;
+    text-align: center;
+}
+
+.btn{
+    margin: 0 auto;
+}
+
+
+.home_entry{
+    margin: auto auto;
+    margin-top: 250px;
+    margin-bottom: 35px;
+}
+    /*STYLE FOR OVERLAY CLASS - WHICH IS ABOVE IMAGE WITH OPACITY/TRANSPARENCY 0.75*/
+    #home .overlay {
+        padding-top: 90px;
+        background-color: rgba(153, 204, 153,0.0); /*.75 opacity of the color so that background image is visible*/
+        min-height: 900px;
+        color: #fff;
+    }
+
+    #home h1 {
+        padding-top: 80px;
+        font-weight: 900;
+        font-size: 200px;
+        font-family: 'Roboto';
+        text-align: center;
+    }
+/*SMPLE CLASS TO ADJUST SECTION PADDING & HEIGHT*/
+
+/*CLASS TO FORMAT TEXT*/
+.p-cls {
+    padding-top: 30px;
+    padding-bottom: 40px;
+}
+
+/*======================================
+    PARALLAX LIKE / STATS SECTION STYLES
+=========================================*/
+
+    .colored {
+        color: #fff;
+        background: #006666;
+        color:#ccffcc;
+
+    }
+
+     .colored_1 {
+        color: #fff;
+        background: #006666;
+        color:#CCFFCC;
+
+    }
+
+    .colored_white{
+        background-color: whiteSmoke;
+    }
+
+
+    .padded{
+        padding-top: 20px;
+        padding-bottom: 12px;
+    }
+
+    .padded_1{
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+
+    .large_font{
+        font-size: 22;
+    }
+    .larger_font{
+        font-size: 30;
+    }
+    .largest_font{
+        font-size: 40;
+    }
+    h1{
+        color: #006666;
+        font-size:30;
+    }
+
+/*================================
+    PORTFOLIO / WORK SECTION STYLES
+==================================*/
+.portfolio-item img:hover { /* POSTFOLIO IMAGE BIG ON HOVER */
+    cursor: pointer;
+    -webkit-transform: scale(1.1, 1.1);
+    -ms-transform: scale(1.1, 1.1);
+    transform: scale(1.1, 1.1);
+    transition-duration: 0.3s;
+    -webkit-transition-duration: 0.3s; /* Safari */
+    z-index: 1;
+}
+
+.team-member a:hover{
+    text-decoration: none;
+    color:#006666;
+}
+.team-member a{
+    text-decoration: none;
+}
+
+/*================================
+    CONTACT SECTION STYLE
+==================================*/
+
+
+
+
+/*================================
+    CLIENTS SECTION STYLES
+==================================*/
+#clients {
+    background-color:#f4f4f4;
+    padding-bottom:50px;
+    padding-top:50px;
+}
+    #clients img {
+        opacity:0.5;
+        cursor:pointer;
+    }
+        #clients img:hover {
+            opacity:1;
+        }
+/*================================
+    FOOTER SECTION STYLES
+==================================*/
+
+footer {
+    padding: 20px;
+    font-size: 15px;
+    text-align: center;
+    font-weight: 900;
+    background-color: whiteSmoke;
+    color: #006666;
+}
+
+/* Footer */
+#seas-link, #harvard-link, #daslab-link{
+    background-repeat: no-repeat;
+    display:block;
+    height: 76px;
+    margin: 30px auto 25px;
+    text-indent: -9999px;
+    overflow: hidden;
+}
+
+#seas-link {
+    width: 263px;
+    background-size: 263px 156px;
+}
+
+#harvard-link {
+    width: 290px;
+    background-size: 290px 156px;
+}
+
+#daslab-link {
+    width: 196px;
+    background-size: 196px 156px;
+}
+
+#seas-link {
+    background-image: url(../img/seas_logo.png);
+}
+
+#harvard-link {
+    background-image: url(../img/harvard_logo.png);
+}
+
+#daslab-link {
+    background-image: url(../img/daslab_logo.png);
+}
+
+
+
+@media(min-width:992px) {
+#seas-link {
+    margin-right: 25px;
+}
+#daslab-link {
+    margin-left: 25px;
+}
+}
+@media(max-width:992px) {
+    #seas-link{
+        width: 290px;
+    }
+}
+
+@media(max-width: 787px){
+    .home_entry{
+        width: 100%;
+    }
+    #home{height:700px;
+    }
+    .break{display: none;}
+}
+
+@media(max-width: 1200px){
+
+    .break{display: none;}
+}
+
+@media(min-width: 787px){
+    .home_entry{
+        width: 65%;
+    }
+    #home{min-height:700px;
+    }
+}
+
+#seas-link:hover{
+    background-position-y: -77px;
+}
+
+#harvard-link:hover{
+    background-position-y: -77px;
+}
+
+#daslab-link:hover{
+    background-position-y: -79px;
+}
+
+.img-responsive {
+    margin: 0 auto;
+}
+
+.footnote{
+    color:Grey;
+    text-decoration: overline;
+    font-size: 14pt;
+}
+
+.hidden{
+    visibility: 0;
+}
+
+.modal-body p{
+    text-align: justify;
+}
+.modal {
+    overflow-y:auto;
+    max-height:100%;
+    max-width: 100%;
+}
+
+.fa_custom{
+    font-size: 150px !important;
+}
+
+.fa_custom_big{
+    font-size: px !important;
+}
+
+hr.style18 { 
+  height: 30px; 
+  border-style: solid; 
+  border-color: #006666; 
+  border-width: 1px 0 0 0; 
+  border-radius: 20px; 
+} 
+hr.style18:before { 
+  display: block; 
+  content: ""; 
+  height: 30px; 
+  margin-top: -31px; 
+  border-style: solid; 
+  border-color: #006666; 
+  border-width: 0 0 1px 0; 
+  border-radius: 20px; 
+}

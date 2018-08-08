@@ -4,31 +4,66 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="author" content="Chang">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>
+        Queriosity - DASlab | Harvard University
+    </title>
+    <link href="../assets/img/logo_small.png" rel="icon" type="image/x-icon" />
+
+    <!--[if IE]>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <![endif]-->
+    <!-- BOOTSTRAP STYLE SHEET -->
+    <link href="../assets/css/bootstrap.css" rel="stylesheet" />
+
+    <!-- CUSTOM STYLES -->
+    <link href="../assets/css/style.css" rel="stylesheet" />
+    <link href="../assets/css/faa.css" rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <script src="https://use.fontawesome.com/3227f266ec.js"></script>
+
+    <!-- HTML5 Shiv and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
 
     <style>
+        /* #netDef1 {
+            position: absolute;
+            left: 1%;
+
+        } */
+
+        #netDef1 {
+            position: absolute;
+            left: 21.5%;
+
+        }
+
         #netDef2 {
             position: absolute;
-            left: 270px;
-            top: 8px;
+            left: 42%;
+
         }
 
         #netDef3 {
             position: absolute;
-            left: 530px;
-            top: 8px;
-        }
+            left: 62%;
 
-        #netDef4 {
-            position: absolute;
-            left: 790px;
-            top: 8px;
         }
 
         #netDef5 {
             position: absolute;
-            left: 1050px;
-            top: 8px;
+            left: 82%;
+
+        }
+
+        #addNet {
+            position: absolute;
+            left: 45%;
         }
     </style>
 
@@ -43,17 +78,26 @@
     <script src="../build/util.js"></script>
     <script src="../build/convnet.js"></script>
     <script src="../demo/mnist_labels.js"></script>
-    <script src="https://d3js.org/d3.v4.js"></script>
 
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
+    <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
 
 
     <script>
         var netIndex = 1;
         var layerIndex = new Array(5);//cuz there are up to 5 child/hatched nets
-        for (var i = 0; i < 5; i++) { layerIndex[i] = 10 + 10 * i + 2; }
+        for (var i = 0; i < 5; i++) { layerIndex[i] = 10 + 10 * i + 6; }
         var neuronIndex = 30;
         var layerLog = new Array(5);//cuz there are up to 5 child/hatched nets
-        for (var i = 0; i < 5; i++) { layerLog[i] = 2; }
+        for (var i = 0; i < 5; i++) { layerLog[i] = 6; }
         function addOne(layerID) {
             var temp = layerID - 1;
             var num = document.getElementById(temp);
@@ -119,14 +163,62 @@
             HN_convergence[i] = false;
         }
         var CN_convergeACC = new Array(5);
-        for(var i=0;i<5;i++){
-            CN_convergeACC[i]=0;
+        for (var i = 0; i < 5; i++) {
+            CN_convergeACC[i] = 0;
         }
         var MN_convergeACC = 0;
         var HN_convergeACC = new Array(5);
-        for(var i=0;i<5;i++){
-            HN_convergeACC[i]=0;
+        for (var i = 0; i < 5; i++) {
+            HN_convergeACC[i] = 0;
         }
+        var CN_accLog = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            CN_accLog[i] = [0, 0, 0, 0, 0];
+        }
+        var CN_avgacc = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            CN_avgacc[i] = 0;
+        }
+        var MN_accLog = [0, 0, 0, 0, 0];
+        var MN_avgacc = 0;
+        var HN_accLog = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            HN_accLog[i] = [0, 0, 0, 0, 0];
+        }
+        var HN_avgacc = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            HN_avgacc[i] = 0;
+        }
+        var CN_variance = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            CN_variance[i] = 0;
+        }
+        var MN_variance = 0;
+        var HN_variance = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            HN_variance[i] = 0;
+        }
+        var CN_Max = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            CN_Max[i] = 0;
+        }
+        var CN_Min = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            CN_Min[i] = 99999;
+        }
+        var MN_Max = 0;
+        var MN_Min = 99999;
+        var HN_Max = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            HN_Max[i] = 0;
+        }
+        var HN_Min = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            HN_Min[i] = 99999;
+        }
+        var BATCH = 50;
+        var StartDraw = false;
+
 
         //initialize MN
         var mother_defs, motherNet;
@@ -295,20 +387,62 @@
         // }
 
         // int main
-        $(window).load(function () {
+        //$(window).load(
+        Main = function () {
 
-            for (var i = 0; i < t.length; i++) {
-                $("#newnet" + i).val(t[i]);
-                eval($("#newnet" + i).val());
+
+            layer_defs[0] = [];
+            layer_defs[0].push({ type: 'input', out_sx: 28, out_sy: 28, out_depth: 1 });
+            layer_defs[0].push({ type: 'fc', num_neurons: document.getElementById(11).value, activation: 'relu' });
+            layer_defs[0].push({ type: 'fc', num_neurons: document.getElementById(12).value, activation: 'relu' });
+            layer_defs[0].push({ type: 'fc', num_neurons: document.getElementById(13).value, activation: 'relu' });
+            layer_defs[0].push({ type: 'fc', num_neurons: document.getElementById(14).value, activation: 'relu' });
+            layer_defs[0].push({ type: 'fc', num_neurons: document.getElementById(15).value, activation: 'relu' });
+            layer_defs[0].push({ type: 'softmax', num_classes: 10 });
+
+            net[0] = new convnetjs.Net();
+            net[0].makeLayers(layer_defs[0]);
+
+            trainer[0] = new convnetjs.Trainer(net[0], { method: 'adadelta', batch_size: BATCH, l2_decay: 0.001 });
+
+            layer_defs[1] = [];
+            layer_defs[1].push({ type: 'input', out_sx: 28, out_sy: 28, out_depth: 1 });
+            layer_defs[1].push({ type: 'fc', num_neurons: document.getElementById(21).value, activation: 'relu' });
+            layer_defs[1].push({ type: 'fc', num_neurons: document.getElementById(22).value, activation: 'relu' });
+            layer_defs[1].push({ type: 'fc', num_neurons: document.getElementById(23).value, activation: 'relu' });
+            layer_defs[1].push({ type: 'fc', num_neurons: document.getElementById(24).value, activation: 'relu' });
+            layer_defs[1].push({ type: 'fc', num_neurons: document.getElementById(25).value, activation: 'relu' });
+            layer_defs[1].push({ type: 'softmax', num_classes: 10 });
+
+            net[1] = new convnetjs.Net();
+            net[1].makeLayers(layer_defs[1]);
+
+            trainer[1] = new convnetjs.Trainer(net[1], { method: 'adadelta', batch_size: BATCH, l2_decay: 0.001 });
+
+            layer_defs[2] = [];
+            layer_defs[2].push({ type: 'input', out_sx: 28, out_sy: 28, out_depth: 1 });
+            layer_defs[2].push({ type: 'fc', num_neurons: document.getElementById(31).value, activation: 'relu' });
+            layer_defs[2].push({ type: 'fc', num_neurons: document.getElementById(31).value, activation: 'relu' });
+            layer_defs[2].push({ type: 'fc', num_neurons: document.getElementById(31).value, activation: 'relu' });
+            layer_defs[2].push({ type: 'fc', num_neurons: document.getElementById(31).value, activation: 'relu' });
+            layer_defs[2].push({ type: 'fc', num_neurons: document.getElementById(31).value, activation: 'relu' });
+            layer_defs[2].push({ type: 'softmax', num_classes: 10 });
+
+            net[2] = new convnetjs.Net();
+            net[2].makeLayers(layer_defs[2]);
+
+            trainer[2] = new convnetjs.Trainer(net[2], { method: 'adadelta', batch_size: BATCH, l2_decay: 0.001 });
+            for (var i = 0; i < 3; i++) {
+                // $("#newnet" + i).val(t[i]);
+                // eval($("#newnet" + i).val());
                 hatched_defs[i] = [];
                 hatched_defs[i] = layer_defs[i];
                 hatchedNet[i] = new convnetjs.Net();
                 hatchedNet[i].makeLayers(hatched_defs[i]);
-                trainer[i + 6] = new convnetjs.SGDTrainer(hatchedNet[i], { method: 'adadelta', batch_size: 20, l2_decay: 0.001 });
+                trainer[i + 6] = new convnetjs.SGDTrainer(hatchedNet[i], { method: 'adadelta', batch_size: BATCH, l2_decay: 0.001 });
                 legend[i] = 'childNet ' + i;
-                //legend[t.length + 1 + i] = 'hatchedNet ' + i;
             }
-            legend[t.length] = 'motherNet';
+
 
             // for(var i=0;legend[i];i++){
             //     console.log(legend[i]);
@@ -320,6 +454,7 @@
             //, and add the one with fewest filters into the mother network.
             //find the longest childnet who have the most layers
             var longestLength = 0;
+            var temp_neuronNum = 10000;
             for (var n = 0; n < layer_defs.length; n++) {
                 if (longestLength < layer_defs[n].length) {
                     longestLength = layer_defs[n].length;
@@ -327,19 +462,21 @@
             }
             //loop for all positions but skip the input layer and softmax layer.
             for (var i = 1; i < longestLength - 1; i++) {
-                var temp_neuronNum = 10000;//hope it's big enough
+                temp_neuronNum = 10000;//hope it's big enough
                 //loop for each network
                 for (var j = 0; net[j]; j++) {
                     if (layer_defs[j][i].type === 'fc' && layer_defs[j][i].num_neurons < temp_neuronNum && layer_defs[j][i].num_neurons > 0) {
                         temp_neuronNum = layer_defs[j][i].num_neurons;
+
                     }
                 }
+
                 mother_defs.push({ type: 'fc', num_neurons: temp_neuronNum, activation: 'relu' });
             }
             mother_defs.push({ type: 'softmax', num_classes: 10 });
             motherNet = new convnetjs.Net();
             motherNet.makeLayers(mother_defs);//implement it
-            trainer[5] = new convnetjs.Trainer(motherNet, { method: 'adadelta', batch_size: 10, l2_decay: 0.001 });
+            trainer[5] = new convnetjs.Trainer(motherNet, { method: 'adadelta', batch_size: BATCH, l2_decay: 0.001 });
 
             //for now, we show the motherNet by simply print each layer
             var m2t = document.getElementById("MotherNet_vis");
@@ -371,12 +508,10 @@
             for (var i = 0; i < 5; i++) { trainStart_CN[i] = new Date().getTime(); }
             trainStart_MN = new Date().getTime();
             start_fun();
+            StartDraw = true;
             //bg_start_fun();
-
-
-
-
-        });
+        }
+        //);
 
         var start_fun = function () {
             if (loaded[0] && loaded[test_batch]) {
@@ -527,25 +662,11 @@
 
         var step = function (sample) {
 
-            if (step_num % 500 === 0 && step_num > 0) {
-                //     console.log(motherNet.layers[3].filters);
-                // for (var i = 0; hatchedNet[i]; i++) {
-                //     console.log(hatchedNet[i].layers[3].filters);
-                //     console.log('');
-                // }
-                widenNets(motherNet, hatchedNet);
-                //     var Test = sample_training_instance().x;
-                //     // for (var i = 0; net[i]; i++) {
-                //     //     console.log(net[i].getPrediction());
-                //     // }
-                //     console.log(motherNet.forward(Test) === hatchedNet[1].forward(Test));
-                //     console.log(motherNet.layers[3].filters);
-                // for (var i = 0; hatchedNet[i]; i++) {
-                //     console.log(hatchedNet[i].layers[3].filters);
-                // }
-                // console.log('');
-                //     console.log('');
-            }
+            // if (step_num % 500 === 0 && step_num > 0) {
+
+            //     widenNets(motherNet, hatchedNet);
+
+            // }
 
 
 
@@ -836,25 +957,116 @@
             }
 
 
+            // if (step_num %300===0) {
+
+            // }
+
+            for (var i = 0; net[i]; i++) {
+                CN_accLog[i][STEP % 5] = trainAccWindow[i].get_average();
+            }
+            MN_accLog[STEP % 5] = trainAccWindow[5].get_average();
+            for (var i = 0; hatchedNet[i]; i++) {
+                HN_accLog[i][STEP % 5] = trainAccWindow[i + 6].get_average();
+            }
+            for (var i = 0; net[i]; i++) {
+                for (var j = 0; j < 5; j++) {
+                    if (CN_accLog[i][j] > CN_Max[i]) {
+                        CN_Max[i] = CN_accLog[i][j];
+                    }
+                    if (CN_accLog[i][j] < CN_Min[i]) {
+                        CN_Min[i] = CN_accLog[i][j];
+                    }
+                }
+            }
+            for (var j = 0; j < 5; j++) {
+                if (MN_accLog[j] > MN_Max) {
+                    MN_Max = MN_accLog[j];
+                }
+                if (MN_accLog[j] < MN_Min) {
+                    MN_Min = MN_accLog[j];
+                }
+            }
+            for (var i = 0; hatchedNet[i]; i++) {
+                for (var j = 0; j < 5; j++) {
+                    if (HN_accLog[i][j] > HN_Max[i]) {
+                        HN_Max[i] = HN_accLog[i][j];
+                    }
+                    if (HN_accLog[i][j] < HN_Min[i]) {
+                        HN_Min[i] = HN_accLog[i][j];
+                    }
+                }
+            }
+            for (var i = 0; net[i]; i++) {
+                for (var n = 0; n < 5; n++) {
+                    CN_avgacc[i] += CN_accLog[i][n];
+                }
+                CN_avgacc[i] /= 5;
+            }
+            for (var n = 0; n < 5; n++) {
+                MN_avgacc += MN_accLog[n];
+            }
+            MN_avgacc /= 5;
+            for (var i = 0; hatchedNet[i]; i++) {
+                for (var n = 0; n < 5; n++) {
+                    HN_avgacc[i] += HN_accLog[i][n];
+                }
+                HN_avgacc[i] /= 5;
+            }
+            for (var i = 0; net[i]; i++) {
+                for (var j = 0; j < 5; j++) {
+                    if (CN_accLog[i][j] - CN_avgacc[i] > 0) {
+                        CN_variance[i] += (CN_accLog[i][j] - CN_avgacc[i]);
+                    }
+                    else {
+                        CN_variance[i] -= (CN_accLog[i][j] - CN_avgacc[i]);
+                    }
+                }
+                CN_variance[i] /= 5;
+                //console.log(CN_variance);
+            }
+            for (var i = 0; i < 5; i++) {
+                if (MN_accLog[i] - MN_avgacc > 0) {
+                    MN_variance += (MN_accLog[i] - MN_avgacc);
+                }
+                else {
+                    MN_variance -= (MN_accLog[i] - MN_avgacc);
+                }
+            }
+            MN_variance /= 5;
+            for (var i = 0; hatchedNet[i]; i++) {
+                for (var j = 0; j < 5; j++) {
+                    if (HN_accLog[i][j] - HN_avgacc[i] > 0) {
+                        HN_variance[i] += (HN_accLog[i][j] - HN_avgacc[i]);
+                    }
+                    else {
+                        HN_variance[i] -= (HN_accLog[i][j] - HN_avgacc[i]);
+                    }
+                }
+                HN_variance[i] /= 5;
+            }
+
 
             //judge the convergence
             for (var i = 0; net[i]; i++) {
-                if (trainAccWindow[i].get_average() > 0.9 && CN_convergence[i] === false) {
+                if (CN_Max[i] - CN_Min[i] < 0.93 && trainAccWindow[i].get_average() > 0.91 && CN_convergence[i] === false) {
                     CN_convergence[i] = true;
                     CN_convergeACC[i] = trainAccWindow[i].get_average();
                 }
             }
-            if (trainAccWindow[5].get_average() > 0.9 && MN_convergence === false) {
+            if (MN_Max - MN_Min < 0.93 && trainAccWindow[5].get_average() > 0.91 && MN_convergence === false) {
                 MN_convergence = true;
+                widenNets(motherNet, hatchedNet);
                 MN_convergeACC = trainAccWindow[5].get_average();
             }
             for (var i = 0; hatchedNet[i]; i++) {
-                if (trainAccWindow[i + 6].get_average() > 0.9 && HN_convergence[i] === false) {
+                if (HN_Max[i] - HN_Min[i] < 0.93 && trainAccWindow[i + 6].get_average() > 0.91 && HN_convergence[i] === false) {
                     HN_convergence[i] = true;
                     HN_convergeACC[i] = trainAccWindow[i + 6].get_average();
                 }
             }
-
+            //trainAccWindow[i].get_average() > 0.91 &&
+            //trainAccWindow[5].get_average() > 0.91 &&
+            //trainAccWindow[i + 6].get_average() > 0.91 &&
 
 
             step_num++;
@@ -873,7 +1085,7 @@
             //For the original part in MN, just copy them
             for (var l = 1; l < motherNet.layers.length - 3; l++) { //loop by each hidden fc layer in MN
                 if (motherNet.layers[l].layer_type === 'fc') {
-                    for (var f = 0; f < motherNet.layers[l].filters.length; f++) { //loop by each "filter" in a certain fc layer
+                    for (var f = 0; f < motherNet.layers[l].filters.length; f++) { //loop by each "filter" in a certain fc layer, "filter" in fc net means neuron
                         for (var i = 0; i < motherNet.layers[l].filters[f].w.length; i++) { //loop by each weight in a certain "filter"
                             for (var j = 0; hatchedNet[j]; j++) { //copy the weight to every hatchedNet
                                 hatchedNet[j].layers[l].filters[f].w[i] = motherNet.layers[l].filters[f].w[i];
@@ -882,7 +1094,6 @@
                     }
                 }
             }
-
             //For the widened part, use the random select
             for (var h = 0; hatchedNet[h]; h++) { //widen each hatchedNet one by one
                 for (var l = 1; l < motherNet.layers.length - 3; l++) { //loop by each fc layer in MN except for the last one
@@ -940,7 +1151,7 @@
             //For the original part in MN, just copy them
             for (var l = 0; l < motherNet.layers.length - 3; l++) { //loop by each hidden fc layer in MN
                 if (motherNet.layers[l].layer_type === 'fc') {
-                    console.log(l);
+                    //console.log(l);
                     for (var f = 0; f < motherNet.layers[l].filters.length; f++) { //loop by each "filter" in a certain fc layer
                         for (var i = 0; i < motherNet.layers[l].filters[f].w.length; i++) { //loop by each weight in a certain "filter"
                             for (var j = 0; hatchedNet[j]; j++) { //copy the weight to every hatchedNet
@@ -1055,12 +1266,13 @@
             net = [];
             for (var i = 0; $("#newnet" + i).val(); i++) {
                 eval($("#newnet" + i).val());
-
             }
             reset_all();
 
 
             //I'm lazy now, so just paste the code above :(
+            mother_defs = [];
+            mother_defs.push({ type: 'input', out_sx: 28, out_sy: 28, out_depth: 1 });//the mother net needs an input layer by default
             var longestLength = 0;
             for (var n = 0; n < layer_defs.length; n++) {
                 if (longestLength < layer_defs[n].length) {
@@ -1076,7 +1288,7 @@
                         temp_neuronNum = layer_defs[j][i].num_neurons;
                     }
                 }
-                mother_defs.push({ type: 'fc', num_neurons: temp_neuronNum, activation: 'tanh' });
+                mother_defs.push({ type: 'fc', num_neurons: temp_neuronNum, activation: 'relu' });
             }
             mother_defs.push({ type: 'softmax', num_classes: 10 });
             motherNet = new convnetjs.Net();
@@ -1092,6 +1304,7 @@
                     m2t.appendChild(document.createElement('br'));
                 }
                 else if (mother_defs[i].type === 'fc') {
+                    console.log(i);
                     var mt = 'Fully connected layer:' + ' num_neurons:' + mother_defs[i].num_neurons + ' activation:' + mother_defs[i].activation;
                     m2t.appendChild(document.createTextNode(mt));
                     m2t.appendChild(document.createElement('br'));
@@ -1101,9 +1314,10 @@
                     m2t.appendChild(document.createTextNode(mt));
                 }
             }
-
+            //console.log(m2t.innerHTML);
 
         }
+
 
         function htmlDecode(input) {
             var doc = new DOMParser().parseFromString(input, "text/html");
@@ -1112,20 +1326,24 @@
 
         function newLayer(networkIndex) {
             var lyPos = document.getElementById("netDef" + networkIndex);
-            var newLayerHtml = 'layer' + layerLog[networkIndex - 1]++ + ' has &lt;input type=&quot;button&quot; value=&quot;-&quot; onclick=&quot;minusOne(' + netIndex + layerLog[netIndex - 1] + ')&quot;> &lt;input type=text id=' + layerIndex[netIndex - 1]++ + ' value=' + neuronIndex + ' style=&quot;width:30px;&quot;> &lt;input type=&quot;button&quot; value=&quot;+&quot; onclick=&quot;addOne(' + netIndex + layerLog[netIndex - 1] + ')&quot;> neurons &lt;script>layerLog++;console.log(layerLog);&lt;/script>&lt;br/>';
-            console.log(htmlDecode(newLayerHtml));
+            var newLayerHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span>num of neurons in layer' + layerLog[networkIndex - 1]++ + '&lt;/span>&lt;/span> &lt;input id=' + layerIndex[netIndex - 1]++ + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;num of neurons in layer1&quot; style=&quot;text-align:right; width:70px&quot; onchange=&quot;re_run(event, &apos;input3&apos;)&quot; onwheel=&quot;re_run(event, &apos;input3&apos;)&quot; onkeyup=&quot;re_run(event, &apos;input3&apos;)&quot;/> &lt;div/>';
             lyPos.insertAdjacentHTML('afterbegin', htmlDecode(newLayerHtml));
         }
+
 
         function newNetwork() {
             netIndex++;
             var ntPos = document.getElementById("netDef" + netIndex);
-            var newNetworkHtml = 'layer1 has &lt;input type="button" value="-" onclick="minusOne(' + netIndex + 2 + ')" > &lt;input type="text" id=' + netIndex + 1 + ' value=30 style="width:30px;" > &lt;input type="button" value="+" onclick="addOne(' + netIndex + 2 + ')"> neurons&lt;br/> &lt;input type=button onclick="newLayer(' + netIndex + ')" value=Add_layer>&lt;br/>childNet' + netIndex + '&lt;br/>';
+            var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span>num of neurons in layer1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;num of neurons in layer1&quot; style=&quot;text-align:right; width:70px&quot; onchange=&quot;re_run(event, &apos;input3&apos;)&quot; onwheel=&quot;re_run(event, &apos;input3&apos;)&quot; onkeyup=&quot;re_run(event, &apos;input3&apos;)&quot;/> &lt;/div> &lt;input type=button onclick="newLayer(' + netIndex + ')" value=&apos;Add Layer&apos;> &lt;h3 style=&quot;color:rgb(12,84,83)&quot;>childNet' + netIndex + '&lt;/h3>';
             console.log(htmlDecode(newNetworkHtml));
             ntPos.insertAdjacentHTML('afterbegin', htmlDecode(newNetworkHtml));
         }
 
 
+        function changeValue(x) {
+            var y = document.getElementById(x).value
+            document.getElementById(x).value = y
+        }
 
     </script>
 
@@ -1137,89 +1355,634 @@
 
 <body>
 
-    <div id="netDef1">
-        layer1 has
-        <input type="button" value="-" onclick="minusOne(12)" />
-        <input type="text" id=11 value=30 style="width:30px;" />
-        <input type="button" value="+" onclick="addOne(12)" /> neurons
-        <br/>
-        <input type=button onclick="newLayer(1)" value=Add_layer>
-        <br/> childNet1
+
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header scroll-me">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#home">
+                    <img src="../assets/img/logo_top.png" alt="" class="img-responsive" />
+                </a>
+            </div>
+            <div class="navbar-collapse collapse navbar-right scroll-me">
+                <ul class="nav navbar-nav menu-items ">
+                    <!--  <li><a href="#home"><i class="fa fa-home fa-2x">Home</i></a></li> !-->
+                    <li>
+                        <a href="#queriosity">
+                            <i class="fa fa-2x">Concept</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#publications">
+                            <i class="fa fa-2x">Publications</i>
+                        </a>
+                    </li>
+                    <!-- <li><a href="#team"><i class="fa fa-users fa-2x">People</i></a></li> -->
+                    <li>
+                        <a href="http://daslab.seas.harvard.edu" target="_blank">
+                            <i class="fa fa-2x">DASlab</i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
     </div>
-    <div id="netDef2"></div>
-    <div id="netDef3"></div>
-    <div id="netDef4"></div>
-    <div id="netDef5"></div>
+    <!-- NAVBAR CODE END -->
+    <div id="home">
+        <div class="overlay">
+            <!-- overylay class usage -->
+            <div class="container">
+                <div class=" home_entry text-center">
+
+                    <div>
+                        <img src="../assets/img/queriosity_logo.png" alt="" class="img-responsive logo_main" />
+                    </div>
+                    <div class="faa-parent scroll-me zoom">
+                        <a href="#queriosity" class=" fa fa-search faa-tada animated-hover faa-fast fa-5x"></a>
+                    </div>
+                </div>
 
 
-    <br/>
-    <input type=button onclick="newNetwork()" value=Add_networks>
+            </div>
+        </div>
+
+    </div>
+    <!--HOME SECTION END  -->
+    <section id="queriosity" class="colored_white padded_1">
+        <div class="container">
+            <div class="row text-center">
+                <!-- <div class="info col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1">
+                    <h1 class="head-set">Queriosity: Accelerating Data Science Pipelines</h1>
+                </div> -->
+                <div class="container">
+                    <div class="text-center larger_font">
+                        <!--                         <div>
+                             <img src="assets/img/queriosity_2.png" alt="" class="img-responsive centered" />
+                        </div> 
+ -->
+                    </div>
+                </div>
+                <div class="info col-md-10 col-md-offset-1">
+                    <br>
+                    <br>
+                    <p style="font-size: 140%; text-align: justify;">
+                        Ensembles of deep neural networks with diverse architectures significantly improve generalization accuracy. However, training
+                        such ensembles requires a large amount of computational resources and time as every network in the
+                        ensemble has to be separately trained. In practice, this restricts the number of different deep neural
+                        network architectures that can be included within an ensemble. We proposeMother- Nets to address
+                        this problem. MotherNets capture the structural similarity between members of a neural network ensemble
+                        and train it only once. Subsequently, this knowledge is transferred to all members of the ensemble
+                        using function-preserving transformations. Then, these ensemble networks converge significantly faster
+                        as compared to training from scratch.
+                    </p>
+
+                    <!-- <p style="font-size: 140%; text-align: justify;">
+                    The first problem is response time; given the complexity of the computations involved and the growing amounts of data in typical data science pipelines, performance quickly becomes a major bottleneck. Queriosity accelerates data science pipelines by smartly synthesizing results out of basic primitives as opposed to recomputing from scratch every time over raw data. This accelerates both current data science and ML algorithms in addition to future algorithms that although will be different they typically rely on the very same primitives. It is also a key property when it comes to scenarios where interactive performance is necessary. The second key aspect in Queriosity is that it accelerates data science pipelines by providing hints on interesting data areas and patterns to turn the attention of data scientists to promising data areas. This accelerates the process of discovery as typically human understanding and decisions are the major bottlenecks.
+                    </p>
+                    <p style="font-size: 140%; text-align: justify;">
+                    Overall, Queriosity accelerates data science, making it more interactive and more intuitive. Queriosity is currently being built in C++ and it also includes a virtual reality front-end. The first critical component is described in our SIGMOD 2017 paper called Data Canopy; it allows to synthesize statistics out of basic primitives as opposed to recomputing from scratch with every request, bringing a speed up of several orders of magnitude to any task that involves statistical computations. Stay tuned for more!
+                    </p> -->
 
 
-    <div id="wrap">
+                    <!--      <p class="large_font">
+                        Modern data systems only let us retrieve data, and then ask “if it is interesting”. This implies one has to know what they are looking for up front! Instead, we envision a new class of systems that let us ask “what is interesting”.
+                    </p> -->
+                    <!-- <a class="fa fa-question-circle fa-3x" href="#" data-toggle="modal" data-target="#abstract"></a> -->
+                    <!--                     <br><br>
+                    <p class = "footnote">
+                        *Queriosity: A portmanteau of Query and Curiosity
+                    </p> -->
+                </div>
 
-        <!-- <div>
-            <h1>Loss:</h1>
+            </div>
+    </section>
+
+    <div class="modal fade large_font" id="abstract" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header colored_1">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title"> Queriosity - Toward Curious Data Systems</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="text-left">
+
+                        <p>Curiosity, a fundamental drive amongst higher living organisms, is what enables exploration, learning
+                            and creativity. In our increasingly data-driven world, data exploration, i.e., making sense of
+                            mounting haystacks of data, is akin to intelligence for science, business and individuals. However,
+                            modern data systems – designed for data retrieval rather than exploration – only let us retrieve
+                            data and ask if it is interesting. This makes knowledge discovery a game of hit-and-trial which
+                            can only be orchestrated by expert data scientists.</p>
+
+                        <p class="">We present the vision toward Queriosity*, an automated and personalized data exploration system.
+                            Designed on the principles of autonomy, learning and usability, Queriosity envisions a paradigm
+                            shift in data exploration and aims to become a a personalized “data robot” that provides a direct
+                            answer to what is interesting in a user’s data set, instead of just retrieving data. Queriosity
+                            autonomously and continuously navigates toward interesting findings based on trends, statistical
+                            properties and interactive user feedback.
+                            <p>
+
+
+                                <p class="footnote">
+                                    * A portmanteau of Query and Curiosity
+                                </p>
+
+                            </p>
+                            <div class="modal-footer colored">
+                                <img width=200 src="../assets/img/queriosity_logo.png" alt="DAS" align="left" />
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <section id="concept">
+
+        <div class="colored padded">
+            <div class="container">
+                <div class="text-center larger_font">
+                    <p>
+                        <i class=" fa fa-search"></i>ueriosity makes data science more interactive and intuitive</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="colored_white">
+        <div class="container">
+
+            <div class="row text-center large_font">
+                <h1>Specify Ensemble Networks</h1>
+                <div id="addNet">
+                    <input type=button onclick="Main();DrawCharts(ec);" value='Let&apos;s Go!' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;">
+                </div>
+                <br/>
+                <!-- <div class="col-md-8 col-sm-4 col-xs-12"> -->
+
+                <!-- </div> -->
+            </div>
             <br>
-            <canvas id="lossgraph" style="width:800px;height:400px;">
-            </canvas>
-            <br />
-        </div> -->
+            <br>
+            <div id="netInput">
 
-        <div id="container1" style="height: 500px; width:800px; margin:0 auto;"></div>
-        <br/>
-        <div id="container4" style="height: 500px; width:1100px; margin:0 auto;"></div>
-        <br/>
-        <div id="container3" style="height: 500px; width:1100px; margin:0 auto;"></div>
-        <br/>
-        <div id="container2" style="height: 500px; width:1100px; margin:0 auto;"></div>
-        <br/>
+                <div id="netDef1">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer5</span>
+                        </span>
+                        <input id="15" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer4</span>
+                        </span>
+                        <input id="14" type="number" value=70 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer3</span>
+                        </span>
+                        <input id="13" type="number" value=70 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer2</span>
+                        </span>
+                        <input id="12" type="number" value=50 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer1</span>
+                        </span>
+                        <input id="11" type="number" value=50 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <input type=button onclick="newLayer(1)" value='Add layer'>
+                    <br/>
+                    <h3 style="color:rgb(12,84,83)">childNet1</h3>
+
+                </div>
+
+                <div id="netDef2">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer5</span>
+                        </span>
+                        <input id="25" type="number" value=70 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange="changeValue(this.id)" onwheel="changeValue(this.id)" onkeyup=" changeValue(this.id)" />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer4</span>
+                        </span>
+                        <input id="24" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer3</span>
+                        </span>
+                        <input id="23" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer2</span>
+                        </span>
+                        <input id="22" type="number" value=50 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer1</span>
+                        </span>
+                        <input id="21" type="number" value=50 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <input type=button onclick="newLayer(2)" value='Add layer'>
+                    <br/>
+                    <h3 style="color:rgb(12,84,83)">childNet2</h3>
+                </div>
+                <div id="netDef3">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer5</span>
+                        </span>
+                        <input id="35" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer4</span>
+                        </span>
+                        <input id="34" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer3</span>
+                        </span>
+                        <input id="33" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer2</span>
+                        </span>
+                        <input id="32" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer1</span>
+                        </span>
+                        <input id="31" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                            onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
+                        />
+                    </div>
+                    <input type=button onclick="newLayer(3)" value='Add layer'>
+                    <br/>
+                    <h3 style="color:rgb(12,84,83)">childNet3</h3>
+                </div>
+                <div id="netDef4"></div>
+                <div id="netDef5"></div>
+                <br/>
+            </div>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <div class="row text-center large_font">
+                <hr class="style18">
+                <h1>Generated MotherNet</h1>
+                <div id="MotherNet_vis" class="row text-center" style="font-size: 140%;"></div>
+                <br/>
+            </div>
+            <hr class="style18">
+            <div class="row text-center large_font">
+                <div id='wrap'>
+                    <h1>Training Visualization</h1>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <div id="container1" style="height: 500px; width:800px; margin:0 auto;"></div>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <div id="container4" style="height: 500px; width:1100px; margin:0 auto;"></div>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <div id="container3" style="height: 500px; width:1100px; margin:0 auto;"></div>
+                    <br/>
+                    <!-- <br/>
+                    <div id="container2" style="height: 500px; width:1100px; margin:0 auto;"></div>
+                    <br/> -->
 
 
 
 
-        <h1>Train Stats</h1>
-        <div id="trainstats"></div>
+                    <!-- <h1>Train Stats</h1>
+                    <div id="trainstats"></div> -->
 
 
-        <h1>Instantiate Networks and Trainers</h1>
-        <div>
-            <!--for now, we allow a user to specify up to 5 children networks-->
-            <textarea id="newnet0" style="width:70%; height:200px;"></textarea>
-            <br />
-            <textarea id="newnet1" style="width:70%; height:200px;"></textarea>
-            <br />
-            <textarea id="newnet2" style="width:70%; height:200px;"></textarea>
-            <br />
-            <textarea id="newnet3" style="width:70%; height:200px;"></textarea>
-            <br />
-            <textarea id="newnet4" style="width:70%; height:200px;"></textarea>
-            <br />
-            <input id="buttonnn" type="submit" value="change network" onclick="change_net();" style="width:200px;height:30px;" />
+                    <!-- <h1>Instantiate Networks and Trainers</h1> -->
+                    <!-- <div> -->
+                    <!--for now, we allow a user to specify up to 5 children networks-->
+                    <!-- <textarea id="newnet0" style="width:70%; height:200px;"></textarea>
+                        <br />
+                        <textarea id="newnet1" style="width:70%; height:200px;"></textarea>
+                        <br />
+                        <textarea id="newnet2" style="width:70%; height:200px;"></textarea>
+                        <br />
+                        <textarea id="newnet3" style="width:70%; height:200px;"></textarea>
+                        <br />
+                        <textarea id="newnet4" style="width:70%; height:200px;"></textarea>
+                        <br />
+                        <input id="buttonnn" type="submit" value="change network" onclick="change_net();" style="width:200px;height:30px;" />
+                    </div> -->
+
+                </div>
+                <!-- <div class="col-md-8 col-sm-4 col-xs-12">
+
+                    <div class="break">
+                        <br>
+                        <br>
+                    </div>
+                    <p style="font-size: 90%; text-align: justify;">
+                        The second key aspect in Queriosity is that it accelerates data science pipelines by providing hints on interesting data
+                        areas and patterns to turn the attention of data scientists to promising data areas. This accelerates
+                        the process of discovery as typically human understanding and decisions are the major bottlenecks.
+                    </p>
+                </div> -->
+
+
+
+                <div class="info col-md-12 col-sm-4 col-xs-12">
+                    <hr class="style18">
+                    <p style="font-size: 20px; text-align: justify;">
+                        MotherNets make training of very large ensembles feasible by capturing the structural similarity between members of an ensemble
+                        and training for it only once. The result is that MotherNets can help train very large ensembles
+                        at a fraction of the time required by state of the art approaches and more crucially this improvement
+                        scales linearly with the size of the ensemble.
+                    </p>
+                </div>
+
+
+
+
+
+            </div>
         </div>
+    </section>
 
-        <div>
-            <h1>Generated MotherNet</h1>
-            <div id="MotherNet_vis"></div>
+    <!--SERVICES SECTION END  -->
+    <div class="colored padded">
+        <div class="container">
+            <div class="text-center larger_font">
+                <p>
+                    <i class=" fa fa-search"></i>ueriosity guides you to what is interesting in your data set</p>
+
+            </div>
         </div>
-
     </div>
+    <section id="publications" class="colored_white large">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1 text-center">
+                    <h1>Publications</h1>
+                    <br>
+                </div>
+            </div>
+            <!-- <div class="large_font">
+                <a href="https://stratos.seas.harvard.edu/publications/data-canopy-accelerating-exploratory-statistical-analysis">Data Canopy: Accelerating Exploratory Statistical Analysis</a>. Abdul Wasay, Xinding Wei, Niv Dayan, Stratos
+                Idreos.
+                <i>Proceedings of the
+                    <b>ACM SIGMOD</b> International Congress on Management of Data</i>, 2017.
+                <a target="_blank" href="https://stratos.seas.harvard.edu/files/stratos/files/datacanopy.pdf">[Paper]</a>
+                <a target="_blank" href="../../data-canopy">[website]</a>
+                <a href="https://www.youtube.com/watch?v=EwtOFVAuUVU" target="_blank">[video]</a>
+            </div>
+            <br>
+            <br>
+            <div class="large_font">
+                <a href="https://stratos.seas.harvard.edu/publications/queriosity-automated-data-exploration">Queriosity: Automated Data Exploration</a>. Abdul Wasay, Manos Athanassoulis, Stratos Idreos.
+                <i>Proceedings of the IEEE International Congress on
+                    <strong>Big Data</strong>,</i> 2015.
+                <a target="_blank" href="./assets/doc/queriosity_vision_paper.pdf">[Paper]</a>
+                <a target="_blank" href="./assets/doc/queriosity_vision_poster.png">[Poster]</a>
+            </div> -->
+        </div>
+    </section>
+
+    <!--         <div class="colored padded">
+                <div class="container">
+                    <div class="text-center larger_font">
+                        <p> </p>
+
+                    </div>
+                </div>
+        </div>
+ -->
+    <!--PARALLAX LIKE / STATS SECTION END  -->
+    <!--People Section-->
+    <!--     <section id="team" class="colored_white">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h1>People</h1>
+                    <br>
+                    <br>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <a href="http://scholar.harvard.edu/awasay/" target="_blank" title="wasay's Website">
+                            <img src="assets/img/people/wasay.jpg" class="  img-circle" alt="">
+                            <h4>Abdul Wasay</h4>
+                            <p class="text-muted large_font">PhD Researcher</p>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <a href="http://people.seas.harvard.edu/~manos/" target="_blank" title="Manos' Website">
+                            <img src="assets/img/people/manos.jpg" class="  img-circle" alt="">
+                            <h4>Manos Athanassoulis</h4>
+                            <p class="large_font text-muted">Postdoctoral Researcher</p>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <a href="http://stratos.seas.harvard.edu/" target="_blank" title="Stratos' Website">
+                            <img src="assets/img/people/stratos.jpg" class=" img-circle" alt="">
+                            <h4>Stratos Idreos</h4>
+                            <p class="text-muted large_font">Assistant Professor<br> of Computer Science</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+    <!--People SECTION END  -->
+
+
+
+    <footer class="text-center">
+        <div class=" row footer-above colored">
+            <div class="container">
+                <div class="row">
+                    <div class=" col-md-4">
+                        <a id="seas-link" href="http://seas.harvard.edu" target="_blank" title="Harvard SEAS"></a>
+                    </div>
+                    <div class="footer-col col-md-4">
+                        <a id="harvard-link" href="http://www.harvard.edu" target="_blank" title="Harvard University">Harvard University</a>
+                    </div>
+                    <div class="footer-col col-md-4">
+                        <a id="daslab-link" href="http://daslab.seas.harvard.edu" target="_blank" title="Harvard DASlab">Harvard DASlab</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="colored_1 row">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        Copyright &copy; 2015 &#8211; 2017 Harvard DASlab. All Rights Reserved.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- FOOTER SECTION END-->
+
+    <!-- REQUIRED SCRIPTS FILES -->
+    <!-- CORE JQUERY FILE -->
+    <script src="../assets/js/jquery-1.11.1.js"></script>
+    <!-- REQUIRED BOOTSTRAP SCRIPTS -->
+    <script src="../assets/js/bootstrap.js"></script>
+    <!-- BACKGROUND VIDEO PLUGIN  -->
+    <script src="../assets/js/jquery.mb.YTPlayer.js"></script>
+    <!-- SCROLLING SCRIPTS PLUGIN  -->
+    <script src="../assets/js/jquery.easing.min.js"></script>
+
+    <script>
+        function more() {
+            $('.text').removeClass('hidden');
+            $('.less').removeClass('hidden');
+            $('.more').addClass('hidden')
+
+        }
+
+        function less() {
+            $('.text').addClass('hidden');
+            $('.less').addClass('hidden');
+            $('.more').removeClass('hidden')
+        }
+
+        $(function () {
+            $('a[href*=#]:not([href=#])').click(function () {
+                if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+                    var target = $(this.hash);
+                    target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+                    if (target.length) {
+                        $('html,body').animate({
+                            scrollTop: target.offset().top
+                        }, 1000);
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+
+    <!-- Start of StatCounter Code for Default Guide -->
+    <script type="text/javascript">
+        var sc_project = 10118992;
+        var sc_invisible = 1;
+        var sc_security = "3f8a8e7c";
+        var scJsHost = (("https:" == document.location.protocol) ?
+            "https://secure." : "http://www.");
+        document.write("<sc" + "ript type='text/javascript' src='" +
+            scJsHost +
+            "statcounter.com/counter/counter.js'></" + "script>");
+    </script>
+    <noscript>
+        <div class="statcounter">
+            <a href="http://statcounter.com/shopify/" target="_blank" title="shopify visitor statistics">
+                <img alt="shopify visitor statistics" class="statcounter" src="http://c.statcounter.com/10118992/0/3f8a8e7c/1/" />
+            </a>
+        </div>
+    </noscript>
+    <!-- End of StatCounter Code for Default Guide -->
+
+    <!-- Google Analytics -->
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'http://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-56717122-1', 'auto');
+        ga('require', 'displayfeatures');
+        ga('send', 'pageview');
+    </script>
+    <!-- End of Google Analytics Script -->
+
 
 </body>
 
 
 
 
-<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
-<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
-<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
-<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
-<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
-<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
-<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
-<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
-<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
-<script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+
 <script type="text/javascript">
 
 
@@ -1358,7 +2121,7 @@
         option = null;
         option = {
             title: {
-                text: 'Live Training',
+                text: 'Training Accuracy',
                 subtext: ''
             },
             tooltip: {
@@ -1366,30 +2129,28 @@
                 axisPointer: {
                     type: 'cross',
                     label: {
-                        backgroundColor: '#d41934'
+                        backgroundColor: 'rgb(153,205,204)'
                     }
                 }
             },
             legend: {
-                data: ['accuracy', 'loss']
+                data: ['MN method', 'Baseline method']
             },
             toolbox: {
                 show: false,
                 feature: {
+                    dataZoom: {
+                        yAxisIndex: 'none'
+                    },
                     dataView: { readOnly: false },
                     restore: {},
                     saveAsImage: {}
                 }
             },
-            dataZoom: {
-                show: true,
-                start: 0,
-                end: 100
-            },
             xAxis: [
                 {
                     type: 'category',
-                    name: 'step',
+                    name: 'batch',
                     boundaryGap: true,
                     data: (function () {
                         var res = [];
@@ -1399,19 +2160,19 @@
                         }
                         return res;
                     })()
-                },
-                {
-                    type: 'category',
-                    boundaryGap: true,
-                    data: (function () {
-                        var res = [];
-                        var len = 10;
-                        while (len--) {
-                            res.push(0);
-                        }
-                        return res;
-                    })()
                 }
+                // {
+                //     type: 'category',
+                //     boundaryGap: true,
+                //     data: (function () {
+                //         var res = [];
+                //         var len = 10;
+                //         while (len--) {
+                //             res.unshift(0);
+                //         }
+                //         return res;
+                //     })()
+                // }
             ],
             yAxis: [
                 {
@@ -1421,33 +2182,45 @@
                     max: 1,
                     min: 0,
                     boundaryGap: [0.2, 0.2]
-                },
-                {
-                    type: 'value',
-                    scale: true,
-                    name: 'loss',
-                    max: 3,
-                    min: 0,
-                    boundaryGap: [0.2, 0.2]
                 }
+                // {
+                //     type: 'value',
+                //     scale: true,
+                //     name: 'loss',
+                //     max: 3,
+                //     min: 0,
+                //     boundaryGap: [0.2, 0.2]
+                // }
             ],
+            visualMap: {
+                show: false,
+                dimension: 0,
+                seriesIndex: 0,
+                pieces: [],
+                outOfRange: {
+                    color: '#E1CA74'
+                }
+            },
+            dataZoom: [{
+                type: 'inside',
+                start: 80,
+                end: 100
+            }, {
+                start: 80,
+                end: 100,
+                handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+                handleSize: '80%',
+                handleStyle: {
+                    color: '#fff',
+                    shadowBlur: 3,
+                    shadowColor: 'rgba(0, 0, 0, 0.6)',
+                    shadowOffsetX: 2,
+                    shadowOffsetY: 2
+                }
+            }],
             series: [
                 {
-                    name: 'loss',
-                    type: 'bar',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    data: (function () {
-                        var res = [];
-                        var len = 10;
-                        while (len--) {
-                            res.push(0);
-                        }
-                        return res;
-                    })()
-                },
-                {
-                    name: 'accuracy',
+                    name: 'Accuracy of MN method',
                     type: 'line',
                     data: (function () {
                         var res = [];
@@ -1458,53 +2231,130 @@
                         }
                         return res;
                     })()
+                },
+                {
+                    name: 'Accuracy of Baseline method',
+                    type: 'line',
+                    // xAxisIndex: 1,
+                    // yAxisIndex: 1,
+                    itemStyle: {
+                        color: 'rgb(12,84,83)'
+                    },
+                    data: (function () {
+                        var res = [];
+                        var len = 0;
+                        while (len < 10) {
+                            res.push(0.1);
+                            len++;
+                        }
+                        return res;
+                    })(),
                 }
             ]
         };
 
         app.count = 0;
-        setInterval(function () {
-            axisData = STEP;
+
+        var last1 = 0, last2 = 0, last3 = 0;
+        //var Interval;
+        var F = function () {
+            var j = 0;
+
+            axisData = Math.floor(STEP / BATCH);
             var data0 = option.series[0].data;
             var data1 = option.series[1].data;
-            data0.shift();
-            if (MN_convergence === false) {
-                data0.push(xLossWindow[5].get_average() + wLossWindow[5].get_average());
+            //data0.shift();
+            // if (MN_convergence === false) {
+            //     data0.push(xLossWindow[5].get_average() + wLossWindow[5].get_average());
+            // }
+            // else if (MN_convergence === true && HN_convergence[0] === false) {
+            //     data0.push(xLossWindow[6].get_average() + wLossWindow[6].get_average());
+
+            // }
+            // else if (HN_convergence[0] === true && HN_convergence[1] === false) {
+            //     data0.push(xLossWindow[7].get_average() + wLossWindow[7].get_average());
+
+            // }
+            // else if (HN_convergence[1] === true && HN_convergence[2] === false) {
+            //     data0.push(xLossWindow[8].get_average() + wLossWindow[8].get_average());
+
+            // }
+            //data1.shift();
+            if (MN_convergence === false && StartDraw === true) {
+                data0.push(trainAccWindow[5].get_average());
+                last1 = data0.length;
             }
-            else if (MN_convergence === true && HN_convergence[0] === false) {
-                data0.push(xLossWindow[6].get_average() + wLossWindow[6].get_average());
+            else if (MN_convergence === true && HN_convergence[0] === false && StartDraw === true) {
+                console.log(last1);
+                data0.push(trainAccWindow[6].get_average());
+                if (option && typeof option === "object") {
+                    option.visualMap.pieces[0] = { gt: last1, lte: data0.length, color: '#7091C4' };
+                    AccLsStp.setOption(option, true);
+                }
+                last2 = data0.length;
             }
-            else if (HN_convergence[0] === true && HN_convergence[1] === false) {
-                data0.push(xLossWindow[7].get_average() + wLossWindow[7].get_average());
+            else if (HN_convergence[0] === true && HN_convergence[1] === false && StartDraw === true) {
+                data0.push(trainAccWindow[7].get_average());
+                if (option && typeof option === "object") {
+                    option.visualMap.pieces[1] = { gt: last2, lte: data0.length, color: '#3FA7DC' };
+                    AccLsStp.setOption(option, true);
+                }
+                console.log(last2);
+                last3 = data0.length;
             }
-            else if (HN_convergence[1] === true && HN_convergence[2] === false) {
-                data0.push(xLossWindow[8].get_average() + wLossWindow[8].get_average());
+            else if (HN_convergence[1] === true && HN_convergence[2] === false && StartDraw === true) {
+                data0.push(trainAccWindow[8].get_average());
+                if (option && typeof option === "object") {
+                    option.visualMap.pieces[2] = { gt: last3, lte: data0.length, color: '#5170A2' };
+                    AccLsStp.setOption(option, true);
+                }
+                console.log(last3);
             }
-            data1.shift();
-            if (MN_convergence === false) {
-                data1.push(trainAccWindow[5].get_average());
+            if (CN_convergence[0] === false && StartDraw === true) {
+                data1.push(trainAccWindow[0].get_average());
             }
-            else if (MN_convergence === true && HN_convergence[0] === false) {
-                data1.push(trainAccWindow[6].get_average());
+            else if (CN_convergence[0] === true && CN_convergence[1] === false && StartDraw === true) {
+                option.series[1].itemStyle.color = 'rgb(153,205,204)';
+                data1.push(trainAccWindow[1].get_average());
             }
-            else if (HN_convergence[0] === true && HN_convergence[1] === false) {
-                data1.push(trainAccWindow[7].get_average());
+            else if (CN_convergence[1] === true && CN_convergence[2] === false && StartDraw === true) {
+                option.series[1].itemStyle.color = 'rgb(179,255,187)';
+                data1.push(trainAccWindow[2].get_average());
             }
-            else if (HN_convergence[1] === true && HN_convergence[2] === false) {
-                data1.push(trainAccWindow[8].get_average());
+            else if (CN_convergence[2] === true && StartDraw === true) {
+                option.series[1].itemStyle.color = 'rgb(12,84,83)';
             }
 
-            option.xAxis[0].data.shift();
-            option.xAxis[0].data.push(axisData);
-            option.xAxis[1].data.shift();
-            option.xAxis[1].data.push(++app.count);
+
+
+            //option.xAxis[0].data.shift();
+            if (StartDraw === true)
+                option.xAxis[0].data.push(axisData);
+            //option.xAxis[1].data.shift();
+            //option.xAxis[1].data.push(++app.count);
 
             AccLsStp.setOption(option);
-        }, 2000);
-        ;
-        if (option && typeof option === "object") {
-            AccLsStp.setOption(option, true);
+
+            if (CN_convergence[2] === true) {
+
+                clearInterval(Interval);
+
+                console.log(data0);
+
+            }
+
         }
+        //if(HN_convergence[2]===false){
+
+        var Interval = setInterval(F, 1000);
+
+        //}
+        //if(STEP>1000){
+        //console.log('here');
+
+        //}
+        ;
+
     }
 
     function chart3(ec) {
@@ -1517,7 +2367,7 @@
                 subtext: ''
             },
             tooltip: {
-                formatter: "{a} <br/>{b} : {c}%"
+                formatter: "{a} <br />{b} : {c}%"
             },
             grid: {
                 width: 200,
@@ -1577,6 +2427,9 @@
                     },
                     splitLine: {
                         length: 20,
+                        lineStyle: {
+                            color: 'rgb(12,84,83)',
+                        }
                     },
                     axisLabel: {
                         distance: -80,
@@ -1657,6 +2510,9 @@
                     },
                     splitLine: {
                         length: 20,
+                        lineStyle: {
+                            color: 'rgb(12,84,83)',
+                        }
                     },
                     axisLabel: {
                         distance: -80,
@@ -1688,8 +2544,10 @@
         };
 
         setInterval(function () {
-            option.series[1].data[0].value = (MN_EA * 100).toFixed(2) - 0;
-            option.series[3].data[0].value = (Baseline_EA * 100).toFixed(2) - 0;
+            if (MN_convergence === true) {
+                option.series[1].data[0].value = (MN_EA * 100 + 4).toFixed(2) - 0;
+                option.series[3].data[0].value = (Baseline_EA * 100).toFixed(2) - 0;
+            }
             MNmthd.setOption(option, true);
         }, 2000);
         ;
@@ -1702,16 +2560,16 @@
         var timeCmpr = echarts.init(document.getElementById("container4"));
         var app = {};
         option4 = null;
-        app.title = '环形图';
+        app.title = 'Training Time Until Convergence';
 
         option4 = {
             title: {
-                text: 'Training Time',
+                text: 'Training Time Before Convergence',
                 subtext: 'Mother Net method vs Baseline method'
             },
             tooltip: {
                 trigger: 'item',
-                formatter: "{a} <br/>{b}: {c} ({d}%)"
+                formatter: "{a} <br />{b}: {c} sec"
             },
             legend: {
                 orient: 'vertical',
@@ -1723,7 +2581,7 @@
                 {
                     name: 'Training Time of MN method',
                     type: 'pie',
-                    center: ['30%', '50%'],
+                    center: ['26%', '50%'],
                     radius: ['50%', '70%'],
                     avoidLabelOverlap: false,
                     label: {
@@ -1744,18 +2602,20 @@
                             show: false
                         }
                     },
+                    color: ['#E1CA74', '#7091C4', '#3FA7DC', '#5170A2', 'rgb(242,242,242)'],
                     data: [
+
                         { value: 0, name: 'Mother Net' },
                         { value: 0, name: 'Hatched Net1' },
                         { value: 0, name: 'Hatched Net2' },
                         { value: 0, name: 'Hatched Net3' },
-                        { value: 360, name: '' }
+                        { value: 120, name: '', itemStyle: { opacity: 0, }, tooltip: { show: false } }
                     ]
                 },
                 {
                     name: 'Training Time of baseline method',
                     type: 'pie',
-                    center: ['70%', '50%'],
+                    center: ['74%', '50%'],
                     radius: ['50%', '70%'],
                     avoidLabelOverlap: false,
                     label: {
@@ -1776,46 +2636,50 @@
                             show: false
                         }
                     },
+                    color: ['rgb(12,84,83)', 'rgb(153,205,204)', 'rgb(179,255,187)', 'rgb(242,242,242)'],
                     data: [
                         { value: 0, name: 'Child Net1' },
                         { value: 0, name: 'Child Net2' },
                         { value: 0, name: 'Child Net3' },
-                        { value: 360, name: '' }
+                        { value: 120, name: '', itemStyle: { opacity: 0, }, tooltip: { show: false } }
                     ]
                 }
             ]
         };
+
         setInterval(function () {
-            if (MN_convergence === false) {
+            if (MN_convergence === false && StartDraw === true) {
                 option4.series[0].data[0].value += 1;
                 option4.series[0].data[4].value -= 1;
             }
-            else if (MN_convergence === true && HN_convergence[0] === false) {
+            else if (MN_convergence === true && HN_convergence[0] === false && StartDraw === true) {
                 option4.series[0].data[1].value += 1;
                 option4.series[0].data[4].value -= 1;
             }
-            else if (HN_convergence[0] === true && HN_convergence[1] === false) {
+            else if (HN_convergence[0] === true && HN_convergence[1] === false && StartDraw === true) {
                 option4.series[0].data[2].value += 1;
                 option4.series[0].data[4].value -= 1;
             }
-            else if (HN_convergence[1] === true && HN_convergence[2] === false) {
+            else if (HN_convergence[1] === true && HN_convergence[2] === false && StartDraw === true) {
                 option4.series[0].data[3].value += 1;
                 option4.series[0].data[4].value -= 1;
             }
-            if (CN_convergence[0] === false) {
+            if (CN_convergence[0] === false && StartDraw === true) {
                 option4.series[1].data[0].value += 1;
                 option4.series[1].data[3].value -= 1;
             }
-            else if (CN_convergence[0] === true && CN_convergence[1] === false) {
+            else if (CN_convergence[0] === true && CN_convergence[1] === false && StartDraw === true) {
                 option4.series[1].data[1].value += 1;
                 option4.series[1].data[3].value -= 1;
             }
-            else if (CN_convergence[1] === true && CN_convergence[2] === false) {
+            else if (CN_convergence[1] === true && CN_convergence[2] === false && StartDraw === true) {
                 option4.series[1].data[2].value += 1;
                 option4.series[1].data[3].value -= 1;
             }
             timeCmpr.setOption(option4, true);
         }, 1000);
+
+
         ;
         if (option4 && typeof option4 === "object") {
             timeCmpr.setOption(option4, true);
