@@ -216,7 +216,7 @@
         for (var i = 0; i < 5; i++) {
             HN_Min[i] = 99999;
         }
-        var BATCH = 50;
+        var BATCH = 128;
         var StartDraw = false;
 
 
@@ -2263,23 +2263,6 @@
             axisData = Math.floor(STEP / BATCH);
             var data0 = option.series[0].data;
             var data1 = option.series[1].data;
-            //data0.shift();
-            // if (MN_convergence === false) {
-            //     data0.push(xLossWindow[5].get_average() + wLossWindow[5].get_average());
-            // }
-            // else if (MN_convergence === true && HN_convergence[0] === false) {
-            //     data0.push(xLossWindow[6].get_average() + wLossWindow[6].get_average());
-
-            // }
-            // else if (HN_convergence[0] === true && HN_convergence[1] === false) {
-            //     data0.push(xLossWindow[7].get_average() + wLossWindow[7].get_average());
-
-            // }
-            // else if (HN_convergence[1] === true && HN_convergence[2] === false) {
-            //     data0.push(xLossWindow[8].get_average() + wLossWindow[8].get_average());
-
-            // }
-            //data1.shift();
             if (MN_convergence === false && StartDraw === true) {
                 data0.push(trainAccWindow[5].get_average());
                 last1 = data0.length;
@@ -2323,6 +2306,8 @@
             }
             else if (CN_convergence[2] === true && StartDraw === true) {
                 option.series[1].itemStyle.color = 'rgb(12,84,83)';
+                option.dataZoom[0].start=1;
+                option.dataZoom[1].start=1;
             }
 
 
@@ -2544,7 +2529,7 @@
         };
 
         setInterval(function () {
-            if (MN_convergence === true) {
+            if (HN_convergence[2] === true) {
                 option.series[1].data[0].value = (MN_EA * 100 + 4).toFixed(2) - 0;
                 option.series[3].data[0].value = (Baseline_EA * 100).toFixed(2) - 0;
             }
@@ -2609,7 +2594,7 @@
                         { value: 0, name: 'Hatched Net1' },
                         { value: 0, name: 'Hatched Net2' },
                         { value: 0, name: 'Hatched Net3' },
-                        { value: 120, name: '', itemStyle: { opacity: 0, }, tooltip: { show: false } }
+                        { value: 180, name: '', itemStyle: { opacity: 0, }, tooltip: { show: false } }
                     ]
                 },
                 {
@@ -2641,7 +2626,7 @@
                         { value: 0, name: 'Child Net1' },
                         { value: 0, name: 'Child Net2' },
                         { value: 0, name: 'Child Net3' },
-                        { value: 120, name: '', itemStyle: { opacity: 0, }, tooltip: { show: false } }
+                        { value: 180, name: '', itemStyle: { opacity: 0, }, tooltip: { show: false } }
                     ]
                 }
             ]
