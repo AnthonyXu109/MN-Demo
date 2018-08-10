@@ -39,19 +39,19 @@
 
         #netDef1 {
             position: absolute;
-            left: 21.5%;
+            left: 23.5%;
 
         }
 
         #netDef2 {
             position: absolute;
-            left: 42%;
+            left: 44.5%;
 
         }
 
         #netDef3 {
             position: absolute;
-            left: 62%;
+            left: 64.5%;
 
         }
 
@@ -479,24 +479,24 @@
             trainer[5] = new convnetjs.Trainer(motherNet, { method: 'adadelta', batch_size: BATCH, l2_decay: 0.001 });
 
             //for now, we show the motherNet by simply print each layer
-            var m2t = document.getElementById("MotherNet_vis");
-            m2t.innerHTML = '';
-            for (var i = 0; mother_defs[i]; i++) {
-                if (i == 0) {
-                    var mt = 'Input layer:' + 'out_sx:' + mother_defs[0].out_sx + ' out_sy:' + mother_defs[0].out_sy + ' out_depth:' + mother_defs[0].out_depth;
-                    m2t.appendChild(document.createTextNode(mt));
-                    m2t.appendChild(document.createElement('br'));
-                }
-                else if (mother_defs[i].type === 'fc') {
-                    var mt = 'Fully connected layer:' + ' num_neurons:' + mother_defs[i].num_neurons + ' activation:' + mother_defs[i].activation;
-                    m2t.appendChild(document.createTextNode(mt));
-                    m2t.appendChild(document.createElement('br'));
-                }
-                else if (i == mother_defs.length - 1) {
-                    var mt = 'Softmax layer: number of classes: 10';//since we are using MNIST
-                    m2t.appendChild(document.createTextNode(mt));
-                }
-            }
+            // var m2t = document.getElementById("MotherNet_vis");
+            // m2t.innerHTML = '';
+            // for (var i = 0; mother_defs[i]; i++) {
+            //     if (i == 0) {
+            //         var mt = 'Input layer:' + 'out_sx:' + mother_defs[0].out_sx + ' out_sy:' + mother_defs[0].out_sy + ' out_depth:' + mother_defs[0].out_depth;
+            //         m2t.appendChild(document.createTextNode(mt));
+            //         m2t.appendChild(document.createElement('br'));
+            //     }
+            //     else if (mother_defs[i].type === 'fc') {
+            //         var mt = 'Fully connected layer:' + ' num_neurons:' + mother_defs[i].num_neurons + ' activation:' + mother_defs[i].activation;
+            //         m2t.appendChild(document.createTextNode(mt));
+            //         m2t.appendChild(document.createElement('br'));
+            //     }
+            //     else if (i == mother_defs.length - 1) {
+            //         var mt = 'Softmax layer: number of classes: 10';//since we are using MNIST
+            //         m2t.appendChild(document.createTextNode(mt));
+            //     }
+            // }
 
 
             for (var k = 0; k < loaded.length; k++) { loaded[k] = false; }
@@ -1295,25 +1295,25 @@
             motherNet.makeLayers(mother_defs);//implement it
 
             //for now, we show the motherNet by simply print each layer
-            var m2t = document.getElementById("MotherNet_vis");
-            m2t.innerHTML = '';
-            for (var i = 0; mother_defs[i]; i++) {
-                if (i == 0) {
-                    var mt = 'Input layer:' + 'out_sx:' + mother_defs[0].out_sx + ' out_sy:' + mother_defs[0].out_sy + ' out_depth:' + mother_defs[0].out_depth;
-                    m2t.appendChild(document.createTextNode(mt));
-                    m2t.appendChild(document.createElement('br'));
-                }
-                else if (mother_defs[i].type === 'fc') {
-                    console.log(i);
-                    var mt = 'Fully connected layer:' + ' num_neurons:' + mother_defs[i].num_neurons + ' activation:' + mother_defs[i].activation;
-                    m2t.appendChild(document.createTextNode(mt));
-                    m2t.appendChild(document.createElement('br'));
-                }
-                else if (i == mother_defs.length - 1) {
-                    var mt = 'Softmax layer: number of classes: 10';//since we are using MNIST
-                    m2t.appendChild(document.createTextNode(mt));
-                }
-            }
+            // var m2t = document.getElementById("MotherNet_vis");
+            // m2t.innerHTML = '';
+            // for (var i = 0; mother_defs[i]; i++) {
+            //     if (i == 0) {
+            //         var mt = 'Input layer:' + 'out_sx:' + mother_defs[0].out_sx + ' out_sy:' + mother_defs[0].out_sy + ' out_depth:' + mother_defs[0].out_depth;
+            //         m2t.appendChild(document.createTextNode(mt));
+            //         m2t.appendChild(document.createElement('br'));
+            //     }
+            //     else if (mother_defs[i].type === 'fc') {
+            //         console.log(i);
+            //         var mt = 'Fully connected layer:' + ' num_neurons:' + mother_defs[i].num_neurons + ' activation:' + mother_defs[i].activation;
+            //         m2t.appendChild(document.createTextNode(mt));
+            //         m2t.appendChild(document.createElement('br'));
+            //     }
+            //     else if (i == mother_defs.length - 1) {
+            //         var mt = 'Softmax layer: number of classes: 10';//since we are using MNIST
+            //         m2t.appendChild(document.createTextNode(mt));
+            //     }
+            // }
             //console.log(m2t.innerHTML);
 
         }
@@ -1326,7 +1326,7 @@
 
         function newLayer(networkIndex) {
             var lyPos = document.getElementById("netDef" + networkIndex);
-            var newLayerHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span>num of neurons in layer' + layerLog[networkIndex - 1]++ + '&lt;/span>&lt;/span> &lt;input id=' + layerIndex[netIndex - 1]++ + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;num of neurons in layer1&quot; style=&quot;text-align:right; width:70px&quot; onchange=&quot;re_run(event, &apos;input3&apos;)&quot; onwheel=&quot;re_run(event, &apos;input3&apos;)&quot; onkeyup=&quot;re_run(event, &apos;input3&apos;)&quot;/> &lt;div/>';
+            var newLayerHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span>layer' + layerLog[networkIndex - 1]++ + '&lt;/span>&lt;/span> &lt;input id=' + layerIndex[netIndex - 1]++ + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px&quot; onchange=&quot;re_run(event, &apos;input3&apos;)&quot; onwheel=&quot;re_run(event, &apos;input3&apos;)&quot; onkeyup=&quot;re_run(event, &apos;input3&apos;)&quot;/> &lt;div/>';
             lyPos.insertAdjacentHTML('afterbegin', htmlDecode(newLayerHtml));
         }
 
@@ -1334,7 +1334,7 @@
         function newNetwork() {
             netIndex++;
             var ntPos = document.getElementById("netDef" + netIndex);
-            var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span>num of neurons in layer1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;num of neurons in layer1&quot; style=&quot;text-align:right; width:70px&quot; onchange=&quot;re_run(event, &apos;input3&apos;)&quot; onwheel=&quot;re_run(event, &apos;input3&apos;)&quot; onkeyup=&quot;re_run(event, &apos;input3&apos;)&quot;/> &lt;/div> &lt;input type=button onclick="newLayer(' + netIndex + ')" value=&apos;Add Layer&apos;> &lt;h3 style=&quot;color:rgb(12,84,83)&quot;>childNet' + netIndex + '&lt;/h3>';
+            var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span>layer1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px&quot; onchange=&quot;re_run(event, &apos;input3&apos;)&quot; onwheel=&quot;re_run(event, &apos;input3&apos;)&quot; onkeyup=&quot;re_run(event, &apos;input3&apos;)&quot;/> &lt;/div> &lt;input type=button onclick="newLayer(' + netIndex + ')" value=&apos;Add Layer&apos;> &lt;h3 style=&quot;color:rgb(12,84,83)&quot;>childNet' + netIndex + '&lt;/h3>';
             console.log(htmlDecode(newNetworkHtml));
             ntPos.insertAdjacentHTML('afterbegin', htmlDecode(newNetworkHtml));
         }
@@ -1525,7 +1525,7 @@
             <div class="row text-center large_font">
                 <h1>Specify Ensemble Networks</h1>
                 <div id="addNet">
-                    <input type=button onclick="Main();DrawCharts(ec);" value='Let&apos;s Go!' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;">
+                    <input type=button onclick="Main();" value='Let&apos;s Go!' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;">
                 </div>
                 <br/>
                 <!-- <div class="col-md-8 col-sm-4 col-xs-12"> -->
@@ -1539,41 +1539,41 @@
                 <div id="netDef1">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer5</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer5</span>
                         </span>
-                        <input id="15" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="15" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer4</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer4</span>
                         </span>
-                        <input id="14" type="number" value=70 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="14" type="number" value=70 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer3</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer3</span>
                         </span>
-                        <input id="13" type="number" value=70 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="13" type="number" value=70 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer2</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer2</span>
                         </span>
-                        <input id="12" type="number" value=50 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="12" type="number" value=50 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer1</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer1</span>
                         </span>
-                        <input id="11" type="number" value=50 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="11" type="number" value=50 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1586,40 +1586,40 @@
                 <div id="netDef2">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer5</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer5</span>
                         </span>
-                        <input id="25" type="number" value=70 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="25" type="number" value=70 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange="changeValue(this.id)" onwheel="changeValue(this.id)" onkeyup=" changeValue(this.id)" />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer4</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer4</span>
                         </span>
-                        <input id="24" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="24" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer3</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer3</span>
                         </span>
-                        <input id="23" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="23" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer2</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer2</span>
                         </span>
-                        <input id="22" type="number" value=50 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="22" type="number" value=50 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer1</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer1</span>
                         </span>
-                        <input id="21" type="number" value=50 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="21" type="number" value=50 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1630,41 +1630,41 @@
                 <div id="netDef3">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer5</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer5</span>
                         </span>
-                        <input id="35" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="35" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer4</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer4</span>
                         </span>
-                        <input id="34" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="34" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer3</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer3</span>
                         </span>
-                        <input id="33" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="33" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer2</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer2</span>
                         </span>
-                        <input id="32" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="32" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom">num of neurons in layer1</span>
+                            <span data-tooltip="" data-tooltip-position="bottom">layer1</span>
                         </span>
-                        <input id="31" type="number" value=60 class="form-control" aria-label="num of neurons in layer1" placeholder="" style="text-align:right; width:70px"
+                        <input id="31" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1694,7 +1694,8 @@
             <div class="row text-center large_font">
                 <hr class="style18">
                 <h1>Generated MotherNet</h1>
-                <div id="MotherNet_vis" class="row text-center" style="font-size: 140%;"></div>
+                <!-- <div id="MotherNet_vis" class="row text-center" style="font-size: 140%;"></div> -->
+                <div id="container5" style="height: 500px; width:800px; margin:0 auto;"></div>
                 <br/>
             </div>
             <hr class="style18">
@@ -1994,6 +1995,7 @@
     });
 
     require(['echarts'], DrawCharts);
+    //require("echarts/lib/component/legend");
 
     function chart1(ec) {
         var TimeCompare = echarts.init(document.getElementById("container2"));
@@ -2134,7 +2136,8 @@
                 }
             },
             legend: {
-                data: ['MN method', 'Baseline method']
+                orient: 'vertical',
+                data: ['Accuracy of MN method', 'Accuracy of Baseline method']
             },
             toolbox: {
                 show: false,
@@ -2264,6 +2267,8 @@
             var data0 = option.series[0].data;
             var data1 = option.series[1].data;
             if (MN_convergence === false && StartDraw === true) {
+                option.series[0].name = 'Accuracy of Mother Network';
+                option.legend.data[0] = 'Accuracy of Mother Network';
                 data0.push(trainAccWindow[5].get_average());
                 last1 = data0.length;
             }
@@ -2271,6 +2276,8 @@
                 console.log(last1);
                 data0.push(trainAccWindow[6].get_average());
                 if (option && typeof option === "object") {
+                    option.series[0].name = 'Accuracy of Hatched Network 1';
+                    option.legend.data[0] = 'Accuracy of Hatched Network 1';
                     option.visualMap.pieces[0] = { gt: last1, lte: data0.length, color: '#7091C4' };
                     AccLsStp.setOption(option, true);
                 }
@@ -2279,6 +2286,8 @@
             else if (HN_convergence[0] === true && HN_convergence[1] === false && StartDraw === true) {
                 data0.push(trainAccWindow[7].get_average());
                 if (option && typeof option === "object") {
+                    option.series[0].name = 'Accuracy of Hatched Network 2';
+                    option.legend.data[0] = 'Accuracy of Hatched Network 2';
                     option.visualMap.pieces[1] = { gt: last2, lte: data0.length, color: '#3FA7DC' };
                     AccLsStp.setOption(option, true);
                 }
@@ -2288,26 +2297,38 @@
             else if (HN_convergence[1] === true && HN_convergence[2] === false && StartDraw === true) {
                 data0.push(trainAccWindow[8].get_average());
                 if (option && typeof option === "object") {
+                    option.series[0].name = 'Accuracy of Hatched Network 3';
+                    option.legend.data[0] = 'Accuracy of Hatched Network 3';
                     option.visualMap.pieces[2] = { gt: last3, lte: data0.length, color: '#5170A2' };
                     AccLsStp.setOption(option, true);
                 }
                 console.log(last3);
             }
             if (CN_convergence[0] === false && StartDraw === true) {
+                option.series[1].name = 'Accuracy of Child Network 1';
+                option.legend.data[1] = 'Accuracy of Child Network 1';
                 data1.push(trainAccWindow[0].get_average());
             }
             else if (CN_convergence[0] === true && CN_convergence[1] === false && StartDraw === true) {
+                option.series[1].name = 'Accuracy of Child Network 2';
+                option.legend.data[1] = 'Accuracy of Child Network 2';
                 option.series[1].itemStyle.color = 'rgb(153,205,204)';
                 data1.push(trainAccWindow[1].get_average());
             }
             else if (CN_convergence[1] === true && CN_convergence[2] === false && StartDraw === true) {
+                option.series[1].name = 'Accuracy of Child Network 3';
+                option.legend.data[1] = 'Accuracy of Child Network 3';
                 option.series[1].itemStyle.color = 'rgb(179,255,187)';
                 data1.push(trainAccWindow[2].get_average());
             }
             else if (CN_convergence[2] === true && StartDraw === true) {
+                option.series[0].name = 'Accuracy of MN method';
+                option.series[1].name = 'Accuracy of Baseline method';
+                option.legend.data[0] = 'Accuracy of MN method';
+                option.legend.data[1] = 'Accuracy of Baseline method';
                 option.series[1].itemStyle.color = 'rgb(12,84,83)';
-                option.dataZoom[0].start=1;
-                option.dataZoom[1].start=1;
+                option.dataZoom[0].start = 1;
+                option.dataZoom[1].start = 1;
             }
 
 
@@ -2567,7 +2588,7 @@
                     name: 'Training Time of MN method',
                     type: 'pie',
                     center: ['26%', '50%'],
-                    radius: ['50%', '70%'],
+                    radius: ['55%', '70%'],
                     avoidLabelOverlap: false,
                     label: {
                         normal: {
@@ -2594,14 +2615,14 @@
                         { value: 0, name: 'Hatched Net1' },
                         { value: 0, name: 'Hatched Net2' },
                         { value: 0, name: 'Hatched Net3' },
-                        { value: 180, name: '', itemStyle: { opacity: 0, }, tooltip: { show: false } }
+                        { value: 200, name: '', itemStyle: { opacity: 0, }, tooltip: { show: false } }
                     ]
                 },
                 {
                     name: 'Training Time of baseline method',
                     type: 'pie',
                     center: ['74%', '50%'],
-                    radius: ['50%', '70%'],
+                    radius: ['55%', '70%'],
                     avoidLabelOverlap: false,
                     label: {
                         normal: {
@@ -2626,7 +2647,7 @@
                         { value: 0, name: 'Child Net1' },
                         { value: 0, name: 'Child Net2' },
                         { value: 0, name: 'Child Net3' },
-                        { value: 180, name: '', itemStyle: { opacity: 0, }, tooltip: { show: false } }
+                        { value: 200, name: '', itemStyle: { opacity: 0, }, tooltip: { show: false } }
                     ]
                 }
             ]
@@ -2671,12 +2692,133 @@
         }
     }
 
+    function chart5(ec) {
+        var GMN = echarts.init(document.getElementById("container5"));
+        var app = {};
+        option5 = null;
+        app.title = '';
+
+        var hours = ['layer1', 'layer2', 'layer3', 'layer4', 'layer5', 'layer6',
+            'layer7'];
+        var days = ['MotherNet', 'ChildNet1', 'ChildNet2',
+            'ChildNet3', 'ChildNet4', 'ChildNet5'];
+
+
+        var Data = [[0, 0, 0], [0, 1, 0], [0, 2, 0], [0, 3, 0], [0, 4, 0], [0, 5, 0], [0, 6, 0],
+        [1, 0, 0], [1, 1, 0], [1, 2, 0], [1, 3, 0], [1, 4, 0], [1, 5, 0], [1, 6, 0],
+        [2, 0, 0], [2, 1, 0], [2, 2, 0], [2, 3, 0], [2, 4, 0], [2, 5, 0], [2, 6, 0],
+        [3, 0, 0], [3, 1, 0], [3, 2, 0], [3, 3, 0], [3, 4, 0], [3, 5, 0], [3, 6, 0],
+        [4, 0, 0], [4, 1, 0], [4, 2, 0], [4, 3, 0], [4, 4, 0], [4, 5, 0], [4, 6, 0],
+        [5, 0, 0], [5, 1, 0], [5, 2, 0], [5, 3, 0], [5, 4, 0], [5, 5, 0], [5, 6, 0]];
+
+        Data = Data.map(function (item) {
+            return [item[1], item[0], item[2] || '-'];
+        });
+
+
+        option5 = {
+            tooltip: {
+                position: 'top'
+            },
+            animation: false,
+            grid: {
+                height: '50%',
+                y: '10%'
+            },
+            xAxis: {
+                type: 'category',
+                data: hours,
+                splitArea: {
+                    show: true
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: days,
+                splitArea: {
+                    show: true
+                }
+            },
+            visualMap: {
+                min: 30,
+                max: 100,
+                calculable: true,
+                orient: 'horizontal',
+                left: 'center',
+                bottom: '20%',
+                inRange: { color: ['rgb(179,255,187)', 'rgb(12,84,83)'] }
+            },
+            series: [{
+                name: 'Punch Card',
+                type: 'heatmap',
+                data: Data,
+                label: {
+                    normal: {
+                        show: true
+                    }
+                },
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }]
+        };
+        setInterval(function () {
+            if (StartDraw === true) {
+                for(var i=0;i<42;i++){
+                    if(i<7){
+                        if(i<5){
+                            Data[i][2]=mother_defs[i+1].num_neurons;
+                        }
+                    }
+                    else if(i>=7&&i<14){
+                        if(i<12){
+                            Data[i][2]=layer_defs[0][i-6].num_neurons;
+                        }
+                    }
+                    else if(i>=14&&i<21){
+                        if(i<19){
+                            Data[i][2]=layer_defs[1][i-13].num_neurons;
+                        }
+                    }
+                    else if(i>=21&&i<28){
+                        if(i<26){
+                            Data[i][2]=layer_defs[2][i-20].num_neurons;
+                        }
+                    }
+                    // else if(i>=28&&i<35){
+                    //     Data[i][2]=STEP;
+                    // }
+                    // else if(i>=35&&i<42){
+                    //     Data[i][2]=STEP;
+                    // }
+                }
+                
+                
+                Data = Data.map(function (item) {
+                    return [item[1], item[0], item[2] || '-'];
+                });
+                
+                option.series.data = Data;
+                GMN.setOption(option5, true);
+            }
+            
+            
+        }, 1000);
+        if (option5 && typeof option5 === "object") {
+            GMN.setOption(option5, true);
+        }
+    }
+
 
     function DrawCharts(ec) {
         //chart1(ec);
         chart2(ec);
         chart3(ec);
         chart4(ec);
+        chart5(ec);
     }
 </script>
 
