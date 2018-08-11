@@ -1,4 +1,4 @@
-# Queriosity-Demo
+# MotherNetwork-Demo
 A showcase of MotherNetwork
 
 This demo is built based on ConvNetJS library. To see the effect, run demo/demo_FC_InBrs.html in Firefox.
