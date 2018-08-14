@@ -40,17 +40,17 @@ body {
 }
 
 section {
-    padding-top: 80px;
-    padding-bottom: 120px;
+    padding-top: 1px;
+    padding-bottom: 1px;
 }
 
 .head-set {
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 1px;
+    padding-bottom: 1px;
 }
 
 .pad-bottom {
-    padding-bottom: 60px;
+    padding-bottom: 1px;
 }
 /*================================
     NAVBAR STYLES
@@ -87,7 +87,7 @@ section {
 #home {
     background: url(../img/queriosity_background.png) no-repeat center center; /*Full Witdth background image*/
     background-attachment: fixed;
-    padding: 10;
+    padding: 1;
     -webkit-background-size: cover;
     background-size: cover;
     -moz-background-size: cover;
@@ -106,14 +106,14 @@ section {
 }
     /*STYLE FOR OVERLAY CLASS - WHICH IS ABOVE IMAGE WITH OPACITY/TRANSPARENCY 0.75*/
     #home .overlay {
-        padding-top: 90px;
+        padding-top: 1px;
         background-color: rgba(153, 204, 153,0.0); /*.75 opacity of the color so that background image is visible*/
         min-height: 900px;
         color: #fff;
     }
 
     #home h1 {
-        padding-top: 80px;
+        padding-top: 1px;
         font-weight: 900;
         font-size: 200px;
         font-family: 'Roboto';
@@ -123,8 +123,8 @@ section {
 
 /*CLASS TO FORMAT TEXT*/
 .p-cls {
-    padding-top: 30px;
-    padding-bottom: 40px;
+    padding-top: 1px;
+    padding-bottom: 1px;
 }
 
 /*======================================
@@ -151,13 +151,13 @@ section {
 
 
     .padded{
-        padding-top: 20px;
-        padding-bottom: 12px;
+        padding-top: 1px;
+        padding-bottom: 1px;
     }
 
     .padded_1{
-        padding-top: 40px;
-        padding-bottom: 40px;
+        padding-top: 1px;
+        padding-bottom: 1px;
     }
 
     .large_font{
@@ -207,8 +207,8 @@ section {
 ==================================*/
 #clients {
     background-color:#f4f4f4;
-    padding-bottom:50px;
-    padding-top:50px;
+    padding-bottom:1px;
+    padding-top:1px;
 }
     #clients img {
         opacity:0.5;
@@ -222,7 +222,7 @@ section {
 ==================================*/
 
 footer {
-    padding: 20px;
+    padding: 1px;
     font-size: 15px;
     text-align: center;
     font-weight: 900;
