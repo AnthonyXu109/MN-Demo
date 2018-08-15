@@ -154,7 +154,12 @@
             width: 163px;
         }
 
-        #Specify_Networks {
+        #Generate_MN {
+            position: absolute;
+            left: 42.3%;
+        }
+
+        #TrainStart {
             position: absolute;
             left: 44.9%;
         }
@@ -321,6 +326,7 @@
         }
         var BATCH = 128;
         var StartDraw = false;
+        var GenerateMN = false;
 
 
         //initialize MN
@@ -659,8 +665,11 @@
             //         m2t.appendChild(document.createTextNode(mt));
             //     }
             // }
+            GenerateMN=true;
+        }
 
 
+        function Train(){
             for (var k = 0; k < loaded.length; k++) { loaded[k] = false; }
 
             load_data_batch(0); // async load train set batch 0 (6 total train batches)
@@ -1633,10 +1642,10 @@
             </div>
             <br>
             <div id='Increase_Networks'>
-                <input type=button onclick="newNetwork()" value='Add network' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;">
+                <input type=button onclick="newNetwork()" value='Add network' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px; border:0">
             </div>
             <div id='Increase_Layers'>
-                <input type=button onclick="newLayer(1);newLayer(2);newLayer(3);newLayer(4);newLayer(5);" value='Add layer' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px; width:160px">
+                <input type=button onclick="newLayer(1);newLayer(2);newLayer(3);newLayer(4);newLayer(5);" value='Add layer' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;  border:0; width:160px">
             </div>
             <br>
             <br>
@@ -1666,7 +1675,7 @@
                         <span class="input-group-addon">
                             <span  style="font-size:20px">Layer 2</span>
                         </span>
-                        <input id="12" type="number" value=50 class="form-control" aria-label="layer1"  style="text-align:right; width:70px; font-size:20px"
+                        <input id="12" type="number" value=90 class="form-control" aria-label="layer1"  style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1674,7 +1683,7 @@
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px">Layer 3</span>
                         </span>
-                        <input id="13" type="number" value=70 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
+                        <input id="13" type="number" value=30 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1690,7 +1699,7 @@
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px">Layer 5</span>
                         </span>
-                        <input id="15" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
+                        <input id="15" type="number" value=80 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1703,7 +1712,7 @@
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px">Layer 1</span>
                         </span>
-                        <input id="21" type="number" value=50 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
+                        <input id="21" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1711,7 +1720,7 @@
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px">Layer 2</span>
                         </span>
-                        <input id="22" type="number" value=50 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
+                        <input id="22" type="number" value=80 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1719,7 +1728,7 @@
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px">Layer 3</span>
                         </span>
-                        <input id="23" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
+                        <input id="23" type="number" value=40 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1735,7 +1744,7 @@
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px">Layer 5</span>
                         </span>
-                        <input id="25" type="number" value=70 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
+                        <input id="25" type="number" value=80 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
                             onchange="changeValue(this.id)" onwheel="changeValue(this.id)" onkeyup=" changeValue(this.id)" />
                     </div>
 
@@ -1745,7 +1754,7 @@
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px">Layer 1</span>
                         </span>
-                        <input id="31" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
+                        <input id="31" type="number" value=70 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1753,7 +1762,7 @@
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px">Layer 2</span>
                         </span>
-                        <input id="32" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
+                        <input id="32" type="number" value=70 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1761,7 +1770,7 @@
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px">Layer 3</span>
                         </span>
-                        <input id="33" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
+                        <input id="33" type="number" value=50 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1769,7 +1778,7 @@
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px">Layer 4</span>
                         </span>
-                        <input id="34" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
+                        <input id="34" type="number" value=50 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1777,7 +1786,7 @@
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px">Layer 5</span>
                         </span>
-                        <input id="35" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
+                        <input id="35" type="number" value=80 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1800,10 +1809,9 @@
             <br/>
             <br/>
             <br/>
-            <div id='Specify_Networks'>
-                <input type=button onclick="Main();" value='Start training' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;">
+            <div id='Generate_MN'>
+                <input type=button onclick="Main()" value='Generate MotherNet' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;  border:0">
             </div>
-            <br/>
             <br/>
             <br/>
             <br/>
@@ -1820,6 +1828,10 @@
                 <!-- <div id="MotherNet_vis" class="row text-center" style="font-size: 140%;"></div> -->
                 <div id="container5" style="height: 500px; width:800px; margin:0 auto;"></div>
                 <br/>
+                <div id='TrainStart'>
+                    <input type=button onclick="Train()" value='Start training' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;  border:0">
+                </div>
+                <br/><br/>
             </div>
             <hr class="style18">
             <div class="row text-center large_font">
@@ -3049,7 +3061,7 @@
             }]
         };
         setInterval(function () {
-            if (StartDraw === true) {
+            if (GenerateMN === true) {
                 for (var i = 36; i > -1; i -= 6) {
                     if ((document.getElementById(16) === null && i > 6) || (document.getElementById(16) != null && document.getElementById(17) === null && i > 0) || document.getElementById(17) != null) {
                         Data[i][2] = mother_defs[7 - Math.floor(i / 6)].num_neurons;
