@@ -30,6 +30,17 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- <style type="text/css">
+        html{height: 100%;}
+        body.aa{height: auto;
+        background: url("../assets/img/queriosity_background.png") no-repeat center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        color: rgba(255, 255, 255, .95)}
+    </style> -->
+    
     <style>
         #DNN_1 {
             position: absolute;
@@ -1477,7 +1488,7 @@
         function newLayer(networkIndex) {
             if (layerLog[networkIndex - 1] < 8 && document.getElementById(networkIndex * 10 + 1) != undefined) {
                 var lyPos = document.getElementById("netDef" + networkIndex);
-                var newLayerHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer ' + layerLog[networkIndex - 1]++ + '&lt;/span>&lt;/span> &lt;input id=' + networkIndex + layerIndex[networkIndex - 1]++ + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;div/>';
+                var newLayerHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer ' + layerLog[networkIndex - 1]++ + '&lt;/span>&lt;/span> &lt;input id=' + networkIndex + layerIndex[networkIndex - 1]++ + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
                 console.log('netIndex:' + networkIndex);
                 console.log(htmlDecode(newLayerHtml));
                 lyPos.insertAdjacentHTML('beforeEnd', htmlDecode(newLayerHtml));
@@ -1513,46 +1524,48 @@
 
 <body data-spy="scroll" data-target=".navbar-fixed-top" id="top">
 
-
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header scroll-me">
-                    <span class="sr-only">
-                            Toggle navigation
-                           </span>
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#home">
-                    <img src="../assets/img/logo_top.png" alt="" class="img-responsive" />
-                </a>
+    
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header scroll-me">
+                        <span class="sr-only">
+                                Toggle navigation
+                               </span>
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#home">
+                        <img src="../assets/img/logo_top.png" alt="" class="img-responsive" />
+                    </a>
+                </div>
+                <!-- <div class="navbar-collapse collapse navbar-right scroll-me">
+                    <ul class="nav navbar-nav menu-items ">
+                        
+                        <li>
+                            <a href="#queriosity">
+                                <i class="fa fa-2x">Concept</i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#publications">
+                                <i class="fa fa-2x">Publications</i>
+                            </a>
+                        </li>
+                       
+                        <li>
+                            <a href="http://daslab.seas.harvard.edu" target="_blank">
+                                <i class="fa fa-2x">DASlab</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div> -->
+    
             </div>
-            <!-- <div class="navbar-collapse collapse navbar-right scroll-me">
-                <ul class="nav navbar-nav menu-items ">
-                    
-                    <li>
-                        <a href="#queriosity">
-                            <i class="fa fa-2x">Concept</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#publications">
-                            <i class="fa fa-2x">Publications</i>
-                        </a>
-                    </li>
-                   
-                    <li>
-                        <a href="http://daslab.seas.harvard.edu" target="_blank">
-                            <i class="fa fa-2x">DASlab</i>
-                        </a>
-                    </li>
-                </ul>
-            </div> -->
-
-        </div>
-    </nav>
+        </nav>
+    
+    
 
     
     <!-- NAVBAR CODE END -->
@@ -1651,9 +1664,9 @@
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px">Layer 2</span>
+                            <span  style="font-size:20px">Layer 2</span>
                         </span>
-                        <input id="12" type="number" value=50 class="form-control" aria-label="layer1" placeholder="" style="text-align:right; width:70px; font-size:20px"
+                        <input id="12" type="number" value=50 class="form-control" aria-label="layer1"  style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
