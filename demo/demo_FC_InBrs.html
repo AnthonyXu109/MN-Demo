@@ -1598,7 +1598,7 @@
                         similarity that exists between neural networks in an ensemble and training for it only once. This
                         demo lets you explore the benefit of MotherNets as you train an ensemble of fully-connected networks
                         using the
-                        <a href=http://yann.lecun.com/exdb/mnist/>MNIST</a> data set.
+                        <a href=http://yann.lecun.com/exdb/mnist/ target="_blank">MNIST</a> data set.
                     </p>
                 </div>
             </div>
@@ -2225,7 +2225,7 @@
                 textStyle: {
                     fontSize: 20
                 },
-                data: ['Accuracy of MotherNet method', 'Accuracy of Baseline method']
+                data: ['MotherNet method', 'Baseline method']
             },
             grid: {
                 tooltip: {
@@ -2327,7 +2327,7 @@
             }],
             series: [
                 {
-                    name: 'Accuracy of MotherNet method',
+                    name: 'MotherNet method',
                     type: 'line',
                     symbol: 'circle',
                     symbolSize: 10,
@@ -2345,12 +2345,12 @@
                     })()
                 },
                 {
-                    name: 'Accuracy of Baseline method',
+                    name: 'Baseline method',
                     type: 'line',
                     symbol: 'diamond',
                     symbolSize: 12,
                     itemStyle: {
-                        color: 'rgb(12,84,83)'
+                        color: 'rgb(153,205,204)'
                     },
                     data: (function () {
                         var res = [];
@@ -2376,16 +2376,16 @@
             var data0 = option.series[0].data;
             var data1 = option.series[1].data;
             if (MN_convergence === false && StartDraw === true) {
-                option.series[0].name = 'Accuracy of Mother Network';
-                option.legend.data[0] = 'Accuracy of Mother Network';
+                option.series[0].name = 'Mother Network';
+                option.legend.data[0] = 'Mother Network';
                 data0.push(trainAccWindow[5].get_average());
                 last1 = data0.length;
             }
             else if (MN_convergence === true && HN_convergence[0] === false && StartDraw === true) {
                 data0.push(trainAccWindow[6].get_average());
                 if (option && typeof option === "object") {
-                    option.series[0].name = 'Accuracy of Hatched Network 1';
-                    option.legend.data[0] = 'Accuracy of Hatched Network 1';
+                    option.series[0].name = 'Hatched Network 1';
+                    option.legend.data[0] = 'Hatched Network 1';
                     //option.visualMap.pieces[0] = { gt: last1, lte: data0.length, color: '#7091C4' };
                     AccLsStp.setOption(option, true);
                 }
@@ -2394,8 +2394,8 @@
             else if (HN_convergence[0] === true && HN_convergence[1] === false && StartDraw === true) {
                 data0.push(trainAccWindow[7].get_average());
                 if (option && typeof option === "object") {
-                    option.series[0].name = 'Accuracy of Hatched Network 2';
-                    option.legend.data[0] = 'Accuracy of Hatched Network 2';
+                    option.series[0].name = 'Hatched Network 2';
+                    option.legend.data[0] = 'Hatched Network 2';
                     //option.visualMap.pieces[1] = { gt: last2, lte: data0.length, color: '#3FA7DC' };
                     AccLsStp.setOption(option, true);
                 }
@@ -2404,8 +2404,8 @@
             else if (HN_convergence[1] === true && HN_convergence[2] === false && StartDraw === true) {
                 data0.push(trainAccWindow[8].get_average());
                 if (option && typeof option === "object") {
-                    option.series[0].name = 'Accuracy of Hatched Network 3';
-                    option.legend.data[0] = 'Accuracy of Hatched Network 3';
+                    option.series[0].name = 'Hatched Network 3';
+                    option.legend.data[0] = 'Hatched Network 3';
                     //option.visualMap.pieces[2] = { gt: last3, lte: data0.length, color: '#5170A2' };
                     AccLsStp.setOption(option, true);
                 }
@@ -2413,70 +2413,70 @@
             else if (document.getElementById(41) != null && HN_convergence[2] === true && HN_convergence[3] === false && StartDraw === true) {
                 data0.push(trainAccWindow[9].get_average());
                 if (option && typeof option === "object") {
-                    option.series[0].name = 'Accuracy of Hatched Network 4';
-                    option.legend.data[0] = 'Accuracy of Hatched Network 4';
+                    option.series[0].name = 'Hatched Network 4';
+                    option.legend.data[0] = 'Hatched Network 4';
                     AccLsStp.setOption(option, true);
                 }
             }
             else if (document.getElementById(51) != null && HN_convergence[3] === true && HN_convergence[4] === false && StartDraw === true) {
                 data0.push(trainAccWindow[10].get_average());
                 if (option && typeof option === "object") {
-                    option.series[0].name = 'Accuracy of Hatched Network 5';
-                    option.legend.data[0] = 'Accuracy of Hatched Network 5';
+                    option.series[0].name = 'Hatched Network 5';
+                    option.legend.data[0] = 'Hatched Network 5';
                     AccLsStp.setOption(option, true);
                 }
             }
             if (CN_convergence[0] === false && StartDraw === true) {
-                option.series[1].name = 'Accuracy of DNN 1';
-                option.legend.data[1] = 'Accuracy of DNN 1';
+                option.series[1].name = 'DNN 1';
+                option.legend.data[1] = 'DNN 1';
                 data1.push(trainAccWindow[0].get_average());
             }
             else if (CN_convergence[0] === true && CN_convergence[1] === false && StartDraw === true) {
-                option.series[1].name = 'Accuracy of DNN 2';
-                option.legend.data[1] = 'Accuracy of DNN 2';
+                option.series[1].name = 'DNN 2';
+                option.legend.data[1] = 'DNN 2';
                 //option.series[1].itemStyle.color = 'rgb(153,205,204)';
                 data1.push(trainAccWindow[1].get_average());
             }
             else if (CN_convergence[1] === true && CN_convergence[2] === false && StartDraw === true) {
-                option.series[1].name = 'Accuracy of DNN 3';
-                option.legend.data[1] = 'Accuracy of DNN 3';
+                option.series[1].name = 'DNN 3';
+                option.legend.data[1] = 'DNN 3';
                 //option.series[1].itemStyle.color = 'rgb(179,255,187)';
                 data1.push(trainAccWindow[2].get_average());
             }
             else if (CN_convergence[2] === true && document.getElementById(41) === null && StartDraw === true) {
-                option.series[0].name = 'Accuracy of MotherNet method';
-                option.series[1].name = 'Accuracy of Baseline method';
-                option.legend.data[0] = 'Accuracy of MotherNet method';
-                option.legend.data[1] = 'Accuracy of Baseline method';
+                option.series[0].name = 'MotherNet method';
+                option.series[1].name = 'Baseline method';
+                option.legend.data[0] = 'MotherNet method';
+                option.legend.data[1] = 'Baseline method';
                 option.series[1].itemStyle.color = 'rgb(153,205,204)';
                 option.dataZoom[0].start = 1;
                 option.dataZoom[1].start = 1;
             }
             else if (CN_convergence[2] === true && document.getElementById(41) != null && CN_convergence[3] === false && StartDraw === true) {
-                option.series[1].name = 'Accuracy of DNN 4';
-                option.legend.data[1] = 'Accuracy of DNN 4';
+                option.series[1].name = 'DNN 4';
+                option.legend.data[1] = 'DNN 4';
                 data1.push(trainAccWindow[3].get_average());
             }
             else if (CN_convergence[2] === true && document.getElementById(41) != null && CN_convergence[3] === true && document.getElementById(51) === null && StartDraw === true) {
-                option.series[0].name = 'Accuracy of MotherNet method';
-                option.series[1].name = 'Accuracy of Baseline method';
-                option.legend.data[0] = 'Accuracy of MotherNet method';
-                option.legend.data[1] = 'Accuracy of Baseline method';
+                option.series[0].name = 'MotherNet method';
+                option.series[1].name = 'Baseline method';
+                option.legend.data[0] = 'MotherNet method';
+                option.legend.data[1] = 'Baseline method';
                 option.series[1].itemStyle.color = 'rgb(153,205,204)';
                 option.dataZoom[0].start = 1;
                 option.dataZoom[1].start = 1;
             }
             else if (CN_convergence[3] === true && document.getElementById(51) != null && CN_convergence[4] === false && StartDraw === true) {
-                option.series[1].name = 'Accuracy of DNN 5';
-                option.legend.data[1] = 'Accuracy of DNN 5';
+                option.series[1].name = 'DNN 5';
+                option.legend.data[1] = 'DNN 5';
                 data1.push(trainAccWindow[4].get_average());
             }
             else if (document.getElementById(51) != null && CN_convergence[4] === true && StartDraw === true) {
 
-                option.series[0].name = 'Accuracy of MotherNet method';
-                option.series[1].name = 'Accuracy of Baseline method';
-                option.legend.data[0] = 'Accuracy of MotherNet method';
-                option.legend.data[1] = 'Accuracy of Baseline method';
+                option.series[0].name = 'MotherNet method';
+                option.series[1].name = 'Baseline method';
+                option.legend.data[0] = 'MotherNet method';
+                option.legend.data[1] = 'Baseline method';
                 option.series[1].itemStyle.color = 'rgb(153,205,204)';
                 option.dataZoom[0].start = 1;
                 option.dataZoom[1].start = 1;
