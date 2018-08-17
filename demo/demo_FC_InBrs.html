@@ -40,7 +40,7 @@
         background-size: cover;
         color: rgba(255, 255, 255, .95)}
     </style> -->
-    
+
     <style>
         #DNN_1 {
             position: absolute;
@@ -665,11 +665,11 @@
             //         m2t.appendChild(document.createTextNode(mt));
             //     }
             // }
-            GenerateMN=true;
+            GenerateMN = true;
         }
 
 
-        function Train(){
+        function Train() {
             for (var k = 0; k < loaded.length; k++) { loaded[k] = false; }
 
             load_data_batch(0); // async load train set batch 0 (6 total train batches)
@@ -1056,14 +1056,14 @@
 
             //compute the ensemble averaging accuracy
             Baseline_EA = 0;
-            if ((CN_convergence[2]===true && document.getElementById(41) === null) || (document.getElementById(41) != null && document.getElementById(51) === null && CN_convergence[3]===true) || (document.getElementById(51) != null && CN_convergence[4]===true)) {
+            if ((CN_convergence[2] === true && document.getElementById(41) === null) || (document.getElementById(41) != null && document.getElementById(51) === null && CN_convergence[3] === true) || (document.getElementById(51) != null && CN_convergence[4] === true)) {
                 for (var i = 0; net[i]; i++) {
                     Baseline_EA += CN_convergeACC[i];
                 }
                 Baseline_EA /= net.length;
             }
             MN_EA = 0;
-            if ((HN_convergence[2]===true && document.getElementById(41) === null) || (document.getElementById(41) != null && document.getElementById(51) === null && HN_convergence[3]===true) || (document.getElementById(51) != null && HN_convergence[4]===true)) {
+            if ((HN_convergence[2] === true && document.getElementById(41) === null) || (document.getElementById(41) != null && document.getElementById(51) === null && HN_convergence[3] === true) || (document.getElementById(51) != null && HN_convergence[4] === true)) {
                 for (var i = 0; hatchedNet[i]; i++) {
                     MN_EA += HN_convergeACC[i];
                     //console.log(trainAccWindow[i + 6].get_average());
@@ -1508,13 +1508,23 @@
 
         function newNetwork() {
             console.log(document.getElementById(16));
+
+            netIndex++;
+            var ntPos = document.getElementById("netDef" + netIndex);
             if (document.getElementById(16) === null) {
-                netIndex++;
-                var ntPos = document.getElementById("netDef" + netIndex);
                 var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 2&lt;/span>&lt;/span> &lt;input id=' + netIndex + 2 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 3&lt;/span>&lt;/span> &lt;input id=' + netIndex + 3 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 4&lt;/span>&lt;/span> &lt;input id=' + netIndex + 4 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 5&lt;/span>&lt;/span> &lt;input id=' + netIndex + 5 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
-                console.log(htmlDecode(newNetworkHtml));
-                ntPos.insertAdjacentHTML('afterbegin', htmlDecode(newNetworkHtml));
             }
+            else if (document.getElementById(16)!=null&&document.getElementById(17)===null){
+                var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 2&lt;/span>&lt;/span> &lt;input id=' + netIndex + 2 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 3&lt;/span>&lt;/span> &lt;input id=' + netIndex + 3 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 4&lt;/span>&lt;/span> &lt;input id=' + netIndex + 4 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 5&lt;/span>&lt;/span> &lt;input id=' + netIndex + 5 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div> &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 6&lt;/span>&lt;/span> &lt;input id=' + netIndex + 6 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
+                layerLog[netIndex - 1]++;layerIndex[netIndex - 1]++;
+            }
+            else if (document.getElementById(17)!= null){
+                var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 2&lt;/span>&lt;/span> &lt;input id=' + netIndex + 2 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 3&lt;/span>&lt;/span> &lt;input id=' + netIndex + 3 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 4&lt;/span>&lt;/span> &lt;input id=' + netIndex + 4 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 5&lt;/span>&lt;/span> &lt;input id=' + netIndex + 5 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div> &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 6&lt;/span>&lt;/span> &lt;input id=' + netIndex + 6 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div> &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 7&lt;/span>&lt;/span> &lt;input id=' + netIndex + 7 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
+                layerLog[netIndex - 1]++;layerIndex[netIndex - 1]++;layerLog[netIndex - 1]++;layerIndex[netIndex - 1]++;
+            }
+            console.log(htmlDecode(newNetworkHtml));
+            ntPos.insertAdjacentHTML('afterbegin', htmlDecode(newNetworkHtml));
+
         }
 
 
@@ -1533,23 +1543,23 @@
 
 <body data-spy="scroll" data-target=".navbar-fixed-top" id="top">
 
-    
-        <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header scroll-me">
-                        <span class="sr-only">
-                                Toggle navigation
-                               </span>
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#home">
-                        <img src="../assets/img/logo_top.png" alt="" class="img-responsive" />
-                    </a>
-                </div>
-                <!-- <div class="navbar-collapse collapse navbar-right scroll-me">
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header scroll-me">
+                <span class="sr-only">
+                    Toggle navigation
+                </span>
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#home">
+                    <img src="../assets/img/logo_top.png" alt="" class="img-responsive" />
+                </a>
+            </div>
+            <!-- <div class="navbar-collapse collapse navbar-right scroll-me">
                     <ul class="nav navbar-nav menu-items ">
                         
                         <li>
@@ -1570,13 +1580,13 @@
                         </li>
                     </ul>
                 </div> -->
-    
-            </div>
-        </nav>
-    
-    
 
-    
+        </div>
+    </nav>
+
+
+
+
     <!-- NAVBAR CODE END -->
     <div id="home">
         <div class="overlay">
@@ -1673,9 +1683,9 @@
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <span  style="font-size:20px">Layer 2</span>
+                            <span style="font-size:20px">Layer 2</span>
                         </span>
-                        <input id="12" type="number" value=90 class="form-control" aria-label="layer1"  style="text-align:right; width:70px; font-size:20px"
+                        <input id="12" type="number" value=90 class="form-control" aria-label="layer1" style="text-align:right; width:70px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
                         />
                     </div>
@@ -1810,7 +1820,7 @@
             <br/>
             <br/>
             <div id='Generate_MN'>
-                <input type=button onclick="Main()" value='Generate MotherNet' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;  border:0">
+                <input type=button onclick="Main();" value='Generate MotherNet' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;  border:0">
             </div>
             <br/>
             <br/>
@@ -1837,7 +1847,6 @@
             <div class="row text-center large_font">
                 <div id='wrap'>
                     <h1>Training Visualization</h1>
-                    
                     <br/>
                     <br/>
                     <br/>
@@ -1989,10 +1998,12 @@
                         <a id="seas-link" href="http://seas.harvard.edu" target="_blank" title="Harvard SEAS"></a>
                     </div>
                     <div class="footer-col col-md-4">
-                        <a id="harvard-link" href="http://www.harvard.edu" target="_blank" title="Harvard University">Harvard University</a>
+                        <a id="harvard-link" href="http://www.harvard.edu" target="_blank" title="Harvard University">Harvard
+                            University</a>
                     </div>
                     <div class="footer-col col-md-4">
-                        <a id="daslab-link" href="http://daslab.seas.harvard.edu" target="_blank" title="Harvard DASlab">Harvard DASlab</a>
+                        <a id="daslab-link" href="http://daslab.seas.harvard.edu" target="_blank" title="Harvard DASlab">Harvard
+                            DASlab</a>
                     </div>
                 </div>
             </div>
@@ -3047,8 +3058,8 @@
                 label: {
                     normal: {
                         textStyle: {
-                    fontSize: 20
-                },
+                            fontSize: 20
+                        },
                         show: true
                     }
                 },
