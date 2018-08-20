@@ -173,6 +173,25 @@
             position: absolute;
             right: 15%;
         }
+
+        #testset_acc {
+            margin-bottom: 200px;
+        }
+
+        .probsdiv canvas {
+            float: left;
+        }
+
+        .probsdiv {
+            height: 60px;
+            width: 180px;
+            display: inline-block;
+            font-size: 12px;
+            box-shadow: 0px 0px 2px 2px #EEE;
+            margin: 5px;
+            padding: 5px;
+            color: black;
+        }
     </style>
 
     <style>
@@ -328,6 +347,11 @@
         var StartDraw = false;
         var GenerateMN = false;
 
+        var testMN = false;
+        var testHN = new Array(5);
+        for (var i = 0; i < 5; i++) {
+            testHN[i] = false;
+        }
 
         //initialize MN
         var mother_defs, motherNet;
@@ -433,20 +457,14 @@
             return { x: x, label: labels[n], isval: isval };
         }
 
-        var sample_bg_training_instance = function () {
-            var bg = 0;
-            var bi = Math.floor(Math.random() * loaded_train_batches.length);
-            var b = loaded_train_batches[bi];
-            var k = Math.floor(Math.random() * 3000);
-            var n = b * 3000 + k;
-            // load more batches over time
-            if (step_num % 5000 === 0 && step_num > 0) {
-                bg = Math.floor(Math.random() * num_batches);
-                load_bg_data_batch(bg);
-            }
+        // sample a random testing instance
+        var sample_test_instance = function () {
 
-            // fetch the appropriate row of the training image and reshape into a Vol
-            var p = bg_img_data[bg].data;
+            var b = test_batch;
+            var k = Math.floor(Math.random() * 1000);
+            var n = b * 3000 + k;
+
+            var p = img_data[b].data;
             var x = new convnetjs.Vol(28, 28, 1, 0.0);
             var W = 28 * 28;
             var j = 0;
@@ -455,45 +473,19 @@
                 x.w[i] = p[ix] / 255.0;
             }
 
-            var isval = use_validation_data && n % 10 === 0 ? true : false;
-            return { x: x, label: labels[n], isval: isval };
+            // // distort position and maybe flip
+            // var xs = [];
+            // //xs.push(x, 32, 0, 0, false); // push an un-augmented copy
+            // for (var k = 0; k < 6; k++) {
+            //     var dx = Math.floor(Math.random() * 5 - 2);
+            //     var dy = Math.floor(Math.random() * 5 - 2);
+            //     xs.push(convnetjs.augment(x, 32, dx, dy, k > 2));
+            // }
+
+            // return multiple augmentations, and we will average the network over them
+            // to increase performance
+            return { x: x, label: labels[n] };
         }
-
-        // // sample a random testing instance
-        // var sample_test_instance = function () {
-
-        //     var b = test_batch;
-        //     var k = Math.floor(Math.random() * 1000);
-        //     var n = b * 1000 + k;
-
-        //     var p = img_data[b].data;
-        //     var x = new convnetjs.Vol(32, 32, 3, 0.0);
-        //     var W = 32 * 32;
-        //     var j = 0;
-        //     for (var dc = 0; dc < 3; dc++) {
-        //         var i = 0;
-        //         for (var xc = 0; xc < 32; xc++) {
-        //             for (var yc = 0; yc < 32; yc++) {
-        //                 var ix = ((W * k) + i) * 4 + dc;
-        //                 x.set(yc, xc, dc, p[ix] / 255.0 - 0.5);
-        //                 i++;
-        //             }
-        //         }
-        //     }
-
-        //     // distort position and maybe flip
-        //     var xs = [];
-        //     //xs.push(x, 32, 0, 0, false); // push an un-augmented copy
-        //     for (var k = 0; k < 6; k++) {
-        //         var dx = Math.floor(Math.random() * 5 - 2);
-        //         var dy = Math.floor(Math.random() * 5 - 2);
-        //         xs.push(convnetjs.augment(x, 32, dx, dy, k > 2));
-        //     }
-
-        //     // return multiple augmentations, and we will average the network over them
-        //     // to increase performance
-        //     return { x: xs, label: labels[n] };
-        // }
 
         // int main
         //$(window).load(
@@ -778,6 +770,106 @@
             bg_step(sample);
         }
 
+
+        var draw_activations = function (elt, A, scale, grads) {
+
+            var s = scale || 2; // scale
+            var draw_grads = false;
+            if (typeof (grads) !== 'undefined') draw_grads = grads;
+
+            // get max and min activation to scale the maps automatically
+            var w = draw_grads ? A.dw : A.w;
+            var mm = maxmin(w);
+
+            // create the canvas elements, draw and add to DOM
+            for (var d = 0; d < A.depth; d++) {
+
+                var canv = document.createElement('canvas');
+                canv.className = 'actmap';
+                var W = A.sx * s;
+                var H = A.sy * s;
+                canv.width = W;
+                canv.height = H;
+                var ctx = canv.getContext('2d');
+                var g = ctx.createImageData(W, H);
+
+                for (var x = 0; x < A.sx; x++) {
+                    for (var y = 0; y < A.sy; y++) {
+                        if (draw_grads) {
+                            var dval = Math.floor((A.get_grad(x, y, d) - mm.minv) / mm.dv * 255);
+                        } else {
+                            var dval = Math.floor((A.get(x, y, d) - mm.minv) / mm.dv * 255);
+                        }
+                        for (var dx = 0; dx < s; dx++) {
+                            for (var dy = 0; dy < s; dy++) {
+                                var pp = ((W * (y * s + dy)) + (dx + x * s)) * 4;
+                                for (var i = 0; i < 3; i++) { g.data[pp + i] = dval; } // rgb
+                                g.data[pp + 3] = 255; // alpha channel
+                            }
+                        }
+                    }
+                }
+                ctx.putImageData(g, 0, 0);
+                elt.appendChild(canv);
+            }
+        }
+
+
+
+        // evaluate current network on test set
+        var test_predict = function (Net) {
+            var num_classes = Net.layers[Net.layers.length - 1].out_depth;
+
+
+            document.getElementById('testset_acc').innerHTML = '';
+            // grab a random test image
+            for (num = 0; num < 5; num++) {
+                var sample = sample_test_instance();
+                var y = sample.label;  // ground truth label
+
+                // forward prop it through the network
+                var aavg = new convnetjs.Vol(1, 1, num_classes, 0.0);
+                // ensures we always have a list, regardless if above returns single item or list
+                var xs = [].concat(sample.x);
+                var n = xs.length;
+                console.log(n);
+
+                for (var i = 0; i < n; i++) {
+                    var a = Net.forward(xs[i]);
+                    aavg.addFrom(a);
+                }
+                var preds = [];
+                for (var k = 0; k < aavg.w.length; k++) { preds.push({ k: k, p: aavg.w[k] }); }
+                preds.sort(function (a, b) { return a.p < b.p ? 1 : -1; });
+
+                var div = document.createElement('div');
+                div.className = 'testdiv';
+
+                // draw the image into a canvas
+                draw_activations(div, xs[0], 2); // draw Vol into canv
+
+                // add predictions
+                var probsdiv = document.createElement('div');
+                div.className = 'probsdiv';
+                var t = '';
+                for (var k = 0; k < 3; k++) {
+                    console.log(preds[k]);
+                    var col = preds[k].k === y ? 'rgb(85,187,85)' : 'rgb(187,85,85)';
+                    t += '<div class=\"pp\" style=\"width:' + Math.floor(preds[k].p / n * 100) + 'px; margin-left: 60px; background-color:' + col + ';\">' + classes_txt[preds[k].k] + '</div>'
+                }
+                probsdiv.innerHTML = t;
+                div.appendChild(probsdiv);
+
+                // add it into DOM
+                $("#testset_acc").append(div).fadeIn(1000);
+            }
+        }
+
+
+
+
+
+
         //var lossGraph = new cnnvis.MultiGraph(legend, );
         var xLossWindow = new Array();
         var wLossWindow = new Array();
@@ -819,14 +911,6 @@
             bg_valAccWindow[i] = new cnnutil.Window(100);
             bg_testAccWindow[i] = new cnnutil.Window(100);
         }
-
-
-
-
-
-
-
-
 
 
 
@@ -941,92 +1025,6 @@
                 trainAccWindow[i + 6].add(train_acc[i + 6]);
             }
 
-            /*
-                        // visualize training status
-                        var train_elt = document.getElementById("trainstats");
-                        train_elt.innerHTML = '';
-                        for (var i = 0; net[i]; i++) {
-                            var T = 'Forward time of network' + i + ' per example: ' + stats[i].fwd_time + 'ms';
-                            train_elt.appendChild(document.createTextNode(T));
-                            train_elt.appendChild(document.createElement('br'));
-                        }
-                        var T = 'Forward time of MotherNetwork per example: ' + stats[5].fwd_time + 'ms';
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-                        for (var i = 0; hatchedNet[i]; i++) {
-                            var T = 'Forward time of hatched network' + i + ' per example: ' + stats[i + 6].fwd_time + 'ms';
-                            train_elt.appendChild(document.createTextNode(T));
-                            train_elt.appendChild(document.createElement('br'));
-                        }
-                        for (var i = 0; net[i]; i++) {
-                            var T = 'Backprop time of network' + i + ' per example: ' + stats[i].bwd_time + 'ms';
-                            train_elt.appendChild(document.createTextNode(T));
-                            train_elt.appendChild(document.createElement('br'));
-                        }
-                        var T = 'Backprop time of MotherNetwork per example: ' + stats[5].bwd_time + 'ms';
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-                        for (var i = 0; hatchedNet[i]; i++) {
-                            var T = 'Backprop time of hatched network' + i + ' per example: ' + stats[i + 6].bwd_time + 'ms';
-                            train_elt.appendChild(document.createTextNode(T));
-                            train_elt.appendChild(document.createElement('br'));
-                        }
-                        for (var i = 0; net[i]; i++) {
-                            var T = 'Classification loss of network' + i + ' : ' + f2t(xLossWindow[i].get_average());
-                            train_elt.appendChild(document.createTextNode(T));
-                            train_elt.appendChild(document.createElement('br'));
-                        }
-                        var T = 'Classification loss of MotherNetwork: ' + f2t(xLossWindow[5].get_average());
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-                        for (var i = 0; hatchedNet[i]; i++) {
-                            var T = 'Classification loss of hatched network' + i + ' : ' + f2t(xLossWindow[i + 6].get_average());
-                            train_elt.appendChild(document.createTextNode(T));
-                            train_elt.appendChild(document.createElement('br'));
-                        }
-                        for (var i = 0; net[i]; i++) {
-                            var T = 'L2 Weight decay loss of network' + i + ' : ' + f2t(wLossWindow[i].get_average());
-                            train_elt.appendChild(document.createTextNode(T));
-                            train_elt.appendChild(document.createElement('br'));
-                        }
-                        var T = 'L2 Weight decay loss of MotherNetwork: ' + f2t(wLossWindow[5].get_average());
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-                        for (var i = 0; hatchedNet[i]; i++) {
-                            var T = 'L2 Weight decay loss of hatched network' + i + ' : ' + f2t(wLossWindow[i + 6].get_average());
-                            train_elt.appendChild(document.createTextNode(T));
-                            train_elt.appendChild(document.createElement('br'));
-                        }
-                        for (var i = 0; net[i]; i++) {
-                            var T = 'Training accuracy of network' + i + ' : ' + f2t(trainAccWindow[i].get_average());
-                            train_elt.appendChild(document.createTextNode(T));
-                            train_elt.appendChild(document.createElement('br'));
-                        }
-                        var T = 'Training accuracy of MotherNetwork: ' + f2t(trainAccWindow[5].get_average());
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-                        for (var i = 0; hatchedNet[i]; i++) {
-                            var T = 'Training accuracy of hatched network' + i + ' : ' + f2t(trainAccWindow[i + 6].get_average());
-                            train_elt.appendChild(document.createTextNode(T));
-                            train_elt.appendChild(document.createElement('br'));
-                        }
-                        for (var i = 0; net[i]; i++) {
-                            var T = 'Validation accuracy of network' + i + ' : ' + f2t(valAccWindow[i].get_average());
-                            train_elt.appendChild(document.createTextNode(T));
-                            train_elt.appendChild(document.createElement('br'));
-                        }
-                        var T = 'Validation accuracy of MotherNetwork: ' + f2t(valAccWindow[5].get_average());
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-                        for (var i = 0; hatchedNet[i]; i++) {
-                            var T = 'Validation accuracy of hatched network' + i + ' : ' + f2t(valAccWindow[i + 6].get_average());
-                            train_elt.appendChild(document.createTextNode(T));
-                            train_elt.appendChild(document.createElement('br'));
-                        }
-                        var T = 'Examples seen: ' + step_num;
-                        train_elt.appendChild(document.createTextNode(T));
-                        train_elt.appendChild(document.createElement('br'));
-            */
 
             // // log progress to graph, (full loss)
             // if (step_num % 100 === 0 && step_num >= 200) {
@@ -1237,6 +1235,32 @@
             //trainAccWindow[i].get_average() > 0.91 &&
             //trainAccWindow[5].get_average() > 0.91 &&
             //trainAccWindow[i + 6].get_average() > 0.91 &&
+
+
+            if (testMN === false && MN_convergence === true) {
+                test_predict(motherNet);
+                testMN = true;
+            }
+            else if (HN_convergence[0] === true && HN_convergence[1] === false && testHN[0] === false) {
+                test_predict(hatchedNet[0]);
+                testHN[0] = true;
+            }
+            else if (HN_convergence[1] === true && HN_convergence[2] === false && testHN[1] === false) {
+                test_predict(hatchedNet[1]);
+                testHN[1] = true;
+            }
+            else if (HN_convergence[2] === true && testHN[2] === false) {
+                test_predict(hatchedNet[2]);
+                testHN[2] = true;
+            }
+            else if (document.getElementById(41) != null && HN_convergence[3] === true && testHN[3] === false) {
+                test_predict(hatchedNet[3]);
+                testHN[3] = true;
+            }
+            else if (document.getElementById(51) != null && HN_convergence[4] === true && testHN[4] === false) {
+                test_predict(hatchedNet[4]);
+                testHN[4] = true;
+            }
 
 
             step_num++;
@@ -1507,20 +1531,18 @@
 
 
         function newNetwork() {
-            console.log(document.getElementById(16));
-
             netIndex++;
             var ntPos = document.getElementById("netDef" + netIndex);
             if (document.getElementById(16) === null) {
                 var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 2&lt;/span>&lt;/span> &lt;input id=' + netIndex + 2 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 3&lt;/span>&lt;/span> &lt;input id=' + netIndex + 3 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 4&lt;/span>&lt;/span> &lt;input id=' + netIndex + 4 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 5&lt;/span>&lt;/span> &lt;input id=' + netIndex + 5 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
             }
-            else if (document.getElementById(16)!=null&&document.getElementById(17)===null){
+            else if (document.getElementById(16) != null && document.getElementById(17) === null) {
                 var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 2&lt;/span>&lt;/span> &lt;input id=' + netIndex + 2 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 3&lt;/span>&lt;/span> &lt;input id=' + netIndex + 3 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 4&lt;/span>&lt;/span> &lt;input id=' + netIndex + 4 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 5&lt;/span>&lt;/span> &lt;input id=' + netIndex + 5 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div> &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 6&lt;/span>&lt;/span> &lt;input id=' + netIndex + 6 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
-                layerLog[netIndex - 1]++;layerIndex[netIndex - 1]++;
+                layerLog[netIndex - 1]++; layerIndex[netIndex - 1]++;
             }
-            else if (document.getElementById(17)!= null){
+            else if (document.getElementById(17) != null) {
                 var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 2&lt;/span>&lt;/span> &lt;input id=' + netIndex + 2 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 3&lt;/span>&lt;/span> &lt;input id=' + netIndex + 3 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 4&lt;/span>&lt;/span> &lt;input id=' + netIndex + 4 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 5&lt;/span>&lt;/span> &lt;input id=' + netIndex + 5 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div> &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 6&lt;/span>&lt;/span> &lt;input id=' + netIndex + 6 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div> &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Layer 7&lt;/span>&lt;/span> &lt;input id=' + netIndex + 7 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:right; width:70px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
-                layerLog[netIndex - 1]++;layerIndex[netIndex - 1]++;layerLog[netIndex - 1]++;layerIndex[netIndex - 1]++;
+                layerLog[netIndex - 1]++; layerIndex[netIndex - 1]++; layerLog[netIndex - 1]++; layerIndex[netIndex - 1]++;
             }
             console.log(htmlDecode(newNetworkHtml));
             ntPos.insertAdjacentHTML('afterbegin', htmlDecode(newNetworkHtml));
@@ -1532,6 +1554,23 @@
             var y = document.getElementById(x).value
             document.getElementById(x).value = y
         }
+
+
+        $(document).ready(function () {
+            $("#GMN_button").click(function () {
+                $('html, body').animate({
+                    scrollTop: $("#GMN").offset().top
+                }, 1000);
+            });
+        });
+
+        $(document).ready(function () {
+            $("#TV_button").click(function () {
+                $('html, body').animate({
+                    scrollTop: $("#TV").offset().top
+                }, 1000);
+            });
+        });
 
     </script>
 
@@ -1806,7 +1845,6 @@
                 <div id="netDef5"></div>
                 <br/>
             </div>
-
             <br/>
             <br/>
             <br/>
@@ -1820,12 +1858,12 @@
             <br/>
             <br/>
             <div id='Generate_MN'>
-                <input type=button onclick="Main();" value='Generate MotherNet' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;  border:0">
+                <input type=button id='GMN_button' onclick="Main();" value='Generate MotherNet' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;  border:0">
             </div>
             <br/>
             <br/>
             <br/>
-            <div class="row text-center large_font">
+            <div class="row text-center large_font" id='GMN'>
                 <hr class="style18">
                 <h1>Generated MotherNet</h1>
                 <br>
@@ -1839,12 +1877,14 @@
                 <div id="container5" style="height: 500px; width:800px; margin:0 auto;"></div>
                 <br/>
                 <div id='TrainStart'>
-                    <input type=button onclick="Train()" value='Start training' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;  border:0">
+                    <input type=button id='TV_button' onclick="Train();" value='Start training' style="background-color:rgb(12,84,83); color: rgb(179,255,187); font-size: 25px; border-radius: 12px;  border:0">
                 </div>
                 <br/><br/>
             </div>
             <hr class="style18">
-            <div class="row text-center large_font">
+            <div class="row text-center large_font" id='TV'>
+                <br/>
+                <br/>
                 <div id='wrap'>
                     <h1>Training Visualization</h1>
                     <br/>
@@ -1883,10 +1923,15 @@
                     <br/>
                     <br/>
                     <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
+                    <div class="divsec">
+                        <b style="font-size: 30px;  text-align: center;">
+                            MotherNet method example predictions on test set
+                        </b>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <div id="testset_acc"></div>
+                    </div>
                     <br/>
                     <div id="container3" style="height: 600px; width:1200px; margin:0 auto;"></div>
                     <br/>
@@ -1999,11 +2044,13 @@
                     </div>
                     <div class="footer-col col-md-4">
                         <a id="harvard-link" href="http://www.harvard.edu" target="_blank" title="Harvard University">Harvard
-                            University</a>
+                            University
+                        </a>
                     </div>
                     <div class="footer-col col-md-4">
                         <a id="daslab-link" href="http://daslab.seas.harvard.edu" target="_blank" title="Harvard DASlab">Harvard
-                            DASlab</a>
+                            DASlab
+                        </a>
                     </div>
                 </div>
             </div>
@@ -2759,7 +2806,6 @@
 
             }
             if ((document.getElementById(41) === null && CN_convergence[2] === true) || (document.getElementById(41) != null && document.getElementById(51) === null && CN_convergence[3] === true) || (document.getElementById(51) != null && CN_convergence[4] === true)) {
-                console.log(Baseline_EA);
                 option.series[3].data[0].value = (Baseline_EA * 100).toFixed(2) - 0;
             }
             MNmthd.setOption(option, true);
