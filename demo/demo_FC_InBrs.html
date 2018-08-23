@@ -243,7 +243,7 @@
         #testset_acc {
             position: relative;
             left: 0%;
-            margin-bottom: 50px;
+            margin-bottom: 70px;
             width: 1100px;
             font-size: 20px;
         }
@@ -832,11 +832,60 @@
 
 
         // evaluate current network on test set
-        var test_predict = function (Net, HN_Index) {
-            var t = 'Ensemble size ' + HN_Index;
-            document.getElementById('testset_acc').appendChild(document.createTextNode(t));
+        // var test_predict1 = function (Net, HN_Index) {
+        //     var t = 'Ensemble size ' + HN_Index;
+        //     document.getElementById('testset_acc').appendChild(document.createTextNode(t));
 
-            var num_classes = Net.layers[Net.layers.length - 1].out_depth;
+        //     var num_classes = Net.layers[Net.layers.length - 1].out_depth;
+
+        //     //document.getElementById('testset_acc').innerHTML = '';
+        //     // grab a random test image
+        //     for (num = 0; num < 5; num++) {
+        //         var sample = sample_test_instance();
+        //         var y = sample.label;  // ground truth label
+
+        //         // forward prop it through the network
+        //         var aavg = new convnetjs.Vol(1, 1, num_classes, 0.0);
+        //         // ensures we always have a list, regardless if above returns single item or list
+        //         var xs = [].concat(sample.x);
+        //         var n = xs.length;
+
+        //         for (var i = 0; i < n; i++) {
+        //             var a = Net.forward(xs[i]);
+        //             aavg.addFrom(a);
+        //         }
+        //         var preds = [];
+        //         for (var k = 0; k < aavg.w.length; k++) { preds.push({ k: k, p: aavg.w[k] }); }
+        //         preds.sort(function (a, b) { return a.p < b.p ? 1 : -1; });
+
+        //         var div = document.createElement('div');
+        //         div.className = 'testdiv';
+
+        //         // draw the image into a canvas
+        //         draw_activations(div, xs[0], 2); // draw Vol into canv
+
+        //         // add predictions
+        //         var probsdiv = document.createElement('div');
+        //         div.className = 'probsdiv';
+        //         var t = '';
+        //         for (var k = 0; k < 3; k++) {
+        //             var col = preds[k].k === y ? 'rgb(85,187,85)' : 'rgb(187,85,85)';
+        //             t += '<div class=\"pp\" style=\"width:' + Math.floor(preds[k].p / n * 100) + 'px; margin-left: 60px; background-color:' + col + ';\">' + classes_txt[preds[k].k] + '</div>'
+        //         }
+        //         probsdiv.innerHTML = t;
+        //         div.appendChild(probsdiv);
+
+        //         // add it into DOM
+        //         $("#testset_acc").append(div).fadeIn(1000);
+        //     }
+        // }
+
+
+        var test_predict = function (HN_Index) {
+            var text = 'Ensemble size ' + HN_Index;
+            document.getElementById('testset_acc').appendChild(document.createTextNode(text));
+
+            var num_classes = 10;
 
             //document.getElementById('testset_acc').innerHTML = '';
             // grab a random test image
@@ -845,19 +894,36 @@
                 var y = sample.label;  // ground truth label
 
                 // forward prop it through the network
-                var aavg = new convnetjs.Vol(1, 1, num_classes, 0.0);
+                var aavg = new Array(HN_Index);
+                for(var i=0;i<HN_Index;i++){
+                    aavg[i] = new convnetjs.Vol(1, 1, num_classes, 0.0);
+                }
+                
                 // ensures we always have a list, regardless if above returns single item or list
                 var xs = [].concat(sample.x);
                 var n = xs.length;
-                console.log(n);
 
                 for (var i = 0; i < n; i++) {
-                    var a = Net.forward(xs[i]);
-                    aavg.addFrom(a);
+                    var a = new Array(HN_Index);
+                    for(var j=0;j<HN_Index;j++){
+                        a[j] = hatchedNet[j].forward(xs[i]);
+                        aavg[j].addFrom(a[j]);
+                    }
                 }
-                var preds = [];
-                for (var k = 0; k < aavg.w.length; k++) { preds.push({ k: k, p: aavg.w[k] }); }
-                preds.sort(function (a, b) { return a.p < b.p ? 1 : -1; });
+                var preds = new Array(HN_Index);
+                for(var i=0;i<HN_Index;i++){
+                    preds[i]=[];
+                    for (var k = 0; k < aavg[i].w.length; k++) { preds[i].push({ k: k, p: aavg[i].w[k] }); }
+                }
+                var EA = [];
+                for(var i=0;i<10;i++){
+                    var ACC=0;
+                    for(var j=0;j<HN_Index;j++){
+                        ACC += preds[j][i].p;
+                    }
+                    EA.push({k:i, p: ACC/HN_Index});
+                }
+                EA.sort(function (a, b) { return a.p < b.p ? 1 : -1; });
 
                 var div = document.createElement('div');
                 div.className = 'testdiv';
@@ -870,8 +936,8 @@
                 div.className = 'probsdiv';
                 var t = '';
                 for (var k = 0; k < 3; k++) {
-                    var col = preds[k].k === y ? 'rgb(85,187,85)' : 'rgb(187,85,85)';
-                    t += '<div class=\"pp\" style=\"width:' + Math.floor(preds[k].p / n * 100) + 'px; margin-left: 60px; background-color:' + col + ';\">' + classes_txt[preds[k].k] + '</div>'
+                    var col = EA[k].k === y ? 'rgb(85,187,85)' : 'rgb(187,85,85)';
+                    t += '<div class=\"pp\" style=\"width:' + Math.floor(EA[k].p / n * 100) + 'px; margin-left: 60px; background-color:' + col + ';\">' + classes_txt[EA[k].k] + '</div>'
                 }
                 probsdiv.innerHTML = t;
                 div.appendChild(probsdiv);
@@ -1054,7 +1120,6 @@
             if ((HN_convergence[2] === true && document.getElementById(41) === null) || (document.getElementById(41) != null && document.getElementById(51) === null && HN_convergence[3] === true) || (document.getElementById(51) != null && HN_convergence[4] === true)) {
                 for (var i = 0; hatchedNet[i]; i++) {
                     MN_EA += HN_convergeACC[i];
-                    //console.log(trainAccWindow[i + 6].get_average());
                 }
                 MN_EA /= hatchedNet.length;
             }
@@ -1228,23 +1293,23 @@
 
 
             if (HN_convergence[0] === true && HN_convergence[1] === false && testHN[0] === false) {
-                test_predict(hatchedNet[0],1);
+                test_predict(1);
                 testHN[0] = true;
             }
             else if (HN_convergence[1] === true && HN_convergence[2] === false && testHN[1] === false) {
-                test_predict(hatchedNet[1],2);
+                test_predict(2);
                 testHN[1] = true;
             }
             else if (HN_convergence[2] === true && testHN[2] === false) {
-                test_predict(hatchedNet[2],3);
+                test_predict(3);
                 testHN[2] = true;
             }
             else if (document.getElementById(41) != null && HN_convergence[3] === true && testHN[3] === false) {
-                test_predict(hatchedNet[3],4);
+                test_predict(4);
                 testHN[3] = true;
             }
             else if (document.getElementById(51) != null && HN_convergence[4] === true && testHN[4] === false) {
-                test_predict(hatchedNet[4],5);
+                test_predict(5);
                 testHN[4] = true;
             }
 
