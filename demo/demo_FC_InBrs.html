@@ -115,62 +115,67 @@
         #circle1 {
             position: absolute;
             left: 22%;
-            width: 7px;
-            height: 7px;
-            background: rgb(12,84,83);
-            -moz-border-radius: 3.5px;
-            -webkit-border-radius: 3.5px;
-            border-radius: 3.5px;
+            width: 15px;
+            height: 15px;
+            background: rgb(12, 84, 83);
+            -moz-border-radius: 7px;
+            -webkit-border-radius: 7px;
+            border-radius: 7px;
         }
+
         #circle2 {
             position: absolute;
             left: 33%;
-            width: 7px;
-            height: 7px;
+            width: 15px;
+            height: 15px;
             background: #7091C4;
-            -moz-border-radius: 3.5px;
-            -webkit-border-radius: 3.5px;
-            border-radius: 3.5px;
+            -moz-border-radius: 7px;
+            -webkit-border-radius: 7px;
+            border-radius: 7px;
         }
+
         #circle3 {
             position: absolute;
             left: 44%;
-            width: 7px;
-            height: 7px;
+            width: 15px;
+            height: 15px;
             background: #3FA7DC;
-            -moz-border-radius: 3.5px;
-            -webkit-border-radius: 3.5px;
-            border-radius: 3.5px;
+            -moz-border-radius: 7px;
+            -webkit-border-radius: 7px;
+            border-radius: 7px;
         }
+
         #circle4 {
             position: absolute;
             left: 55%;
-            width: 7px;
-            height: 7px;
+            width: 15px;
+            height: 15px;
             background: #5170A2;
-            -moz-border-radius: 3.5px;
-            -webkit-border-radius: 3.5px;
-            border-radius: 3.5px;
+            -moz-border-radius: 7px;
+            -webkit-border-radius: 7px;
+            border-radius: 7px;
         }
+
         #circle5 {
             position: absolute;
             left: 66%;
-            width: 7px;
-            height: 7px;
+            width: 15px;
+            height: 15px;
             background: #ad46f3;
-            -moz-border-radius: 3.5px;
-            -webkit-border-radius: 3.5px;
-            border-radius: 3.5px;
+            -moz-border-radius: 7px;
+            -webkit-border-radius: 7px;
+            border-radius: 7px;
         }
+
         #circle6 {
             position: absolute;
             left: 77%;
-            width: 7px;
-            height: 7px;
+            width: 15px;
+            height: 15px;
             background: #f845f1;
-            -moz-border-radius: 3.5px;
-            -webkit-border-radius: 3.5px;
-            border-radius: 3.5px;
+            -moz-border-radius: 7px;
+            -webkit-border-radius: 7px;
+            border-radius: 7px;
         }
 
         #netDef1 {
@@ -236,7 +241,11 @@
         }
 
         #testset_acc {
-            margin-bottom: 200px;
+            position: relative;
+            left: 0%;
+            margin-bottom: 50px;
+            width: 1100px;
+            font-size: 20px;
         }
 
         .probsdiv canvas {
@@ -418,54 +427,6 @@
         var mother_defs, motherNet;
         mother_defs = [];
         mother_defs.push({ type: 'input', out_sx: 28, out_sy: 28, out_depth: 1 });//the mother net needs an input layer by default
-
-
-
-        // //there are already three children networks by default
-        // t[0] = "layer_defs[0] = [];\n\
-        // layer_defs[0].push({type:'input', out_sx:28, out_sy:28, out_depth:1});\n\
-        // layer_defs[0].push({type:'fc', num_neurons:50, activation:'relu'});\n\
-        // layer_defs[0].push({type:'fc', num_neurons:50, activation:'relu'});\n\
-        // layer_defs[0].push({type:'fc', num_neurons:50, activation:'relu'});\n\
-        // layer_defs[0].push({type:'fc', num_neurons:50, activation:'relu'});\n\
-        // layer_defs[0].push({type:'fc', num_neurons:50, activation:'relu'});\n\
-        // layer_defs[0].push({type:'softmax', num_classes:10});\n\
-        // \n\
-        // net[0] = new convnetjs.Net();\n\
-        // net[0].makeLayers(layer_defs[0]);\n\
-        // \n\
-        // trainer[0] = new convnetjs.Trainer(net[0], {method:'adadelta', batch_size:50, l2_decay:0.001});\n\
-        // ";
-
-        // t[1] = "layer_defs[1] = [];\n\
-        // layer_defs[1].push({type:'input', out_sx:28, out_sy:28, out_depth:1});\n\
-        // layer_defs[1].push({type:'fc', num_neurons:70, activation:'relu'});\n\
-        // layer_defs[1].push({type:'fc', num_neurons:70, activation:'relu'});\n\
-        // layer_defs[1].push({type:'fc', num_neurons:70, activation:'relu'});\n\
-        // layer_defs[1].push({type:'fc', num_neurons:70, activation:'relu'});\n\
-        // layer_defs[1].push({type:'fc', num_neurons:70, activation:'relu'});\n\
-        // layer_defs[1].push({type:'softmax', num_classes:10});\n\
-        // \n\
-        // net[1] = new convnetjs.Net();\n\
-        // net[1].makeLayers(layer_defs[1]);\n\
-        // \n\
-        // trainer[1] = new convnetjs.Trainer(net[1], {method:'adadelta', batch_size:50, l2_decay:0.001});\n\
-        // ";
-
-        // t[2] = "layer_defs[2] = [];\n\
-        // layer_defs[2].push({type:'input', out_sx:28, out_sy:28, out_depth:1});\n\
-        // layer_defs[2].push({type:'fc', num_neurons:60, activation:'relu'});\n\
-        // layer_defs[2].push({type:'fc', num_neurons:60, activation:'relu'});\n\
-        // layer_defs[2].push({type:'fc', num_neurons:60, activation:'relu'});\n\
-        // layer_defs[2].push({type:'fc', num_neurons:60, activation:'relu'});\n\
-        // layer_defs[2].push({type:'fc', num_neurons:60, activation:'relu'});\n\
-        // layer_defs[2].push({type:'softmax', num_classes:10});\n\
-        // \n\
-        // net[2] = new convnetjs.Net();\n\
-        // net[2].makeLayers(layer_defs[2]);\n\
-        // \n\
-        // trainer[2] = new convnetjs.Trainer(net[2], {method:'adadelta', batch_size:50, l2_decay:0.001});\n\
-        // ";
 
         var step_num = 0;
         var maxmin = cnnutil.maxmin;
@@ -711,26 +672,6 @@
             motherNet = new convnetjs.Net();
             motherNet.makeLayers(mother_defs);//implement it
             trainer[5] = new convnetjs.Trainer(motherNet, { method: 'adadelta', batch_size: BATCH, l2_decay: 0.001 });
-
-            //for now, we show the motherNet by simply print each layer
-            // var m2t = document.getElementById("MotherNet_vis");
-            // m2t.innerHTML = '';
-            // for (var i = 0; mother_defs[i]; i++) {
-            //     if (i == 0) {
-            //         var mt = 'Input layer:' + 'out_sx:' + mother_defs[0].out_sx + ' out_sy:' + mother_defs[0].out_sy + ' out_depth:' + mother_defs[0].out_depth;
-            //         m2t.appendChild(document.createTextNode(mt));
-            //         m2t.appendChild(document.createElement('br'));
-            //     }
-            //     else if (mother_defs[i].type === 'fc') {
-            //         var mt = 'Fully connected layer:' + ' num_neurons:' + mother_defs[i].num_neurons + ' activation:' + mother_defs[i].activation;
-            //         m2t.appendChild(document.createTextNode(mt));
-            //         m2t.appendChild(document.createElement('br'));
-            //     }
-            //     else if (i == mother_defs.length - 1) {
-            //         var mt = 'Softmax layer: number of classes: 10';//since we are using MNIST
-            //         m2t.appendChild(document.createTextNode(mt));
-            //     }
-            // }
             GenerateMN = true;
         }
 
@@ -891,11 +832,13 @@
 
 
         // evaluate current network on test set
-        var test_predict = function (Net) {
+        var test_predict = function (Net, HN_Index) {
+            var t = 'Ensemble size ' + HN_Index;
+            document.getElementById('testset_acc').appendChild(document.createTextNode(t));
+
             var num_classes = Net.layers[Net.layers.length - 1].out_depth;
 
-
-            document.getElementById('testset_acc').innerHTML = '';
+            //document.getElementById('testset_acc').innerHTML = '';
             // grab a random test image
             for (num = 0; num < 5; num++) {
                 var sample = sample_test_instance();
@@ -927,7 +870,6 @@
                 div.className = 'probsdiv';
                 var t = '';
                 for (var k = 0; k < 3; k++) {
-                    console.log(preds[k]);
                     var col = preds[k].k === y ? 'rgb(85,187,85)' : 'rgb(187,85,85)';
                     t += '<div class=\"pp\" style=\"width:' + Math.floor(preds[k].p / n * 100) + 'px; margin-left: 60px; background-color:' + col + ';\">' + classes_txt[preds[k].k] + '</div>'
                 }
@@ -1099,32 +1041,6 @@
                 trainAccWindow[i + 6].add(train_acc[i + 6]);
             }
 
-
-            // // log progress to graph, (full loss)
-            // if (step_num % 100 === 0 && step_num >= 200) {
-            //     var Y = new Array();
-            //     for (var i = 0; i < net.length; i++) {
-            //         var xa = xLossWindow[i].get_average();
-            //         var xw = wLossWindow[i].get_average();
-            //         if (xa >= 0 && xw >= 0) { // if they are -1 it means not enough data was accumulated yet for estimates
-            //             Y[i] = xa + xw;
-            //         }
-            //     }
-            //     if (xLossWindow[5].get_average() >= 0 && wLossWindow[5].get_average() >= 0) {
-            //         Y.push(xLossWindow[5].get_average() + wLossWindow[5].get_average());
-            //     }
-            //     // for (var i = 0; i < hatchedNet.length; i++) {
-            //     //     Y.push(xLossWindow[i + 6].get_average() + wLossWindow[i + 6].get_average());
-            //     // }
-            //     lossGraph.add(step_num, Y);
-            //     lossGraph.drawSelf(document.getElementById("lossgraph"));
-
-
-            // }
-
-            // if(isNaN(hatchedNet[1].layers[3].filters[1].w[1])){
-            //     console.log(step_num);
-            // }
 
             //compute the ensemble averaging accuracy
             Baseline_EA = 0;
@@ -1311,28 +1227,24 @@
             //trainAccWindow[i + 6].get_average() > 0.91 &&
 
 
-            if (testMN === false && MN_convergence === true) {
-                test_predict(motherNet);
-                testMN = true;
-            }
-            else if (HN_convergence[0] === true && HN_convergence[1] === false && testHN[0] === false) {
-                test_predict(hatchedNet[0]);
+            if (HN_convergence[0] === true && HN_convergence[1] === false && testHN[0] === false) {
+                test_predict(hatchedNet[0],1);
                 testHN[0] = true;
             }
             else if (HN_convergence[1] === true && HN_convergence[2] === false && testHN[1] === false) {
-                test_predict(hatchedNet[1]);
+                test_predict(hatchedNet[1],2);
                 testHN[1] = true;
             }
             else if (HN_convergence[2] === true && testHN[2] === false) {
-                test_predict(hatchedNet[2]);
+                test_predict(hatchedNet[2],3);
                 testHN[2] = true;
             }
             else if (document.getElementById(41) != null && HN_convergence[3] === true && testHN[3] === false) {
-                test_predict(hatchedNet[3]);
+                test_predict(hatchedNet[3],4);
                 testHN[3] = true;
             }
             else if (document.getElementById(51) != null && HN_convergence[4] === true && testHN[4] === false) {
-                test_predict(hatchedNet[4]);
+                test_predict(hatchedNet[4],5);
                 testHN[4] = true;
             }
 
@@ -1608,14 +1520,14 @@
             netIndex++;
             var ntPos = document.getElementById("netDef" + netIndex);
             if (document.getElementById(16) === null) {
-                var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Learning rate&lt;/span>&lt;/span> &lt;select id=&quot;LR' + netIndex + '&quot; class=&quotform-control&quot; aria-label=&quotlayer1&quot; placeholder=&quotLearning rate&quot; style=&quottext-align:left; width:105px; font-size:20px&quot;>&lt;option value=&quot;0.1&quot;>0.1&lt;/option>&lt;option value=&quot;0.01&quot; selected=&quot;selected&quot;>0.01&lt;/option>&lt;option value=&quot;0.001&quot;>0.001&lt;/option>&lt;option value=&quot;0.0001&quot>0.0001&lt;/option>&lt;/select> &lt;/div>    &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Batch size&lt;/span>&lt;/span> &lt;select id=&quot;BS' + netIndex + '&quot; class=&quotform-control&quot; aria-label=&quotlayer1&quot; placeholder=&quotLearning rate&quot; style=&quottext-align:left; width:105px; font-size:20px&quot;>&lt;option value=&quot;32&quot;>32&lt;/option>&lt;option value=&quot;64&quot; selected=&quot;selected&quot;>64&lt;/option>&lt;option value=&quot;128&quot; selected=&quot;selected&quot;>128&lt;/option>&lt;option value=&quot;256&quot;>256&lt;/option>&lt;/select> &lt;/div>    &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 2&lt;/span>&lt;/span> &lt;input id=' + netIndex + 2 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 3&lt;/span>&lt;/span> &lt;input id=' + netIndex + 3 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 4&lt;/span>&lt;/span> &lt;input id=' + netIndex + 4 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 5&lt;/span>&lt;/span> &lt;input id=' + netIndex + 5 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
+                var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Learning rate&lt;/span>&lt;/span> &lt;select id=&quot;LR' + netIndex + '&quot; class=&quotform-control&quot; aria-label=&quotlayer1&quot; placeholder=&quotLearning rate&quot; style=&quottext-align:left; width:105px; font-size:20px&quot;>&lt;option value=&quot;0.1&quot;>0.1&lt;/option>&lt;option value=&quot;0.01&quot; selected=&quot;selected&quot;>0.01&lt;/option>&lt;option value=&quot;0.001&quot;>0.001&lt;/option>&lt;option value=&quot;0.0001&quot>0.0001&lt;/option>&lt;/select> &lt;/div>    &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Batch size&lt;/span>&lt;/span> &lt;select id=&quot;BS' + netIndex + '&quot; class=&quotform-control&quot; aria-label=&quotlayer1&quot; placeholder=&quotLearning rate&quot; style=&quottext-align:left; width:105px; font-size:20px&quot;>&lt;option value=&quot;32&quot;>32&lt;/option>&lt;option value=&quot;64&quot; selected=&quot;selected&quot;>64&lt;/option>&lt;option value=&quot;128&quot; selected=&quot;selected&quot;>128&lt;/option>&lt;option value=&quot;256&quot;>256&lt;/option>&lt;/select> &lt;/div>&lt;br/>    &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 2&lt;/span>&lt;/span> &lt;input id=' + netIndex + 2 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 3&lt;/span>&lt;/span> &lt;input id=' + netIndex + 3 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 4&lt;/span>&lt;/span> &lt;input id=' + netIndex + 4 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 5&lt;/span>&lt;/span> &lt;input id=' + netIndex + 5 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
             }
             else if (document.getElementById(16) != null && document.getElementById(17) === null) {
-                var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Learning rate&lt;/span>&lt;/span> &lt;select id=&quot;LR' + netIndex + '&quot; class=&quotform-control&quot; aria-label=&quotlayer1&quot; placeholder=&quotLearning rate&quot; style=&quottext-align:left; width:105px; font-size:20px&quot;>&lt;option value=&quot;0.1&quot;>0.1&lt;/option>&lt;option value=&quot;0.01&quot; selected=&quot;selected&quot;>0.01&lt;/option>&lt;option value=&quot;0.001&quot;>0.001&lt;/option>&lt;option value=&quot;0.0001&quot>0.0001&lt;/option>&lt;/select> &lt;/div>    &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Batch size&lt;/span>&lt;/span> &lt;select id=&quot;BS' + netIndex + '&quot; class=&quotform-control&quot; aria-label=&quotlayer1&quot; placeholder=&quotLearning rate&quot; style=&quottext-align:left; width:105px; font-size:20px&quot;>&lt;option value=&quot;32&quot;>32&lt;/option>&lt;option value=&quot;64&quot; selected=&quot;selected&quot;>64&lt;/option>&lt;option value=&quot;128&quot; selected=&quot;selected&quot;>128&lt;/option>&lt;option value=&quot;256&quot;>256&lt;/option>&lt;/select> &lt;/div>    &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 2&lt;/span>&lt;/span> &lt;input id=' + netIndex + 2 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 3&lt;/span>&lt;/span> &lt;input id=' + netIndex + 3 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 4&lt;/span>&lt;/span> &lt;input id=' + netIndex + 4 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 5&lt;/span>&lt;/span> &lt;input id=' + netIndex + 5 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div> &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 6&lt;/span>&lt;/span> &lt;input id=' + netIndex + 6 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
+                var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Learning rate&lt;/span>&lt;/span> &lt;select id=&quot;LR' + netIndex + '&quot; class=&quotform-control&quot; aria-label=&quotlayer1&quot; placeholder=&quotLearning rate&quot; style=&quottext-align:left; width:105px; font-size:20px&quot;>&lt;option value=&quot;0.1&quot;>0.1&lt;/option>&lt;option value=&quot;0.01&quot; selected=&quot;selected&quot;>0.01&lt;/option>&lt;option value=&quot;0.001&quot;>0.001&lt;/option>&lt;option value=&quot;0.0001&quot>0.0001&lt;/option>&lt;/select> &lt;/div>    &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Batch size&lt;/span>&lt;/span> &lt;select id=&quot;BS' + netIndex + '&quot; class=&quotform-control&quot; aria-label=&quotlayer1&quot; placeholder=&quotLearning rate&quot; style=&quottext-align:left; width:105px; font-size:20px&quot;>&lt;option value=&quot;32&quot;>32&lt;/option>&lt;option value=&quot;64&quot; selected=&quot;selected&quot;>64&lt;/option>&lt;option value=&quot;128&quot; selected=&quot;selected&quot;>128&lt;/option>&lt;option value=&quot;256&quot;>256&lt;/option>&lt;/select> &lt;/div>&lt;br/>    &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 2&lt;/span>&lt;/span> &lt;input id=' + netIndex + 2 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 3&lt;/span>&lt;/span> &lt;input id=' + netIndex + 3 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 4&lt;/span>&lt;/span> &lt;input id=' + netIndex + 4 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 5&lt;/span>&lt;/span> &lt;input id=' + netIndex + 5 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div> &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 6&lt;/span>&lt;/span> &lt;input id=' + netIndex + 6 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
                 layerLog[netIndex - 1]++; layerIndex[netIndex - 1]++;
             }
             else if (document.getElementById(17) != null) {
-                var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Learning rate&lt;/span>&lt;/span> &lt;select id=&quot;LR' + netIndex + '&quot; class=&quotform-control&quot; aria-label=&quotlayer1&quot; placeholder=&quotLearning rate&quot; style=&quottext-align:left; width:105px; font-size:20px&quot;>&lt;option value=&quot;0.1&quot;>0.1&lt;/option>&lt;option value=&quot;0.01&quot; selected=&quot;selected&quot;>0.01&lt;/option>&lt;option value=&quot;0.001&quot;>0.001&lt;/option>&lt;option value=&quot;0.0001&quot>0.0001&lt;/option>&lt;/select> &lt;/div>    &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Batch size&lt;/span>&lt;/span> &lt;select id=&quot;BS' + netIndex + '&quot; class=&quotform-control&quot; aria-label=&quotlayer1&quot; placeholder=&quotLearning rate&quot; style=&quottext-align:left; width:105px; font-size:20px&quot;>&lt;option value=&quot;32&quot;>32&lt;/option>&lt;option value=&quot;64&quot; selected=&quot;selected&quot;>64&lt;/option>&lt;option value=&quot;128&quot; selected=&quot;selected&quot;>128&lt;/option>&lt;option value=&quot;256&quot;>256&lt;/option>&lt;/select> &lt;/div>    &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 2&lt;/span>&lt;/span> &lt;input id=' + netIndex + 2 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 3&lt;/span>&lt;/span> &lt;input id=' + netIndex + 3 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 4&lt;/span>&lt;/span> &lt;input id=' + netIndex + 4 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 5&lt;/span>&lt;/span> &lt;input id=' + netIndex + 5 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div> &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 6&lt;/span>&lt;/span> &lt;input id=' + netIndex + 6 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div> &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 7&lt;/span>&lt;/span> &lt;input id=' + netIndex + 7 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
+                var newNetworkHtml = '&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px&quot;>Learning rate&lt;/span>&lt;/span> &lt;select id=&quot;LR' + netIndex + '&quot; class=&quotform-control&quot; aria-label=&quotlayer1&quot; placeholder=&quotLearning rate&quot; style=&quottext-align:left; width:105px; font-size:20px&quot;>&lt;option value=&quot;0.1&quot;>0.1&lt;/option>&lt;option value=&quot;0.01&quot; selected=&quot;selected&quot;>0.01&lt;/option>&lt;option value=&quot;0.001&quot;>0.001&lt;/option>&lt;option value=&quot;0.0001&quot>0.0001&lt;/option>&lt;/select> &lt;/div>    &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Batch size&lt;/span>&lt;/span> &lt;select id=&quot;BS' + netIndex + '&quot; class=&quotform-control&quot; aria-label=&quotlayer1&quot; placeholder=&quotLearning rate&quot; style=&quottext-align:left; width:105px; font-size:20px&quot;>&lt;option value=&quot;32&quot;>32&lt;/option>&lt;option value=&quot;64&quot; selected=&quot;selected&quot;>64&lt;/option>&lt;option value=&quot;128&quot; selected=&quot;selected&quot;>128&lt;/option>&lt;option value=&quot;256&quot;>256&lt;/option>&lt;/select> &lt;/div>&lt;br/>    &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 1&lt;/span>&lt;/span> &lt;input id=' + netIndex + 1 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 2&lt;/span>&lt;/span> &lt;input id=' + netIndex + 2 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 3&lt;/span>&lt;/span> &lt;input id=' + netIndex + 3 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 4&lt;/span>&lt;/span> &lt;input id=' + netIndex + 4 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>&lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 5&lt;/span>&lt;/span> &lt;input id=' + netIndex + 5 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div> &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 6&lt;/span>&lt;/span> &lt;input id=' + netIndex + 6 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div> &lt;div class=&quot;input-group&quot;> &lt;span class=&quot;input-group-addon&quot;> &lt;span style=&quot;font-size:20px; width:116.5px; text-align:center; display:block;&quot;>Layer 7&lt;/span>&lt;/span> &lt;input id=' + netIndex + 7 + ' type=&quot;number&quot; value=' + neuronIndex + ' class=&quot;form-control&quot; aria-label=&quot;layer1&quot; style=&quot;text-align:left; width:105px; font-size:20px&quot; onchange=&quot;changeValue(this.id)&quot; onwheel=&quot;changeValue(this.id)&quot; onkeyup=&quot;changeValue(this.id)&quot;/> &lt;/div>';
                 layerLog[netIndex - 1]++; layerIndex[netIndex - 1]++; layerLog[netIndex - 1]++; layerIndex[netIndex - 1]++;
             }
             console.log(htmlDecode(newNetworkHtml));
@@ -1789,7 +1701,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:100px">Learning
-                                rate</span>
+                                rate
+                            </span>
                         </span>
                         <select id="LR1" class="form-control" aria-label="layer1" placeholder="Learning rate" style="text-align:left; width:105px; font-size:20px">
                             <option value="0.1">0.1</option>
@@ -1801,7 +1714,7 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">
-                            Batch size </span>
+                                Batch size </span>
                         </span>
                         <select id="BS1" class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px">
                             <option value="32">32</option>
@@ -1810,10 +1723,12 @@
                             <option value="256">256</option>
                         </select>
                     </div>
+                    <br/>
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                1</span>
+                                1
+                            </span>
                         </span>
                         <input id="11" type="number" value=50 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
@@ -1830,7 +1745,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                3</span>
+                                3
+                            </span>
                         </span>
                         <input id="13" type="number" value=30 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
@@ -1839,7 +1755,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                4</span>
+                                4
+                            </span>
                         </span>
                         <input id="14" type="number" value=70 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
@@ -1848,7 +1765,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                5</span>
+                                5
+                            </span>
                         </span>
                         <input id="15" type="number" value=80 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
@@ -1862,7 +1780,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:100px">Learning
-                                rate</span>
+                                rate
+                            </span>
                         </span>
                         <select id="LR2" class="form-control" aria-label="layer1" placeholder="Learning rate" style="text-align:left; width:105px; font-size:20px">
                             <option value="0.1">0.1</option>
@@ -1874,7 +1793,7 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">
-                            Batch size </span>
+                                Batch size </span>
                         </span>
                         <select id="BS2" class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px">
                             <option value="32">32</option>
@@ -1883,10 +1802,12 @@
                             <option value="256">256</option>
                         </select>
                     </div>
+                    <br/>
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                1</span>
+                                1
+                            </span>
                         </span>
                         <input id="21" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
@@ -1895,7 +1816,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                2</span>
+                                2
+                            </span>
                         </span>
                         <input id="22" type="number" value=80 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
@@ -1904,7 +1826,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                3</span>
+                                3
+                            </span>
                         </span>
                         <input id="23" type="number" value=40 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
@@ -1913,7 +1836,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                4</span>
+                                4
+                            </span>
                         </span>
                         <input id="24" type="number" value=60 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
@@ -1922,7 +1846,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                5</span>
+                                5
+                            </span>
                         </span>
                         <input id="25" type="number" value=80 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange="changeValue(this.id)" onwheel="changeValue(this.id)" onkeyup=" changeValue(this.id)" />
@@ -1933,7 +1858,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:100px">Learning
-                                rate</span>
+                                rate
+                            </span>
                         </span>
                         <select id="LR3" class="form-control" aria-label="layer1" placeholder="Learning rate" style="text-align:left; width:105px; font-size:20px">
                             <option value="0.1">0.1</option>
@@ -1945,7 +1871,7 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">
-                            Batch size </span>
+                                Batch size </span>
                         </span>
                         <select id="BS3" class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px">
                             <option value="32">32</option>
@@ -1954,10 +1880,12 @@
                             <option value="256">256</option>
                         </select>
                     </div>
+                    <br/>
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                1</span>
+                                1
+                            </span>
                         </span>
                         <input id="31" type="number" value=70 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
@@ -1966,7 +1894,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                2</span>
+                                2
+                            </span>
                         </span>
                         <input id="32" type="number" value=70 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
@@ -1975,7 +1904,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                3</span>
+                                3
+                            </span>
                         </span>
                         <input id="33" type="number" value=50 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
@@ -1984,7 +1914,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                4</span>
+                                4
+                            </span>
                         </span>
                         <input id="34" type="number" value=50 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange=" changeValue(this.id)" onwheel=" changeValue(this.id)" onkeyup=" changeValue(this.id)"
@@ -1993,7 +1924,8 @@
                     <div class="input-group">
                         <span class="input-group-addon">
                             <span data-tooltip="" data-tooltip-position="bottom" style="font-size:20px; width:116.5px; text-align:center; display:block;">Layer
-                                5</span>
+                                5
+                            </span>
                         </span>
                         <input id="35" type="number" value=80 class="form-control" aria-label="layer1" placeholder="" style="text-align:left; width:105px; font-size:20px"
                             onchange="changeValue(this.id)" onwheel="changeValue(this.id)" onkeyup=" changeValue(this.id)" />
@@ -2006,22 +1938,7 @@
                 <div id="netDef5"></div>
                 <br/>
             </div>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
             <div id='Generate_MN'>
                 <input type=button id='GMN_button' onclick="Main();" value='Generate MotherNet' style="background-color:rgb(12,84,83); color: #fff; font-size: 25px; border-radius: 12px;  border:0">
             </div>
@@ -2037,13 +1954,13 @@
                         The MotherNet captures the structural similarity between every DNN in the ensemble you specified.
                     </p>
                     <div id="circle1"></div>
-                <div id="circle2"></div>
-                <div id="circle3"></div>
-                <div id="circle4"></div>
-                <div id="circle5"></div>
-                <div id="circle6"></div>
+                    <div id="circle2"></div>
+                    <div id="circle3"></div>
+                    <div id="circle4"></div>
+                    <div id="circle5"></div>
+                    <div id="circle6"></div>
                 </div>
-                
+
                 <!-- <div id="MotherNet_vis" class="row text-center" style="font-size: 140%;"></div> -->
                 <div id="container5" style="height: 500px; width:800px; margin:0 auto;"></div>
                 <br/>
@@ -2063,46 +1980,21 @@
                     <br/>
                     <div id="container1" style="height: 500px; width:800px; margin:0 auto;"></div>
                     <div id="container4" style="height: 475px; width:300px; margin:0 auto;"></div>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
+                    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
                     <div class="divsec">
                         <b style="font-size: 30px;  text-align: center;">
-                            MotherNet method example predictions on test set
+                            Sample predictions
                         </b>
                         <br/>
                         <br/>
                         <br/>
                         <br/>
                         <div id="testset_acc"></div>
+                        <!-- <div id="testset_acc1"></div>
+                        <div id="testset_acc2"></div>
+                        <div id="testset_acc3"></div>
+                        <div id="testset_acc4"></div>
+                        <div id="testset_acc5"></div> -->
                     </div>
                     <div id="container3" style="height: 600px; width:1200px; margin:0 auto;"></div>
                     <br/>
