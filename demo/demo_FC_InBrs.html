@@ -243,7 +243,7 @@
         #testset_acc {
             position: relative;
             left: 0%;
-            margin-bottom: 70px;
+            margin-bottom: 90px;
             width: 1100px;
             font-size: 20px;
         }
@@ -495,17 +495,6 @@
                 x.w[i] = p[ix] / 255.0;
             }
 
-            // // distort position and maybe flip
-            // var xs = [];
-            // //xs.push(x, 32, 0, 0, false); // push an un-augmented copy
-            // for (var k = 0; k < 6; k++) {
-            //     var dx = Math.floor(Math.random() * 5 - 2);
-            //     var dy = Math.floor(Math.random() * 5 - 2);
-            //     xs.push(convnetjs.augment(x, 32, dx, dy, k > 2));
-            // }
-
-            // return multiple augmentations, and we will average the network over them
-            // to increase performance
             return { x: x, label: labels[n] };
         }
 
@@ -681,10 +670,10 @@
 
             load_data_batch(0); // async load train set batch 0 (6 total train batches)
             load_data_batch(test_batch); // async load test set (batch 6)
-            load_bg_data_batch(0);
-            load_bg_data_batch(test_batch);
-            for (var i = 0; i < 5; i++) { trainStart_CN[i] = new Date().getTime(); }
-            trainStart_MN = new Date().getTime();
+            // load_bg_data_batch(0);
+            // load_bg_data_batch(test_batch);
+            // for (var i = 0; i < 5; i++) { trainStart_CN[i] = new Date().getTime(); }
+            //trainStart_MN = new Date().getTime();
             start_fun();
             StartDraw = true;
             //bg_start_fun();
@@ -727,21 +716,21 @@
             data_img_elt.src = "mnist_batch_" + batch_num + ".png";
         }
 
-        var load_bg_data_batch = function (batch_num) {
-            // Load the dataset with JS in background
-            bg_data_img_elts[batch_num] = new Image();
-            var bg_data_img_elt = bg_data_img_elts[batch_num];
-            bg_data_img_elt.onload = function () {
-                var bg_data_canvas = document.createElement('canvas');
-                bg_data_canvas.width = bg_data_img_elt.width;
-                bg_data_canvas.height = bg_data_img_elt.height;
-                var bg_data_ctx = bg_data_canvas.getContext("2d");
-                bg_data_ctx.drawImage(bg_data_img_elt, 0, 0); // copy it over... bit wasteful :(
-                bg_img_data[batch_num] = bg_data_ctx.getImageData(0, 0, bg_data_canvas.width, bg_data_canvas.height);
-                console.log('finished loading bagging data batch ' + batch_num);
-            };
-            bg_data_img_elt.src = "mnist_batch_" + batch_num + ".png";
-        }
+        // var load_bg_data_batch = function (batch_num) {
+        //     // Load the dataset with JS in background
+        //     bg_data_img_elts[batch_num] = new Image();
+        //     var bg_data_img_elt = bg_data_img_elts[batch_num];
+        //     bg_data_img_elt.onload = function () {
+        //         var bg_data_canvas = document.createElement('canvas');
+        //         bg_data_canvas.width = bg_data_img_elt.width;
+        //         bg_data_canvas.height = bg_data_img_elt.height;
+        //         var bg_data_ctx = bg_data_canvas.getContext("2d");
+        //         bg_data_ctx.drawImage(bg_data_img_elt, 0, 0); // copy it over... bit wasteful :(
+        //         bg_img_data[batch_num] = bg_data_ctx.getImageData(0, 0, bg_data_canvas.width, bg_data_canvas.height);
+        //         console.log('finished loading bagging data batch ' + batch_num);
+        //     };
+        //     bg_data_img_elt.src = "mnist_batch_" + batch_num + ".png";
+        // }
 
 
         // ------------------------
@@ -754,36 +743,26 @@
         var embed_imgs = [];
         var load_and_step = function () {
             if (paused) return;
-
-            // if (embed_samples.length === 0) { // happens once
-            //     for (var k = 0; k < 200; k++) {
-            //         var s = sample_training_instance();
-            //         embed_samples.push(s);
-            //         // render x and save it too
-            //         var I = render_act(s.x);
-            //         embed_imgs.push(I);
-            //     }
-            // }
             var sample = sample_training_instance();
             step(sample); // process this image
         }
         // the hatchedNet part
         var embed_bg_samples = [];
         var embed_bg_imgs = [];
-        var bg_load_and_step = function () {
-            if (paused) return;
+        // var bg_load_and_step = function () {
+        //     if (paused) return;
 
-            if (embed_bg_samples.length === 0) {
-                for (var k = 0; k < 200; k++) {
-                    var s = sample_bg_training_instance();
-                    embed_bg_samples.push(s);
-                    var I = render_act(s.x);
-                    embed_bg_imgs.push(I);
-                }
-            }
-            var sample = sample_bg_training_instance();
-            bg_step(sample);
-        }
+        //     if (embed_bg_samples.length === 0) {
+        //         for (var k = 0; k < 200; k++) {
+        //             var s = sample_bg_training_instance();
+        //             embed_bg_samples.push(s);
+        //             var I = render_act(s.x);
+        //             embed_bg_imgs.push(I);
+        //         }
+        //     }
+        //     var sample = sample_bg_training_instance();
+        //     bg_step(sample);
+        // }
 
 
         var draw_activations = function (elt, A, scale, grads) {
@@ -947,7 +926,84 @@
             }
         }
 
+        var compute_EA = function (Ensemble_Index) {
+            var num_classes = 10;
+            var correct_HN=0;
+            var correct_DNN=0;
+            var total=100
 
+            // grab a random test image
+            for (num = 0; num < total; num++) {
+                var sample = sample_test_instance();
+                var y = sample.label;  // ground truth label
+
+                // forward prop it through the network
+                var aavg = new Array(Ensemble_Index);
+                for(var i=0;i<Ensemble_Index;i++){
+                    aavg[i] = new convnetjs.Vol(1, 1, num_classes, 0.0);
+                }
+                var aavg_DNN = new Array(Ensemble_Index);
+                for(var i=0;i<Ensemble_Index;i++){
+                    aavg_DNN[i] = new convnetjs.Vol(1, 1, num_classes, 0.0);
+                }
+                
+                // ensures we always have a list, regardless if above returns single item or list
+                var xs = [].concat(sample.x);
+                var n = xs.length;
+
+                for (var i = 0; i < n; i++) {
+                    var a = new Array(Ensemble_Index);
+                    for(var j=0;j<Ensemble_Index;j++){
+                        a[j] = hatchedNet[j].forward(xs[i]);
+                        aavg[j].addFrom(a[j]);
+                    }
+                    var a_DNN = new Array(Ensemble_Index);
+                    for(var j=0;j<Ensemble_Index;j++){
+                        a_DNN[j] = net[j].forward(xs[i]);
+                        aavg_DNN[j].addFrom(a_DNN[j]);
+                    }
+                }
+                var preds = new Array(Ensemble_Index);
+                for(var i=0;i<Ensemble_Index;i++){
+                    preds[i]=[];
+                    for (var k = 0; k < aavg[i].w.length; k++) { preds[i].push({ k: k, p: aavg[i].w[k] }); }
+                }
+                var preds_DNN = new Array(Ensemble_Index);
+                for(var i=0;i<Ensemble_Index;i++){
+                    preds_DNN[i]=[];
+                    for (var k = 0; k < aavg_DNN[i].w.length; k++) { preds_DNN[i].push({ k: k, p: aavg_DNN[i].w[k] }); }
+                }
+                var EA = [];
+                for(var i=0;i<10;i++){
+                    var ACC=0;
+                    for(var j=0;j<Ensemble_Index;j++){
+                        ACC += preds[j][i].p;
+                    }
+                    EA.push({k:i, p: ACC/Ensemble_Index});
+                }
+                EA.sort(function (a, b) { return a.p < b.p ? 1 : -1; });
+
+                if(EA[0].k === y){
+                    correct_HN++;
+                }
+
+                var EA_DNN = [];
+                for(var i=0;i<10;i++){
+                    var ACC_DNN=0;
+                    for(var j=0;j<Ensemble_Index;j++){
+                        ACC_DNN += preds[j][i].p;
+                    }
+                    EA_DNN.push({k:i, p: ACC_DNN/Ensemble_Index});
+                }
+                EA_DNN.sort(function (a, b) { return a.p < b.p ? 1 : -1; });
+
+                if(EA_DNN[0].k === y){
+                    correct_DNN++;
+                }
+            }
+
+            return [correct_HN/total,correct_DNN/total];
+        }
 
 
 
@@ -998,16 +1054,6 @@
 
 
         var step = function (sample) {
-
-            // if (step_num % 500 === 0 && step_num > 0) {
-
-            //     widenNets(motherNet, hatchedNet);
-
-            // }
-
-
-
-
 
             var x = sample.x;
             var y = sample.label;
@@ -1124,65 +1170,6 @@
                 MN_EA /= hatchedNet.length;
             }
 
-            //compute training time
-            //30% acc time
-            // if (Accuracy30_Time[0] === 0 || Accuracy30_Time[1] === 0 || Accuracy30_Time[2] === 0) {
-            //     for (var n = 0; net[n]; n++) {
-            //         if (trainAccWindow[n].get_average() > 0.3 && trainAccWindow[n].get_average() < 0.5 && Accuracy30_Time[n] === 0) {
-
-            //             trainEnd_CN[n] = new Date().getTime();
-            //             Accuracy30_Time[n] = trainEnd_CN[n] - trainStart_CN[n];
-            //             //console.log(Accuracy30_Time[n]);
-            //         }
-            //     }
-            // }
-            // if (trainAccWindow[5].get_average() > 0.3 && trainAccWindow[5].get_average() < 0.5 && Accuracy30_Time[5] === 0) {
-
-            //     trainEnd_MN = new Date().getTime();
-            //     Accuracy30_Time[5] = trainEnd_MN - trainStart_MN;
-
-            // }
-
-            // //50% acc time
-            // for (var n = 0; net[n]; n++) {
-            //     if (trainAccWindow[n].get_average() > 0.5 && trainAccWindow[n].get_average() < 0.7 && Accuracy50_Time[n] === 0) {
-            //         trainEnd_CN[n] = new Date().getTime();
-            //         Accuracy50_Time[n] = trainEnd_CN[n] - trainStart_CN[n];
-            //     }
-            // }
-            // if (trainAccWindow[5].get_average() > 0.5 && trainAccWindow[5].get_average() < 0.7 && Accuracy50_Time[5] === 0) {
-            //     trainEnd_MN = new Date().getTime();
-            //     Accuracy50_Time[5] = trainEnd_MN - trainStart_MN;
-            // }
-
-            // //70% acc time
-            // for (var n = 0; net[n]; n++) {
-            //     if (trainAccWindow[n].get_average() > 0.7 && trainAccWindow[n].get_average() < 0.9 && Accuracy70_Time[n] === 0) {
-            //         trainEnd_CN[n] = new Date().getTime();
-            //         Accuracy70_Time[n] = trainEnd_CN[n] - trainStart_CN[n];
-            //     }
-            // }
-            // if (trainAccWindow[5].get_average() > 0.7 && trainAccWindow[5].get_average() < 0.9 && Accuracy70_Time[5] === 0) {
-            //     trainEnd_MN = new Date().getTime();
-            //     Accuracy70_Time[5] = trainEnd_MN - trainStart_MN;
-            // }
-
-            // //90% acc time
-            // for (var n = 0; net[n]; n++) {
-            //     if (trainAccWindow[n].get_average() > 0.9 && Accuracy90_Time[n] === 0) {
-            //         trainEnd_CN[n] = new Date().getTime();
-            //         Accuracy90_Time[n] = trainEnd_CN[n] - trainStart_CN[n];
-            //     }
-            // }
-            // if (trainAccWindow[5].get_average() > 0.9 && Accuracy90_Time[5] === 0) {
-            //     trainEnd_MN = new Date().getTime();
-            //     Accuracy90_Time[5] = trainEnd_MN - trainStart_MN;
-            // }
-
-
-            // if (step_num %300===0) {
-
-            // }
 
             for (var i = 0; net[i]; i++) {
                 CN_accLog[i][STEP % 5] = trainAccWindow[i].get_average();
@@ -1482,85 +1469,6 @@
                     }
                 }
             }
-        }
-
-
-        var reset_all = function () {
-            // reinit trainer
-            trainer = new Array();
-            for (var i = 0; net[i]; i++) {
-                trainer[i] = new convnetjs.SGDTrainer(net[i], { method: 'adadelta', batch_size: 4, l2_decay: 0.0001 });
-            }
-
-            // reinit windows that keep track of val/train accuracies
-            for (var i = 0; $("#newnet" + i).val(); i++) {
-                xLossWindow[i].reset();
-                wLossWindow[i].reset();
-                trainAccWindow[i].reset();
-                valAccWindow[i].reset();
-                testAccWindow[i].reset();
-            }
-
-            step_num = 0;
-
-
-        }
-
-        var change_net = function () {
-            layer_defs = [];
-            net = [];
-            for (var i = 0; $("#newnet" + i).val(); i++) {
-                eval($("#newnet" + i).val());
-            }
-            reset_all();
-
-
-            //I'm lazy now, so just paste the code above :(
-            mother_defs = [];
-            mother_defs.push({ type: 'input', out_sx: 28, out_sy: 28, out_depth: 1 });//the mother net needs an input layer by default
-            var longestLength = 0;
-            for (var n = 0; n < layer_defs.length; n++) {
-                if (longestLength < layer_defs[n].length) {
-                    longestLength = layer_defs[n].length;
-                }
-            }
-            //loop for all positions but skip the input layer and softmax layer.
-            for (var i = 1; i < longestLength - 1; i++) {
-                var temp_neuronNum = 10000;//hope it's big enough
-                //loop for each network
-                for (var j = 0; net[j]; j++) {
-                    if (layer_defs[j][i].type === 'fc' && layer_defs[j][i].num_neurons < temp_neuronNum && layer_defs[j][i].num_neurons > 0) {
-                        temp_neuronNum = layer_defs[j][i].num_neurons;
-                    }
-                }
-                mother_defs.push({ type: 'fc', num_neurons: temp_neuronNum, activation: 'relu' });
-            }
-            mother_defs.push({ type: 'softmax', num_classes: 10 });
-            motherNet = new convnetjs.Net();
-            motherNet.makeLayers(mother_defs);//implement it
-
-            //for now, we show the motherNet by simply print each layer
-            // var m2t = document.getElementById("MotherNet_vis");
-            // m2t.innerHTML = '';
-            // for (var i = 0; mother_defs[i]; i++) {
-            //     if (i == 0) {
-            //         var mt = 'Input layer:' + 'out_sx:' + mother_defs[0].out_sx + ' out_sy:' + mother_defs[0].out_sy + ' out_depth:' + mother_defs[0].out_depth;
-            //         m2t.appendChild(document.createTextNode(mt));
-            //         m2t.appendChild(document.createElement('br'));
-            //     }
-            //     else if (mother_defs[i].type === 'fc') {
-            //         console.log(i);
-            //         var mt = 'Fully connected layer:' + ' num_neurons:' + mother_defs[i].num_neurons + ' activation:' + mother_defs[i].activation;
-            //         m2t.appendChild(document.createTextNode(mt));
-            //         m2t.appendChild(document.createElement('br'));
-            //     }
-            //     else if (i == mother_defs.length - 1) {
-            //         var mt = 'Softmax layer: number of classes: 10';//since we are using MNIST
-            //         m2t.appendChild(document.createTextNode(mt));
-            //     }
-            // }
-            //console.log(m2t.innerHTML);
-
         }
 
 
@@ -2061,8 +1969,8 @@
                         <div id="testset_acc4"></div>
                         <div id="testset_acc5"></div> -->
                     </div>
-                    <div id="container3" style="height: 600px; width:1200px; margin:0 auto;"></div>
-                    <br/>
+                    <!-- <div id="container3" style="height: 600px; width:1200px; margin:0 auto;"></div> -->
+                    <div id="container6" style="height: 500px; width:800px; margin:0 auto;"></div>
                 </div>
 
             </div>
@@ -2290,133 +2198,13 @@
     require(['echarts'], DrawCharts);
     //require("echarts/lib/component/legend");
 
-    function chart1(ec) {
-        var TimeCompare = echarts.init(document.getElementById("container2"));
-        var app = {};
-        option1 = null;
-        app.title = '堆叠柱状图';
-
-        option1 = {
-            title: {
-                text: 'Training Time',
-                subtext: ''
-            },
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-                }
-            },
-            legend: {
-                data: ['MN', 'HN1', 'HN2', 'HN3', 'CN1', 'CN2', 'CN3']
-            },
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                containLabel: true
-            },
-            xAxis: [
-                {
-                    type: 'category',
-                    data: ['0.3 Accuracy', '0.5 Accuracy', '0.7 Accuracy', '0.9 Accuracy', 'Converge']
-                }
-            ],
-            yAxis: [
-                {
-                    name: 'sec',
-                    type: 'value'
-                }
-            ],
-            series: [
-                // {
-                //     name: 'MN',
-                //     type: 'bar',
-                //     //stack: 'motherNet',
-                //     data: [120, 130, 145, 165, 195]
-                // },
-                {
-                    name: 'MN',
-                    type: 'bar',
-                    stack: 'motherNet',
-                    data: [0, 0, 0, 0, 60]
-                },
-                {
-                    name: 'HN1',
-                    type: 'bar',
-                    stack: 'motherNet',
-                    data: [0, 0, 0, 0, 20]
-                },
-                {
-                    name: 'HN2',
-                    type: 'bar',
-                    stack: 'motherNet',
-                    data: [0, 0, 0, 0, 30]
-                },
-                {
-                    name: 'HN3',
-                    type: 'bar',
-                    data: [0, 0, 0, 0, 25],
-                    stack: 'motherNet'
-                },
-                {
-                    name: 'CN1',
-                    type: 'bar',
-                    stack: 'baseLine',
-                    data: [0, 0, 0, 0, 70]
-                },
-                {
-                    name: 'CN2',
-                    type: 'bar',
-                    stack: 'baseLine',
-                    data: [0, 0, 0, 0, 60]
-                },
-                {
-                    name: 'CN3',
-                    type: 'bar',
-                    stack: 'baseLine',
-                    data: [0, 0, 0, 0, 55]
-                }
-            ]
-        };
-        setInterval(function () {
-            option1.series[0].data[0] = Accuracy30_Time[5] / 1000;
-            option1.series[4].data[0] = Accuracy30_Time[0] / 1000;
-            option1.series[5].data[0] = Accuracy30_Time[1] / 1000;
-            option1.series[6].data[0] = Accuracy30_Time[2] / 1000;
-
-
-            option1.series[0].data[1] = Accuracy50_Time[5] / 1000;
-            option1.series[4].data[1] = Accuracy50_Time[0] / 1000;
-            option1.series[5].data[1] = Accuracy50_Time[1] / 1000;
-            option1.series[6].data[1] = Accuracy50_Time[2] / 1000;
-
-
-            option1.series[0].data[2] = Accuracy70_Time[5] / 1000;
-            option1.series[4].data[2] = Accuracy70_Time[0] / 1000;
-            option1.series[5].data[2] = Accuracy70_Time[1] / 1000;
-            option1.series[6].data[2] = Accuracy70_Time[2] / 1000;
-
-            option1.series[0].data[3] = Accuracy90_Time[5] / 1000;
-            option1.series[4].data[3] = Accuracy90_Time[0] / 1000;
-            option1.series[5].data[3] = Accuracy90_Time[1] / 1000;
-            option1.series[6].data[3] = Accuracy90_Time[2] / 1000;
-            //console.log(option1.series[0].data[0]);
-            TimeCompare.setOption(option1, true);
-        }, 2000);
-        ;
-        if (option1 && typeof option1 === "object") {
-            TimeCompare.setOption(option1, true);
-        }
-    }
-
     function chart2(ec) {
         var AccLsStp = echarts.init(document.getElementById("container1"));
         var app = {};
         option = null;
         option = {
             title: {
-                text: 'Training Accuracy',
+                text: 'Training accuracy',
                 subtext: '',
                 textStyle: {
                     fontSize: 24
@@ -3273,13 +3061,156 @@
         }
     }
 
+    function chart6(ec) {
+        var Ensemble_Acc = echarts.init(document.getElementById("container6"));
+        var app = {};
+        option6 = null;
+        option6 = {
+            title: {
+                text: 'Generalization accuracy',
+                subtext: '',
+                textStyle: {
+                    fontSize: 24
+                },
+            },
+            tooltip: {
+                trigger: 'item',
+                // axisPointer: {
+                //     type: 'cross',
+                //     label: {
+                //         backgroundColor: 'rgb(153,205,204)'
+                //     }
+                // }
+            },
+            legend: {
+                orient: 'vertical',
+                textStyle: {
+                    fontSize: 20
+                },
+                data: ['MotherNet method', 'Baseline method']
+            },
+            grid: {
+                tooltip: {
+                    axisPointer: {
+                        label: {
+                            fontSize: 18
+                        }
+                    }
+                }
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    name: '\n Ensemble size',
+                    nameLocation:'middle',
+                    boundaryGap: true,
+                    nameTextStyle: {
+                        fontSize: 16
+                    },
+                    axisLabel: {
+                        show: true,
+                        textStyle: {
+                            fontSize: '15'    // x轴字体大小
+                        }
+                    },
+                    data: ['1', '2','3','4','5']
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    scale: true,
+                    name: 'Ensemble accuracy',
+                    max: 1,
+                    min: 0,
+                    nameTextStyle: {
+                        fontSize: 16
+                    },
+                    axisLabel: {
+                        show: true,
+                        textStyle: {
+                            fontSize: '15'    // y轴字体大小
+                        }
+                    },
+                    boundaryGap: [0.2, 0.2]
+                }
+            ],
+            series: [
+                {
+                    name: 'MotherNet method',
+                    type: 'bar',
+                    itemStyle: {
+                        color: 'rgb(12,84,83)'
+                    },
+                    barWidth: 30,
+                    data: [0, 0, 0, 0, 0]
+                },
+                {
+                    name: 'Baseline method',
+                    type: 'bar',
+                    barWidth: 30,
+                    itemStyle: {
+                        color: 'rgb(153,205,204)'
+                    },
+                    data: [0, 0, 0, 0, 0]
+                }
+            ]
+        };
+
+        var draw_HN = new Array(5);
+        var draw_DNN = new Array(5);
+        for(var i=0;i<5;i++){
+            draw_HN[i]=false;
+            draw_DNN[i]=false;
+        }
+
+        setInterval(function () {
+            if (CN_convergence[0] === true && HN_convergence[0] === true && StartDraw === true && draw_HN[0]===false&&draw_DNN[0]===false) {
+                option6.series[0].data[0] = compute_EA(1)[0];
+                option6.series[1].data[0] = compute_EA(1)[1];
+                draw_HN[0]=true;
+                draw_DNN[0]=true;
+            }
+            else if (CN_convergence[1] === true && HN_convergence[1] === true && StartDraw === true && draw_HN[1]===false&&draw_DNN[1]===false) {
+                option6.series[0].data[1] = compute_EA(2)[0];
+                option6.series[1].data[1] = compute_EA(2)[1];
+                draw_HN[1]=true;
+                draw_DNN[1]=true;
+            }
+            else if (CN_convergence[2] === true && HN_convergence[2] === true && StartDraw === true && draw_HN[2]===false&&draw_DNN[2]===false) {
+                option6.series[0].data[2] = compute_EA(3)[0];
+                option6.series[1].data[2] = compute_EA(3)[1];
+                draw_HN[2]=true;
+                draw_DNN[2]=true;
+            }
+            else if (CN_convergence[3] === true && HN_convergence[3] === true && StartDraw === true && draw_HN[3]===false&&draw_DNN[3]===false) {
+                option6.series[0].data[3] = compute_EA(4)[0];
+                option6.series[1].data[3] = compute_EA(4)[1];
+                draw_HN[3]=true;
+                draw_DNN[3]=true;
+            }
+            else if (CN_convergence[4] === true && HN_convergence[4] === true && StartDraw === true && draw_HN[4]===false&&draw_DNN[4]===false) {
+                option6.series[0].data[4] = compute_EA(5)[0];
+                option6.series[1].data[4] = compute_EA(5)[1];
+                draw_HN[4]=true;
+                draw_DNN[4]=true;
+            }
+            Ensemble_Acc.setOption(option6, true);
+        }, 1000);
+        ;
+        if (option6 && typeof option6 === "object") {
+            Ensemble_Acc.setOption(option6, true);
+        }
+    }
+
 
     function DrawCharts(ec) {
         //chart1(ec);
         chart2(ec);
-        chart3(ec);
+        //chart3(ec);
         chart4(ec);
         chart5(ec);
+        chart6(ec);
     }
 </script>
 
