@@ -1,0 +1,2073 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>
+        MotherNet - DASlab | Harvard University
+    </title>
+    <link href="../assets/img/logo_small.png" rel="icon" type="image/x-icon" />
+
+    <!--[if IE]>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <![endif]-->
+    <!-- BOOTSTRAP STYLE SHEET -->
+    <link href="../assets/css/bootstrap.css" rel="stylesheet" />
+
+    <!-- CUSTOM STYLES -->
+    <link href="../assets/css/style.css" rel="stylesheet" />
+    <link href="../assets/css/faa.css" rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <script src="https://use.fontawesome.com/3227f266ec.js"></script>
+
+    <!-- HTML5 Shiv and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- <style type="text/css">
+        html{height: 100%;}
+        body.aa{height: auto;
+        background: url("../assets/img/queriosity_background.png") no-repeat center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        color: rgba(255, 255, 255, .95)}
+    </style> -->
+
+    <style>
+        #Generate_MN {
+            position: absolute;
+            left: 42.8%;
+        }
+
+        #TrainStart {
+            position: absolute;
+            left: 45.1%;
+        }
+
+        #container1 {
+            position: absolute;
+            left: 10%;
+        }
+
+        #container4 {
+            position: absolute;
+            right: 15%;
+        }
+
+        #testset_acc {
+            position: relative;
+            left: 0%;
+            margin-bottom: 90px;
+            width: 1100px;
+            font-size: 20px;
+        }
+
+        .probsdiv canvas {
+            float: left;
+        }
+
+        .probsdiv {
+            height: 60px;
+            width: 180px;
+            display: inline-block;
+            font-size: 12px;
+            box-shadow: 0px 0px 2px 2px #EEE;
+            margin: 5px;
+            padding: 5px;
+            color: black;
+        }
+    </style>
+
+    <style>
+        .axis .domain {
+            display: none;
+        }
+    </style>
+
+    <script src="jquery-1.8.3.min.js"></script>
+    <script src="../build/vis.js"></script>
+    <script src="../build/util.js"></script>
+    <script src="../build/convnet.js"></script>
+    <script src="../demo/mnist_labels.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+
+
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+    <!-- <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script> -->
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
+    <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+
+
+    <script>
+        var StartDraw = false;
+        var VisEsb = false;
+
+        // sample a random testing instance
+        var sample_test_instance = function () {
+
+            var b = test_batch;
+            var k = Math.floor(Math.random() * 1000);
+            var n = b * 3000 + k;
+
+            var p = img_data[b].data;
+            var x = new convnetjs.Vol(28, 28, 1, 0.0);
+            var W = 28 * 28;
+            var j = 0;
+            for (var i = 0; i < W; i++) {
+                var ix = ((W * k) + i) * 4;
+                x.w[i] = p[ix] / 255.0;
+            }
+
+            return { x: x, label: labels[n] };
+        }
+
+        var lines1 = [];
+        var lines2 = [];
+        var lines3 = [];
+
+        function DrawCharts(ec) {
+            chart2(ec);
+            chart4(ec);
+            chart6(ec);
+            chart5(ec);
+        }
+
+
+        var MAIN = function () {
+
+            $(document).ready(function () {
+                if (preTrain === 1) {
+                    $.ajax({
+                        type: "GET",
+                        url: "small ensemble1.csv",
+                        dataType: "text",
+                        success: function (data) { processData(data); }
+                    });
+                }
+                else if (preTrain === 2) {
+                    $.ajax({
+                        type: "GET",
+                        url: "V100_1.csv",
+                        dataType: "text",
+                        success: function (data) { processData(data); }
+                    });
+                }
+                else if (preTrain === 3) {
+                    $.ajax({
+                        type: "GET",
+                        url: "R25_1.csv",
+                        dataType: "text",
+                        success: function (data) { processData(data); }
+                    });
+                }
+            });
+
+            function processData(allText) {
+                var allTextLines = allText.split(/\r\n|\n/);
+                var headers = allTextLines[0].split(',');
+
+                for (var i = 1; i < allTextLines.length; i++) {
+                    var data = allTextLines[i].split(',');
+                    if (data.length == headers.length) {
+                        var tarr = [];
+                        for (var j = 0; j < headers.length; j++) {
+                            tarr.push(data[j]);
+                        }
+                        lines1.push(tarr);
+                    }
+                }
+                console.log(lines1);
+            }
+
+            $(document).ready(function () {
+                if (preTrain === 1) {
+                    $.ajax({
+                        type: "GET",
+                        url: "small ensemble2.csv",
+                        dataType: "text",
+                        success: function (data) { processData2(data); }
+                    });
+                }
+                else if (preTrain === 2) {
+                    $.ajax({
+                        type: "GET",
+                        url: "V100_2.csv",
+                        dataType: "text",
+                        success: function (data) { processData2(data); }
+                    });
+                }
+                else if (preTrain === 3) {
+                    $.ajax({
+                        type: "GET",
+                        url: "R25_2.csv",
+                        dataType: "text",
+                        success: function (data) { processData2(data); }
+                    });
+                }
+            });
+
+            function processData2(allText) {
+                var allTextLines = allText.split(/\r\n|\n/);
+                var headers = allTextLines[0].split(',');
+                for (var i = 1; i < allTextLines.length; i++) {
+                    var data = allTextLines[i].split(',');
+                    if (data.length == headers.length) {
+                        var tarr = [];
+                        for (var j = 0; j < headers.length; j++) {
+                            tarr.push(data[j]);
+                        }
+                        lines2.push(tarr);
+                    }
+                }
+                console.log(lines2);
+            }
+
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: "Generalization Acc.csv",
+                    dataType: "text",
+                    success: function (data) { processData3(data); }
+                });
+            });
+
+            function processData3(allText) {
+                var allTextLines = allText.split(/\r\n|\n/);
+                var headers = allTextLines[0].split(',');
+                for (var i = 1; i < allTextLines.length; i++) {
+                    var data = allTextLines[i].split(',');
+                    if (data.length == headers.length) {
+                        var tarr = [];
+                        for (var j = 0; j < headers.length; j++) {
+                            tarr.push(data[j]);
+                        }
+                        lines3.push(tarr);
+                    }
+                }
+                console.log(lines3);
+            }
+
+            StartDraw = true;
+            DrawCharts(ec);
+        }
+
+        function StartPlt() {
+            VisEsb = true;
+        }
+
+
+        var draw_activations = function (elt, A, scale, grads) {
+
+            var s = scale || 2; // scale
+            var draw_grads = false;
+            if (typeof (grads) !== 'undefined') draw_grads = grads;
+
+            // get max and min activation to scale the maps automatically
+            var w = draw_grads ? A.dw : A.w;
+            var mm = maxmin(w);
+
+            // create the canvas elements, draw and add to DOM
+            for (var d = 0; d < A.depth; d++) {
+
+                var canv = document.createElement('canvas');
+                canv.className = 'actmap';
+                var W = A.sx * s;
+                var H = A.sy * s;
+                canv.width = W;
+                canv.height = H;
+                var ctx = canv.getContext('2d');
+                var g = ctx.createImageData(W, H);
+
+                for (var x = 0; x < A.sx; x++) {
+                    for (var y = 0; y < A.sy; y++) {
+                        if (draw_grads) {
+                            var dval = Math.floor((A.get_grad(x, y, d) - mm.minv) / mm.dv * 255);
+                        } else {
+                            var dval = Math.floor((A.get(x, y, d) - mm.minv) / mm.dv * 255);
+                        }
+                        for (var dx = 0; dx < s; dx++) {
+                            for (var dy = 0; dy < s; dy++) {
+                                var pp = ((W * (y * s + dy)) + (dx + x * s)) * 4;
+                                for (var i = 0; i < 3; i++) { g.data[pp + i] = dval; } // rgb
+                                g.data[pp + 3] = 255; // alpha channel
+                            }
+                        }
+                    }
+                }
+                ctx.putImageData(g, 0, 0);
+                elt.appendChild(canv);
+            }
+        }
+
+
+        var test_predict = function (HN_Index) {
+            var text = 'Ensemble size ' + HN_Index;
+            document.getElementById('testset_acc').appendChild(document.createTextNode(text));
+
+            var num_classes = 10;
+
+            //document.getElementById('testset_acc').innerHTML = '';
+            // grab a random test image
+            for (num = 0; num < 5; num++) {
+                var sample = sample_test_instance();
+                var y = sample.label;  // ground truth label
+
+                // forward prop it through the network
+                var aavg = new Array(HN_Index);
+                for (var i = 0; i < HN_Index; i++) {
+                    aavg[i] = new convnetjs.Vol(1, 1, num_classes, 0.0);
+                }
+
+                // ensures we always have a list, regardless if above returns single item or list
+                var xs = [].concat(sample.x);
+                var n = xs.length;
+
+                for (var i = 0; i < n; i++) {
+                    var a = new Array(HN_Index);
+                    for (var j = 0; j < HN_Index; j++) {
+                        a[j] = hatchedNet[j].forward(xs[i]);
+                        aavg[j].addFrom(a[j]);
+                    }
+                }
+                var preds = new Array(HN_Index);
+                for (var i = 0; i < HN_Index; i++) {
+                    preds[i] = [];
+                    for (var k = 0; k < aavg[i].w.length; k++) { preds[i].push({ k: k, p: aavg[i].w[k] }); }
+                }
+                var EA = [];
+                for (var i = 0; i < 10; i++) {
+                    var ACC = 0;
+                    for (var j = 0; j < HN_Index; j++) {
+                        ACC += preds[j][i].p;
+                    }
+                    EA.push({ k: i, p: ACC / HN_Index });
+                }
+                EA.sort(function (a, b) { return a.p < b.p ? 1 : -1; });
+
+                var div = document.createElement('div');
+                div.className = 'testdiv';
+
+                // draw the image into a canvas
+                draw_activations(div, xs[0], 2); // draw Vol into canv
+
+                // add predictions
+                var probsdiv = document.createElement('div');
+                div.className = 'probsdiv';
+                var t = '';
+                for (var k = 0; k < 3; k++) {
+                    var col = EA[k].k === y ? 'rgb(85,187,85)' : 'rgb(187,85,85)';
+                    t += '<div class=\"pp\" style=\"width:' + Math.floor(EA[k].p / n * 100) + 'px; margin-left: 60px; background-color:' + col + ';\">' + classes_txt[EA[k].k] + '</div>'
+                }
+                probsdiv.innerHTML = t;
+                div.appendChild(probsdiv);
+
+                // add it into DOM
+                $("#testset_acc").append(div).fadeIn(1000);
+            }
+        }
+
+
+        function scenario1() {
+            preTrain = 1;
+            document.getElementById("scenario1").style.background = "rgb(12,84,83)";
+            document.getElementById("scenario2").style.background = "rgb(119, 119, 119)";
+            document.getElementById("scenario3").style.background = "rgb(119, 119, 119)";
+            document.getElementById("EsbIntro").innerHTML = "Small ensemble of 5 VGGNets trained on the <a href=https://www.cs.toronto.edu/~kriz/cifar.html target=&quot;_blank&quot;>CIFAR-10</a> data set. These networks have varying depths, number of filters, and filter sizes, as shown in the table (notation: &lt;filter_size>:&lt;filter_number>)."
+            document.getElementById("EsbImage").src = "V5.png"
+        }
+        function scenario2() {
+            preTrain = 2;
+            document.getElementById("scenario2").style.background = "rgb(12,84,83)";
+            document.getElementById("scenario1").style.background = "rgb(119, 119, 119)";
+            document.getElementById("scenario3").style.background = "rgb(119, 119, 119)";
+            document.getElementById("EsbIntro").innerHTML = "Large ensemble of 100 variants of VGG16. Every network has a distinct architecture and is created by varying one or two layers from VGG16 in one of three ways: Increasing the number of filters, increasing the filter size, or applying both. In the visualization, every dot represents a modification, the horizontal line represents enlarge the filter size, the vertical line represents increase the filter number. The following image shows the original structure of VGG16."
+            document.getElementById("EsbImage").src = "V100.png"
+        }
+        function scenario3() {
+            preTrain = 3;
+            document.getElementById("scenario3").style.background = "rgb(12,84,83)";
+            document.getElementById("scenario1").style.background = "rgb(119, 119, 119)";
+            document.getElementById("scenario2").style.background = "rgb(119, 119, 119)";
+            document.getElementById("EsbIntro").innerHTML = "Large ensemble composed of ResNets with 18, 34, 50, 101, and 152 layers and four variants of each of these networks (double the filter number or increase the filter number by 2 for every even and odd subnet respectively). This table shows original Resnets."
+            document.getElementById("EsbImage").src = "R25.png"
+        }
+
+
+
+
+        $(document).ready(function () {
+            $("#GMN_button").click(function () {
+                $('html, body').animate({
+                    scrollTop: $("#GMN").offset().top
+                }, 1000);
+            });
+        });
+
+        $(document).ready(function () {
+            $("#TV_button").click(function () {
+                $('html, body').animate({
+                    scrollTop: $("#TV").offset().top
+                }, 1000);
+            });
+        });
+
+        var SPEED = 1000;
+
+
+
+
+    </script>
+
+
+</head>
+
+
+
+
+<body data-spy="scroll" data-target=".navbar-fixed-top" id="top">
+
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header scroll-me">
+                <span class="sr-only">
+                    Toggle navigation
+                </span>
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#home">
+                    <img src="../assets/img/logo_top.png" alt="" class="img-responsive" />
+                </a>
+            </div>
+            <div class="navbar-collapse collapse navbar-right scroll-me">
+                <ul class="nav navbar-nav menu-items ">
+
+                    <li>
+                        <a href="demo_FC_Realtime.html">
+                            <i class="fa fa-2x">Realtime demo</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#home">
+                            <i class="fa fa-2x">Pre-trained demo</i>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="http://daslab.seas.harvard.edu" target="_blank">
+                            <i class="fa fa-2x">DASlab</i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+
+
+
+
+    <!-- NAVBAR CODE END -->
+    <div id="home">
+        <div class="overlay">
+            <!-- overylay class usage -->
+            <div class="container">
+                <div class=" home_entry text-center">
+
+                    <div>
+                        <img src="../assets/img/queriosity_logo.png" alt="" class="img-responsive logo_main" />
+                    </div>
+                    <!-- <div class="faa-parent scroll-me zoom">
+                        <a href="#queriosity" class=" fa fa-search faa-tada animated-hover faa-fast fa-5x"></a>
+                    </div> -->
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+    <!--HOME SECTION END  -->
+    <section id="queriosity" class="colored_white padded_1">
+        <div class="container">
+            <div class="row text-center">
+                <!-- <div class="info col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1">
+                    <h1 class="head-set">Queriosity: Accelerating Data Science Pipelines</h1>
+                </div> -->
+                <div class="container">
+                    <div class="text-center larger_font">
+                        <!--                         <div>
+                             <img src="assets/img/queriosity_2.png" alt="" class="img-responsive centered" />
+                        </div> 
+ -->
+                    </div>
+                </div>
+                <div class="info col-md-10 col-md-offset-1">
+                    <br>
+                    <br>
+                    <p style="font-size: 140%; text-align: justify;">
+                        MotherNets enables rapid training of diverse ensembles of deep neural networks: This it achieves by capturing the structural
+                        similarity that exists between neural networks in an ensemble and training for it only once. This
+                        demo shows you the benefit of MotherNets by plotting pre-trained ensemble of DCNNs.
+                    </p>
+                </div>
+            </div>
+            <hr class="style18">
+    </section>
+
+
+    <section class="colored_white">
+        <div class="container">
+            <div class="row text-center large_font">
+                <h1>Ensemble Networks</h1>
+                <div id="addNet">
+
+                </div>
+                <br/>
+                <!-- <div class="col-md-8 col-sm-4 col-xs-12"> -->
+
+                <!-- </div> -->
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <div class="input-group input-group-lg text-center">
+                        <span class="input-group-btn">
+                            <a id="scenario1" class="btn btn-default btn-params" type="button" onclick="scenario1()" href="#interactiveDemo" style="background: rgb(12,84,83); color: rgb(255, 255, 255); border-radius: 12px;">Small
+                                ensemble of VGGNet</a>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <div class="input-group input-group-lg text-center">
+                        <span class="input-group-btn">
+                            <a id="scenario2" class="btn btn-default btn-params" type="button" onclick="scenario2()" href="#interactiveDemo" style="background: rgb(119, 119, 119); color: rgb(255, 255, 255); border-radius: 12px;">Large
+                                ensemble of VGG16</a>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <div class="input-group input-group-lg text-center">
+                        <span class="input-group-btn">
+                            <a id="scenario3" class="btn btn-default btn-params" type="button" onclick="scenario3()" href="#interactiveDemo" style="background: rgb(119, 119, 119); color: rgb(255, 255, 255); border-radius: 12px;">Large
+                                ensemble of ResNet</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="info col-md-10 col-md-offset-1">
+                <br>
+                <p id="EsbIntro" style="font-size: 140%; text-align: justify;">
+                    Small ensemble of 5 VGGNets trained on the <a href=https://www.cs.toronto.edu/~kriz/cifar.html target="_blank">CIFAR-10</a>
+                    data set. These networks have varying depths, number of filters, and filter sizes, as shown in the table (notation: &lt;filter_size>:&lt;filter_number>).
+                </p>
+                <img id="EsbImage" src="V5.png" style="width:920px" />
+            </div>
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+            <div class="row text-center large_font" id='GMN'>
+
+                <h1>Ensemble Visualization</h1>
+                <br>
+            </div>
+
+            <!-- <div id="MotherNet_vis" class="row text-center" style="font-size: 140%;"></div> -->
+            <div id="container5" style="height: 600px; width:1000px; margin:0 auto;"></div>
+            <br/><br/>
+            <div id='TrainStart'>
+                <input type=button id='TV_button' onclick="MAIN();DrawCharts(ec)" value='Start plotting' style="background-color:rgb(12,84,83); color: #fff; font-size: 25px; border-radius: 12px;  border:0">
+            </div>
+            <br/><br/>
+            <hr class="style18">
+        </div>
+
+        <div class="row text-center large_font" id='TV'>
+
+            <div id='wrap'>
+                <h1>Training Visualization</h1>
+                <br/>
+                <br/>
+                <div class="row text-center large_font">
+                    <b style="font-size: 20px;  text-align: center;">Select plot speed</b>
+                    <br/><br/>
+                    <form id="SpeedSelect" style="font-size: 140%;">
+                        <input type="radio" name="Speed" value="1000" />2X&ensp;&ensp;&ensp;&ensp;&ensp;
+                        <input type="radio" name="Speed" value="400" />5X&ensp;&ensp;&ensp;&ensp;&ensp;
+                        <input type="radio" name="Speed" value="200" />10X&ensp;&ensp;&ensp;&ensp;&ensp;
+                        <input type="radio" name="Speed" value="40" />50X
+                    </form>
+                </div>
+                <br/><br/><br/>
+                <div id="container1" style="height: 500px; width:800px; margin:0 auto;"></div>
+                <div id="container4" style="height: 475px; width:300px; margin:0 auto;"></div>
+                <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                <div class="divsec">
+                    <b style="font-size: 30px;  text-align: center;">
+                        Sample predictions
+                    </b>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <div id="testset_acc"></div>
+                </div>
+                <!-- <div id="container3" style="height: 600px; width:1200px; margin:0 auto;"></div> -->
+                <div id="container6" style="height: 500px; width:800px; margin:0 auto;"></div>
+            </div>
+
+        </div>
+        </div>
+    </section>
+
+    <!--SERVICES SECTION END  -->
+    <!-- <div class="colored padded">
+        <div class="container">
+            <div class="text-center larger_font">
+                <p>
+                    <i class=" fa fa-search"></i>ueriosity guides you to what is interesting in your data set</p>
+
+            </div>
+        </div>
+    </div> -->
+    <!-- <section id="publications" class="colored_white large">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1 text-center">
+                    <h1>Publications</h1>
+                    <br>
+                </div>
+            </div> -->
+    <!-- <div class="large_font">
+                <a href="https://stratos.seas.harvard.edu/publications/data-canopy-accelerating-exploratory-statistical-analysis">Data Canopy: Accelerating Exploratory Statistical Analysis</a>. Abdul Wasay, Xinding Wei, Niv Dayan, Stratos
+                Idreos.
+                <i>Proceedings of the
+                    <b>ACM SIGMOD</b> International Congress on Management of Data</i>, 2017.
+                <a target="_blank" href="https://stratos.seas.harvard.edu/files/stratos/files/datacanopy.pdf">[Paper]</a>
+                <a target="_blank" href="../../data-canopy">[website]</a>
+                <a href="https://www.youtube.com/watch?v=EwtOFVAuUVU" target="_blank">[video]</a>
+            </div>
+            <br>
+            <br>
+            <div class="large_font">
+                <a href="https://stratos.seas.harvard.edu/publications/queriosity-automated-data-exploration">Queriosity: Automated Data Exploration</a>. Abdul Wasay, Manos Athanassoulis, Stratos Idreos.
+                <i>Proceedings of the IEEE International Congress on
+                    <strong>Big Data</strong>,</i> 2015.
+                <a target="_blank" href="./assets/doc/queriosity_vision_paper.pdf">[Paper]</a>
+                <a target="_blank" href="./assets/doc/queriosity_vision_poster.png">[Poster]</a>
+            </div> -->
+    <!-- </div>
+    </section> -->
+
+    <!--         <div class="colored padded">
+                <div class="container">
+                    <div class="text-center larger_font">
+                        <p> </p>
+
+                    </div>
+                </div>
+        </div>
+ -->
+    <!--PARALLAX LIKE / STATS SECTION END  -->
+    <!--People Section-->
+    <!--     <section id="team" class="colored_white">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h1>People</h1>
+                    <br>
+                    <br>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <a href="http://scholar.harvard.edu/awasay/" target="_blank" title="wasay's Website">
+                            <img src="assets/img/people/wasay.jpg" class="  img-circle" alt="">
+                            <h4>Abdul Wasay</h4>
+                            <p class="text-muted large_font">PhD Researcher</p>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <a href="http://people.seas.harvard.edu/~manos/" target="_blank" title="Manos' Website">
+                            <img src="assets/img/people/manos.jpg" class="  img-circle" alt="">
+                            <h4>Manos Athanassoulis</h4>
+                            <p class="large_font text-muted">Postdoctoral Researcher</p>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <a href="http://stratos.seas.harvard.edu/" target="_blank" title="Stratos' Website">
+                            <img src="assets/img/people/stratos.jpg" class=" img-circle" alt="">
+                            <h4>Stratos Idreos</h4>
+                            <p class="text-muted large_font">Assistant Professor<br> of Computer Science</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+    <!--People SECTION END  -->
+
+
+
+    <footer class="text-center">
+        <div class=" row footer-above colored">
+            <div class="container">
+                <div class="row">
+                    <div class=" col-md-4">
+                        <a id="seas-link" href="http://seas.harvard.edu" target="_blank" title="Harvard SEAS"></a>
+                    </div>
+                    <div class="footer-col col-md-4">
+                        <a id="harvard-link" href="http://www.harvard.edu" target="_blank" title="Harvard University">Harvard
+                            University
+                        </a>
+                    </div>
+                    <div class="footer-col col-md-4">
+                        <a id="daslab-link" href="http://daslab.seas.harvard.edu" target="_blank" title="Harvard DASlab">Harvard
+                            DASlab
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="colored_1 row">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        Copyright &copy; 2015 &#8211; 2017 Harvard DASlab. All Rights Reserved.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- FOOTER SECTION END-->
+
+    <!-- REQUIRED SCRIPTS FILES -->
+    <!-- CORE JQUERY FILE -->
+    <script src="../assets/js/jquery-1.11.1.js"></script>
+    <!-- REQUIRED BOOTSTRAP SCRIPTS -->
+    <script src="../assets/js/bootstrap.js"></script>
+    <!-- BACKGROUND VIDEO PLUGIN  -->
+    <script src="../assets/js/jquery.mb.YTPlayer.js"></script>
+    <!-- SCROLLING SCRIPTS PLUGIN  -->
+    <script src="../assets/js/jquery.easing.min.js"></script>
+
+    <script>
+        function more() {
+            $('.text').removeClass('hidden');
+            $('.less').removeClass('hidden');
+            $('.more').addClass('hidden')
+
+        }
+
+        function less() {
+            $('.text').addClass('hidden');
+            $('.less').addClass('hidden');
+            $('.more').removeClass('hidden')
+        }
+
+        $(function () {
+            $('a[href*=#]:not([href=#])').click(function () {
+                if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+                    var target = $(this.hash);
+                    target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+                    if (target.length) {
+                        $('html,body').animate({
+                            scrollTop: target.offset().top
+                        }, 1000);
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+
+    <!-- Start of StatCounter Code for Default Guide -->
+    <script type="text/javascript">
+        var sc_project = 10118992;
+        var sc_invisible = 1;
+        var sc_security = "3f8a8e7c";
+        var scJsHost = (("https:" == document.location.protocol) ?
+            "https://secure." : "http://www.");
+        document.write("<sc" + "ript type='text/javascript' src='" +
+            scJsHost +
+            "statcounter.com/counter/counter.js'></" + "script>");
+    </script>
+    <noscript>
+        <div class="statcounter">
+            <a href="http://statcounter.com/shopify/" target="_blank" title="shopify visitor statistics">
+                <img alt="shopify visitor statistics" class="statcounter" src="http://c.statcounter.com/10118992/0/3f8a8e7c/1/" />
+            </a>
+        </div>
+    </noscript>
+    <!-- End of StatCounter Code for Default Guide -->
+
+    <!-- Google Analytics -->
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'http://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-56717122-1', 'auto');
+        ga('require', 'displayfeatures');
+        ga('send', 'pageview');
+    </script>
+    <!-- End of Google Analytics Script -->
+
+
+</body>
+
+
+
+
+
+<script type="text/javascript">
+    $(document.body).css({
+        "overflow-x": "hidden"
+    });
+
+    function changeSpeed() {
+        var radioSPEED = document.getElementById("SpeedSelect");
+        for (var i = 0; i < radioSPEED.length; i++) {
+            if (radioSPEED[i].checked) {
+                SPEED = radioSPEED[i].value
+            }
+        }
+    }
+    setInterval(changeSpeed, 500);
+
+    plotSPEED1 = SPEED;
+    plotSPEED2 = SPEED;
+    plotSPEED3 = SPEED;
+    preTrainSlct = preTrain;
+
+
+    var chart1Name = [
+        [['MotherNets-MotherNet', 'MotherNets-V13', 'MotherNets-V16', 'MotherNets-V16A', 'MotherNets-V16B', 'MotherNets-V19'], ['Baseline-V13', 'Baseline-V16', 'Baseline-V16A', 'Baseline-V16B', 'Baseline-V19']],
+        [['MotherNets-MotherNet', 'MotherNets-V16-'], ['Baseline-V16-']],
+        [['MotherNets-MotherNet-1', 'MotherNets-R18-1', 'MotherNets-R18-2', 'MotherNets-R18-3', 'MotherNets-R18-4', 'MotherNets-R18-5', 'MotherNets-R34-1', 'MotherNets-R34-2', 'MotherNets-R34-3', 'MotherNets-R34-4', 'MotherNets-R34-5', 'MotherNets-MotherNet-2', 'MotherNets-R50-1', 'MotherNets-R50-2', 'MotherNets-R50-3', 'MotherNets-R50-4', 'MotherNets-R50-5', 'MotherNets-R101-1', 'MotherNets-R101-2', 'MotherNets-R101-3', 'MotherNets-R101-4', 'MotherNets-R101-5', 'MotherNets-MotherNet-3', 'MotherNets-R152-1', 'MotherNets-R152-2', 'MotherNets-R152-3', 'MotherNets-R152-4', 'MotherNets-R152-5'], ['Baseline-R18-1', 'Baseline-R18-2', 'Baseline-R18-3', 'Baseline-R18-4', 'Baseline-R18-5', 'Baseline-R34-1', 'Baseline-R34-2', 'Baseline-R34-3', 'Baseline-R34-4', 'Baseline-R34-5', 'Baseline-R50-1', 'Baseline-R50-2', 'Baseline-R50-3', 'Baseline-R50-4', 'Baseline-R50-5', 'Baseline-R101-1', 'Baseline-R101-2', 'Baseline-R101-3', 'Baseline-R101-4', 'Baseline-R101-5', 'Baseline-R152-1', 'Baseline-R152-2', 'Baseline-R152-3', 'Baseline-R152-4', 'Baseline-R152-5']]];
+
+    var preTrain = 1;
+
+    var xCount = 0;
+    var asteriskCount1 = 0;
+    var asteriskCount2 = 0;
+
+
+    require.config({
+        paths: {
+            'echarts': 'http://echarts.baidu.com/build/dist',
+        }
+    });
+
+    require(['echarts'], DrawCharts);
+    //require("echarts/lib/component/legend");
+
+    function chart2(ec) {
+        var AccLsStp = echarts.init(document.getElementById("container1"));
+        var app = {};
+        option = null;
+        option = {
+            title: {
+                text: 'Training accuracy',
+                subtext: '',
+                textStyle: {
+                    fontSize: 24
+                },
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: 'rgb(153,205,204)'
+                    }
+                }
+            },
+            legend: {
+                orient: 'vertical',
+                textStyle: {
+                    fontSize: 20
+                },
+                data: ['MotherNets', 'Baseline']
+            },
+            grid: {
+                tooltip: {
+                    axisPointer: {
+                        label: {
+                            fontSize: 18
+                        }
+                    }
+                }
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    name: 'time/sec',
+                    boundaryGap: true,
+                    nameTextStyle: {
+                        fontSize: 16
+                    },
+                    axisLabel: {
+                        show: true,
+                        textStyle: {
+                            fontSize: '15'    // x轴字体大小
+                        }
+                    },
+                    data: (function () {
+                        var res = [];
+                        var len = 10;
+                        while (len--) {
+                            res.unshift(0);
+                        }
+                        return res;
+                    })()
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    scale: true,
+                    name: 'accuracy',
+                    max: 1,
+                    min: 0,
+                    nameTextStyle: {
+                        fontSize: 16
+                    },
+                    axisLabel: {
+                        show: true,
+                        textStyle: {
+                            fontSize: '15'    // y轴字体大小
+                        }
+                    },
+                    boundaryGap: [0.2, 0.2]
+                }
+            ],
+            dataZoom: [{
+                type: 'inside',
+                start: 80,
+                end: 100
+            }, {
+                start: 80,
+                end: 100,
+                handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+                handleSize: '80%',
+                handleStyle: {
+                    color: '#fff',
+                    shadowBlur: 3,
+                    shadowColor: 'rgba(0, 0, 0, 0.6)',
+                    shadowOffsetX: 2,
+                    shadowOffsetY: 2
+                }
+            }],
+            series: [
+                {
+                    name: 'MotherNets',
+                    type: 'line',
+                    symbol: 'circle',
+                    symbolSize: 10,
+                    itemStyle: {
+                        color: 'rgb(12,84,83)'
+                    },
+                    data: (function () {
+                        var res = [];
+                        var len = 0;
+                        while (len < 10) {
+                            res.push(0.1);
+                            len++;
+                        }
+                        return res;
+                    })()
+                },
+                {
+                    name: 'Baseline',
+                    type: 'line',
+                    symbol: 'diamond',
+                    symbolSize: 12,
+                    itemStyle: {
+                        color: 'rgb(153,205,204)'
+                    },
+                    data: (function () {
+                        var res = [];
+                        var len = 0;
+                        while (len < 10) {
+                            res.push(0.1);
+                            len++;
+                        }
+                        return res;
+                    })(),
+                }
+            ]
+        };
+
+        app.count = 0;
+
+
+        //var Interval;
+        var F = function () {
+            var j = 0;
+
+            var data0 = option.series[0].data;
+            var data1 = option.series[1].data;
+            if (StartDraw === true) {
+                if (preTrain === 1) {
+                    option.series[0].name = chart1Name[0][0][asteriskCount1];
+                    option.legend.data[0] = chart1Name[0][0][asteriskCount1];
+                    option.series[1].name = chart1Name[0][1][asteriskCount2];
+                    option.legend.data[1] = chart1Name[0][1][asteriskCount2];
+                    if (asteriskCount1 < 6) {
+                        data0.push(lines1[xCount][0]);
+                    }
+                    data1.push(lines2[xCount][0]);
+                    if (asteriskCount1 < 6 && isNaN(lines1[xCount][0])) {
+                        asteriskCount1++;
+                        console.log('asteriskCount1: ' + asteriskCount1);
+                    }
+                }
+                else if (preTrain === 2) {
+                    if (asteriskCount1 === 0) {
+                        option.series[0].name = chart1Name[1][0][asteriskCount1];
+                        option.legend.data[0] = chart1Name[1][0][asteriskCount1];
+                    }
+                    else {
+                        option.series[0].name = chart1Name[1][0][1] + asteriskCount1;
+                        option.legend.data[0] = chart1Name[1][0][1] + asteriskCount1;
+                    }
+                    option.series[1].name = chart1Name[1][1][1] + asteriskCount2;
+                    option.legend.data[1] = chart1Name[1][1][1] + asteriskCount2;
+                    if (asteriskCount1 < 101) {
+                        data0.push(lines1[xCount][0]);
+                    }
+                    data1.push(lines2[xCount][0]);
+                    if (asteriskCount1 < 101 && isNaN(lines1[xCount][0])) {
+                        asteriskCount1++;
+                        console.log('asteriskCount1: ' + asteriskCount1);
+                    }
+                }
+                else if (preTrain === 3) {
+                    option.series[0].name = chart1Name[2][0][asteriskCount1];
+                    option.legend.data[0] = chart1Name[2][0][asteriskCount1];
+                    option.series[1].name = chart1Name[2][1][asteriskCount2];
+                    option.legend.data[1] = chart1Name[2][1][asteriskCount2];
+                    if (asteriskCount1 < 28) {
+                        data0.push(lines1[xCount][0]);
+                    }
+                    data1.push(lines2[xCount][0]);
+                    if (asteriskCount1 < 28 && isNaN(lines1[xCount][0])) {
+                        asteriskCount1++;
+                        console.log('asteriskCount1: ' + asteriskCount1);
+                    }
+                }
+
+                if (isNaN(lines2[xCount][0])) {
+                    asteriskCount2++;
+                    console.log('asteriskCount2: ' + asteriskCount2);
+                }
+
+
+                if ((preTrain === 1 && asteriskCount2 === 5) || (preTrain === 2 && asteriskCount2 === 100) || (preTrain === 3 && asteriskCount2 === 25)) {
+                    option.series[0].name = 'MotherNets';
+                    option.series[1].name = 'Baseline';
+                    option.legend.data[0] = 'MotherNets';
+                    option.legend.data[1] = 'Baseline';
+                    option.series[1].itemStyle.color = 'rgb(153,205,204)';
+                    option.dataZoom[0].start = 1;
+                    option.dataZoom[1].start = 1;
+                }
+                xCount++;
+            }
+
+
+
+            //option.xAxis[0].data.shift();
+            if ((StartDraw === true) && ((preTrain === 1 && asteriskCount2 < 5) || (preTrain === 2 && asteriskCount2 < 100) || (preTrain === 3 && asteriskCount2 < 25)))
+                option.xAxis[0].data.push(app.count++);
+            //option.xAxis[1].data.shift();
+            //option.xAxis[1].data.push(++app.count);
+
+            AccLsStp.setOption(option);
+
+            if (plotSPEED1 != SPEED) {
+                clearInterval(Interval);
+                plotSPEED1 = SPEED;
+                Interval = setInterval(F, plotSPEED1);
+            }
+
+            if ((preTrain === 1 && asteriskCount2 === 5) || (preTrain === 2 && asteriskCount2 === 100) || (preTrain === 3 && asteriskCount2 === 25)) {
+                clearInterval(Interval);
+            }
+
+        }
+        //if(HN_convergence[2]===false){
+
+        var Interval = setInterval(F, plotSPEED1);
+
+        //}
+        //if(STEP>1000){
+        //console.log('here');
+
+        //}
+        ;
+
+    }
+
+    function chart4(ec) {
+        var timeCmpr = echarts.init(document.getElementById("container4"));
+        var app = {};
+        option4 = null;
+        app.title = 'Training time';
+
+        option4 = {
+            title: {
+                text: 'Training time',
+                textStyle: {
+                    fontSize: 25
+                },
+                subtext: ''
+            },
+            tooltip: {
+                trigger: 'item',
+
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    axisLabel: {
+                        show: true,
+                        textStyle: {
+                            fontSize: '15'    // x轴字体大小
+                        }
+                    },
+                    data: ['MotherNet', 'Baseline']
+                }
+            ],
+            yAxis: [
+                {
+                    name: 'sec',
+                    type: 'value',
+                    nameTextStyle: {
+                        fontSize: 18
+                    },
+                    axisLabel: {
+                        show: true,
+                        textStyle: {
+                            fontSize: '15'    // x轴字体大小
+                        }
+                    },
+                    min: 0,
+                    max: 540
+                }
+            ],
+            series: []
+        };
+
+        function loadChart2() {
+            if (preTrainSlct === 1) {
+                option4.series.push({
+                    name: 'MotherNet',
+                    type: 'bar',
+                    stack: 'motherNet',
+                    barWidth: 50,
+                    itemStyle: {
+                        color: 'rgb(12,84,83)',
+                    },
+                    data: [0, 0]
+                });
+                for (var i = 0; i < 5; i++) {
+                    var colorChoose = '#000000';
+                    if (i % 2 === 0) {
+                        colorChoose = 'rgb(210,210,210)';
+                    }
+                    option4.series.push({
+                        name: chart1Name[0][0][i + 1],
+                        type: 'bar',
+                        stack: 'motherNet',
+                        itemStyle: {
+                            color: colorChoose
+                        },
+                        data: [0, 0]
+                    });
+                }
+                for (var i = 0; i < 5; i++) {
+                    var colorChoose = '#000000';
+                    if (i % 2 === 0) {
+                        colorChoose = 'rgb(210,210,210)';
+                    }
+                    option4.series.push({
+                        name: chart1Name[0][1][i] + asteriskCount1,
+                        type: 'bar',
+                        stack: 'motherNet',
+                        itemStyle: {
+                            color: colorChoose
+                        },
+                        data: [0, 0]
+                    });
+                }
+            }
+            else if (preTrainSlct === 2) {
+                option4.series.push({
+                    name: 'MotherNet',
+                    type: 'bar',
+                    stack: 'motherNet',
+                    barWidth: 50,
+                    itemStyle: {
+                        color: 'rgb(12,84,83)',
+                    },
+                    data: [0, 0]
+                });
+                for (var i = 0; i < 100; i++) {
+                    var colorChoose = '#000000';
+                    if (i % 2 === 0) {
+                        colorChoose = 'rgb(210,210,210)';
+                    }
+                    option4.series.push({
+                        name: "VGG16 variant" + (i+1),
+                        type: 'bar',
+                        stack: 'motherNet',
+                        itemStyle: {
+                            color: colorChoose
+                        },
+                        data: [0, 0]
+                    });
+                }
+                for (var i = 0; i < 100; i++) {
+                    var colorChoose = '#000000';
+                    if (i % 2 === 0) {
+                        colorChoose = 'rgb(210,210,210)';
+                    }
+                    option4.series.push({
+                        name: "VGG16 variant" + (i+1),
+                        type: 'bar',
+                        stack: 'motherNet',
+                        itemStyle: {
+                            color: colorChoose
+                        },
+                        data: [0, 0]
+                    });
+                }
+            }
+            else if (preTrainSlct === 3) {
+                option4.series.push({
+                    name: 'MotherNet',
+                    type: 'bar',
+                    stack: 'motherNet',
+                    barWidth: 50,
+                    itemStyle: {
+                        color: 'rgb(12,84,83)',
+                    },
+                    data: [0, 0]
+                });
+                for (var i = 0; i < 28; i++) {
+                    var colorChoose = '#000000';
+                    if (i % 2 === 0) {
+                        colorChoose = 'rgb(210,210,210)';
+                    }
+                    if (i === 10) {
+                        option4.series.push({
+                            name: 'MotherNet2',
+                            type: 'bar',
+                            stack: 'motherNet',
+                            itemStyle: {
+                                color: 'rgb(12,84,83)'
+                            },
+                            data: [0, 0]
+                        });
+                    }
+                    else if (i === 20) {
+                        option4.series.push({
+                            name: 'MotherNet3',
+                            type: 'bar',
+                            stack: 'motherNet',
+                            itemStyle: {
+                                color: 'rgb(12,84,83)'
+                            },
+                            data: [0, 0]
+                        });
+                    }
+                    else if(i>10&&i<20){
+                        option4.series.push({
+                            name: 'ResNet' + (i),
+                            type: 'bar',
+                            stack: 'motherNet',
+                            itemStyle: {
+                                color: colorChoose
+                            },
+                            data: [0, 0]
+                        });
+                    }
+                    else if(i>20){
+                        option4.series.push({
+                            name: 'ResNet' + (i-1),
+                            type: 'bar',
+                            stack: 'motherNet',
+                            itemStyle: {
+                                color: colorChoose
+                            },
+                            data: [0, 0]
+                        });
+                    }
+                    else {
+                        option4.series.push({
+                            name: 'ResNet' + (i + 1),
+                            type: 'bar',
+                            stack: 'motherNet',
+                            itemStyle: {
+                                color: colorChoose
+                            },
+                            data: [0, 0]
+                        });
+                    }
+                }
+                for (var i = 0; i < 25; i++) {
+                    var colorChoose = '#000000';
+                    if (i % 2 === 0) {
+                        colorChoose = 'rgb(210,210,210)';
+                    }
+                    option4.series.push({
+                        name: chart1Name[2][1][i],
+                        type: 'bar',
+                        stack: 'motherNet',
+                        itemStyle: {
+                            color: colorChoose
+                        },
+                        data: [0, 0]
+                    });
+                }
+            }
+
+            timeCmpr.setOption(option4, true);
+
+            if (preTrainSlct != preTrain) {
+                clearInterval(IntervalLoad);
+                option4.series = [];
+                preTrainSlct = preTrain;
+                IntervalLoad = setInterval(loadChart2, 1000);
+            }
+
+            if (StartDraw === true) {
+                clearInterval(IntervalLoad);
+            }
+
+        }
+
+        function F2() {
+            if (StartDraw === true) {
+
+                if (preTrain === 1 && asteriskCount2 < 5) {
+                    if (asteriskCount1 < 6) {
+                        option4.series[asteriskCount1].data[0] += 1;
+                    }
+                    option4.series[asteriskCount2 + 6].data[1] += 1;
+                }
+                else if (preTrain === 2 && asteriskCount2 < 100) {
+                    if (asteriskCount1 < 101) {
+                        option4.series[asteriskCount1].data[0] += 1;
+                    }
+                    option4.series[asteriskCount2 + 101].data[1] += 1;
+                }
+                else if (preTrain === 3 && asteriskCount2 < 25) {
+                    if (asteriskCount1 < 28) {
+                        option4.series[asteriskCount1].data[0] += 1;
+                    }
+                    option4.series[asteriskCount2 + 28].data[1] += 1;
+                }
+            }
+
+            timeCmpr.setOption(option4, true);
+
+            if (plotSPEED2 != SPEED) {
+                clearInterval(Interval2);
+                plotSPEED2 = SPEED;
+                Interval2 = setInterval(F2, plotSPEED2);
+            }
+
+
+        }
+
+        var IntervalLoad = setInterval(loadChart2, 1000);
+        var Interval2 = setInterval(F2, plotSPEED2);
+
+
+        // ;
+        // if (option4 && typeof option4 === "object") {
+        //     timeCmpr.setOption(option4, true);
+        // }
+    }
+
+
+
+    function chart5(ec) {
+        var GMN = echarts.init(document.getElementById("container5"));
+        var app = {};
+        option5 = null;
+        app.title = '';
+
+        var tmp;
+
+
+        setInterval(function () {
+            if (tmp != preTrain) {
+                GMN.clear();
+            }
+            if (preTrain === 1) {
+                var layers = [1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5];
+                var nets = ['MotherNet', 'V13', 'V16', 'V16A', 'V16B', 'V19'];
+
+                var data =
+                    [[0, 0, 64], [0, 1, 64], [0, 2, 128], [0, 3, 128], [0, 4, 128], [0, 5, 128], [0, 8, 512], [0, 9, 512], [0, 12, 256], [0, 13, 256],
+                    [1, 0, 64], [1, 1, 64], [1, 2, 128], [1, 3, 128], [1, 4, 256], [1, 5, 256], [1, 8, 512], [1, 9, 512], [1, 12, 512], [1, 13, 512],
+                    [2, 0, 64], [2, 1, 64], [2, 2, 128], [2, 3, 128], [2, 4, 256], [2, 5, 256], [2, 6, 256], [2, 8, 512], [2, 9, 512], [2, 10, 512], [2, 12, 512], [2, 13, 512], [2, 14, 512],
+                    [3, 0, 128], [3, 1, 128], [3, 2, 128], [3, 3, 128], [3, 4, 128], [3, 5, 128], [3, 6, 256], [3, 8, 512], [3, 9, 512], [3, 10, 512], [3, 12, 256], [3, 13, 256], [3, 14, 512],
+                    [4, 0, 64], [4, 1, 64], [4, 2, 128], [4, 3, 128], [4, 4, 256], [4, 5, 256], [4, 6, 256], [4, 8, 512], [4, 9, 512], [4, 10, 512], [4, 12, 512], [4, 13, 512], [4, 14, 512],
+                    [5, 0, 64], [5, 1, 64], [5, 2, 128], [5, 3, 128], [5, 4, 256], [5, 5, 256], [5, 6, 256], [5, 7, 256], [5, 8, 512], [5, 9, 512], [5, 10, 512], [5, 11, 512], [5, 12, 512], [5, 13, 512], [5, 14, 512], [5, 15, 512]];
+
+
+                option5 = {
+                    tooltip: {
+                        trigger: 'item'
+                    },
+                    xAxis3D: {
+                        name: 'Subnet',
+                        type: 'category',
+                        data: layers
+                    },
+                    yAxis3D: {
+                        name: 'Small ensemble',
+                        type: 'category',
+                        data: nets
+                    },
+                    zAxis3D: {
+                        name: 'Filter num',
+                        type: 'value'
+                    },
+                    grid3D: {
+                        boxWidth: 200,
+                        boxDepth: 80,
+                        viewControl: {
+                            // projection: 'orthographic'
+                        },
+                        light: {
+                            main: {
+                                intensity: 1.2,
+                                shadow: true
+                            },
+                            ambient: {
+                                intensity: 0.3
+                            }
+                        }
+                    },
+                    visualMap: {
+                        show: false,
+                        dimension: 1,
+                        pieces: [{
+                            lte: 0,
+                            color: 'rgb(12,84,83)'
+                        }, {
+                            gt: 0,
+                            color: 'rgb(115,119,119)'
+                        }]
+                    },
+                    series: [{
+                        type: 'scatter3D',
+                        data: data.map(function (item) {
+                            var SIZE = 30;
+                            var SUBNET = 0;
+                            if ((item[0] == 1 || item[0] == 2 || item[0] == 3) && (item[1] == 6 || item[1] == 10)) {
+                                SIZE = 10;
+                            }
+                            if (item[1] <= 1) SUBNET = 1;
+                            else if (item[1] <= 3) SUBNET = 2;
+                            else if (item[1] <= 7) SUBNET = 3;
+                            else if (item[1] <= 11) SUBNET = 4;
+                            else SUBNET = 5;
+                            return {
+                                value: [item[1], item[0], item[2]],
+                                symbolSize: SIZE,
+                                tooltip: {
+                                    formatter: "filter size: " + SIZE / 10 + "<br/>subnet " + SUBNET
+                                }
+                            }
+                        }),
+                        shading: 'lambert',
+
+                        label: {
+                            textStyle: {
+                                fontSize: 16,
+                                borderWidth: 1
+                            }
+                        },
+
+                        emphasis: {
+                            label: {
+                                textStyle: {
+                                    fontSize: 20,
+                                    color: '#900'
+                                }
+                            },
+                            itemStyle: {
+                                color: '#900'
+                            }
+                        }
+                    }]
+                };
+            }
+            else if (preTrain === 2) {
+                var data = [
+                    ['DNN 1', 1, 1, 1, 1, 0.8, 1.2],
+                    ['DNN 2', 2, 2, 2, 2, 1.8, 2.2],
+                    ['DNN 3', 3, 3, 3, 3, 2.6, 3.4],
+                    ['DNN 4', 4, 4, 4, 4, 3.6, 4.4],
+                    ['DNN 5', 5, 5, 5, 5, 4.2, 5.8],
+                    ['DNN 6', 6, 6, 6, 6, 5.2, 6.8],
+                    ['DNN 7', 7, 7, 7, 7, 6.2, 7.8],
+                    ['DNN 8', 8, 8, 8, 8, 6.4, 9.6],
+                    ['DNN 9', 9, 9, 9, 9, 7.4, 10.6],
+                    ['DNN 10', 10, 10, 10, 10, 8.4, 11.6],
+                    ['DNN 11', 11, 11, 11, 11, 9.4, 12.6],
+                    ['DNN 12', 12, 12, 12, 12, 10.8, 13.6],
+                    ['DNN 13', 1, 13, 12, 14, 1, 1],
+                    ['DNN 14', 2, 14, 13, 15, 2, 2],
+                    ['DNN 15', 3, 15, 14, 16, 3, 3],
+                    ['DNN 16', 4, 16, 15, 17, 4, 4],
+                    ['DNN 17', 5, 17, 16, 18, 5, 5],
+                    ['DNN 18', 6, 18, 17, 19, 6, 6],
+                    ['DNN 19', 7, 19, 18, 20, 7, 7],
+                    ['DNN 20', 1, 20, 19, 21, 0.8, 1.2],
+                    ['DNN 21', 2, 21, 20, 22, 1.8, 2.2],
+                    ['DNN 22', 3, 22, 21, 23, 2.6, 3.4],
+                    ['DNN 23', 4, 23, 22, 24, 3.6, 4.4],
+                    ['DNN 24', 5, 24, 23, 25, 4.2, 5.8],
+                    ['DNN 25', 6, 25, 24, 26, 5.2, 6.8],
+                    ['DNN 26', 7, 26, 25, 27, 6.2, 7.8],
+                    ['DNN 27', 8, 27, 26, 28, 8, 8],
+                    ['DNN 28', 9, 28, 27, 29, 9, 9],
+                    ['DNN 29', 10, 29, 28, 30, 10, 10],
+                    ['DNN 30', 8, 30, 29.1, 30.9, 6.4, 9.6],
+                    ['DNN 31', 9, 31, 30.1, 31.9, 7.4, 10.6],
+                    ['DNN 32', 10, 32, 31.1, 32.9, 8.4, 11.6],
+                    ['DNN 33', 3, 33, 33, 33, 2.2, 3.8],
+                    ['DNN 34', 4, 34, 34, 34, 3.2, 4.8],
+                    ['DNN 35', 5, 35, 35, 35, 3.4, 6.6],
+                    ['DNN 36', 6, 36, 36, 36, 4.4, 7.6],
+                    ['DNN 37', 7, 37, 37, 37, 5.4, 8.6],
+                    ['DNN 38', 8, 38, 38, 38, 4.8, 11.2],
+                    ['DNN 39', 9, 39, 39, 39, 5.8, 12.2],
+                    ['DNN 40', 10, 40, 40, 40, 6.8, 13.2],
+                    ['DNN 41', 11, 41, 41, 41, 7.8, 14.2],
+                    ['DNN 42', 12, 42, 42, 42, 8.8, 15.2],
+                    ['DNN 43', 1, 43, 42, 44, 0.8, 1.2],
+                    ['DNN 44', 2, 44, 43, 45, 1.8, 2.2],
+                    ['DNN 45', 3, 45, 44, 46, 2.6, 3.4],
+                    ['DNN 46', 4, 46, 45, 47, 3.6, 4.4],
+                    ['DNN 47', 5, 47, 46, 48, 4.2, 5.8],
+                    ['DNN 48', 6, 48, 47, 49, 5.2, 6.8],
+                    ['DNN 49', 7, 49, 48, 50, 6.2, 7.8],
+                    ['DNN 50', 8, 50, 49, 51, 6.4, 9.6],
+                    ['DNN 51', 1, 51, 51, 51, 0.8, 1.2], ['DNN 51', 2, 51, 51, 51, 1.8, 2.2],
+                    ['DNN 52', 1, 52, 52, 52, 0.8, 1.2], ['DNN 52', 3, 52, 52, 52, 2.6, 3.4],
+                    ['DNN 53', 1, 53, 53, 53, 0.8, 1.2], ['DNN 53', 4, 53, 53, 53, 3.6, 4.4],
+                    ['DNN 54', 1, 54, 54, 54, 0.8, 1.2], ['DNN 54', 5, 54, 54, 54, 4.2, 5.8],
+                    ['DNN 55', 1, 55, 55, 55, 0.8, 1.2], ['DNN 55', 6, 55, 55, 55, 5.2, 6.8],
+                    ['DNN 56', 1, 56, 56, 56, 0.8, 1.2], ['DNN 56', 7, 56, 56, 56, 6.2, 7.8],
+                    ['DNN 57', 1, 57, 57, 57, 0.8, 1.2], ['DNN 57', 8, 57, 57, 57, 6.4, 9.6],
+                    ['DNN 58', 1, 58, 58, 58, 0.8, 1.2], ['DNN 58', 9, 58, 58, 58, 7.4, 10.6],
+                    ['DNN 59', 1, 59, 59, 59, 0.8, 1.2], ['DNN 59', 10, 59, 59, 59, 8.4, 11.6],
+                    ['DNN 60', 1, 60, 60, 60, 0.8, 1.2], ['DNN 60', 11, 60, 60, 60, 9.4, 12.6],
+                    ['DNN 61', 1, 61, 61, 61, 0.8, 1.2], ['DNN 61', 12, 61, 61, 61, 10.4, 13.6],
+                    ['DNN 62', 2, 62, 62, 62, 1.8, 2.2], ['DNN 62', 3, 62, 62, 62, 2.6, 3.4],
+                    ['DNN 63', 2, 63, 63, 63, 1.8, 2.2], ['DNN 63', 4, 63, 63, 63, 3.6, 4.4],
+                    ['DNN 64', 2, 64, 64, 64, 1.8, 2.2], ['DNN 64', 5, 64, 64, 64, 4.2, 5.8],
+                    ['DNN 65', 2, 65, 65, 65, 1.8, 2.2], ['DNN 65', 6, 65, 65, 65, 5.2, 6.8],
+                    ['DNN 66', 2, 66, 66, 66, 1.8, 2.2], ['DNN 66', 7, 66, 66, 66, 6.2, 7.8],
+                    ['DNN 67', 2, 67, 67, 67, 1.8, 2.2], ['DNN 67', 8, 67, 67, 67, 6.4, 9.6],
+                    ['DNN 68', 2, 68, 68, 68, 1.8, 2.2], ['DNN 68', 9, 68, 68, 68, 7.4, 10.6],
+                    ['DNN 69', 2, 69, 69, 69, 1.8, 2.2], ['DNN 69', 10, 69, 69, 69, 8.4, 11.6],
+                    ['DNN 70', 2, 70, 70, 70, 1.8, 2.2], ['DNN 70', 11, 70, 70, 70, 9.4, 12.6],
+                    ['DNN 71', 2, 71, 71, 71, 1.8, 2.2], ['DNN 71', 12, 71, 71, 71, 10.4, 13.6],
+                    ['DNN 72', 3, 72, 72, 72, 2.6, 3.4], ['DNN 72', 4, 72, 72, 72, 3.6, 4.4],
+                    ['DNN 73', 3, 73, 73, 73, 2.6, 3.4], ['DNN 73', 5, 73, 73, 73, 4.6, 5.4],
+                    ['DNN 74', 3, 74, 74, 74, 2.6, 3.4], ['DNN 74', 6, 74, 74, 74, 5.2, 6.8],
+                    ['DNN 75', 3, 75, 75, 75, 2.6, 3.4], ['DNN 75', 7, 75, 75, 75, 6.2, 7.8],
+                    ['DNN 76', 3, 76, 76, 76, 2.6, 3.4], ['DNN 76', 8, 76, 76, 76, 6.4, 9.6],
+                    ['DNN 77', 3, 77, 77, 77, 2.6, 3.4], ['DNN 77', 9, 77, 77, 77, 7.4, 10.6],
+                    ['DNN 78', 3, 78, 78, 78, 2.6, 3.4], ['DNN 78', 10, 78, 78, 78, 8.4, 11.6],
+                    ['DNN 79', 3, 79, 79, 79, 2.6, 3.4], ['DNN 79', 11, 79, 79, 79, 9.4, 12.6],
+                    ['DNN 80', 3, 80, 80, 80, 2.6, 3.4], ['DNN 80', 12, 80, 80, 80, 10.4, 13.6],
+                    ['DNN 81', 4, 81, 81, 81, 3.6, 4.4], ['DNN 81', 5, 81, 81, 81, 4.2, 5.8],
+                    ['DNN 82', 4, 82, 82, 82, 3.6, 4.4], ['DNN 82', 6, 82, 82, 82, 5.2, 6.8],
+                    ['DNN 83', 4, 83, 83, 83, 3.6, 4.4], ['DNN 83', 7, 83, 83, 83, 6.2, 7.8],
+                    ['DNN 84', 4, 84, 84, 84, 3.6, 4.4], ['DNN 84', 8, 84, 84, 84, 6.4, 9.6],
+                    ['DNN 85', 4, 85, 85, 85, 3.6, 4.4], ['DNN 85', 9, 85, 85, 85, 7.4, 10.6],
+                    ['DNN 86', 4, 86, 86, 86, 3.6, 4.4], ['DNN 86', 10, 86, 86, 86, 8.4, 11.6],
+                    ['DNN 87', 4, 87, 87, 87, 3.6, 4.4], ['DNN 87', 11, 87, 87, 87, 9.4, 12.6],
+                    ['DNN 88', 4, 88, 88, 88, 3.6, 4.4], ['DNN 88', 9, 88, 88, 88, 7.4, 10.6],
+                    ['DNN 89', 4, 89, 89, 89, 3.6, 4.4], ['DNN 89', 10, 89, 89, 89, 8.4, 11.6],
+                    ['DNN 90', 4, 90, 90, 90, 3.6, 4.4], ['DNN 90', 11, 90, 90, 90, 9.4, 12.6],
+                    ['DNN 91', 4, 91, 91, 91, 3.6, 4.4], ['DNN 91', 12, 91, 91, 91, 10.4, 13.6],
+                    ['DNN 92', 5, 92, 92, 92, 4.2, 5.8], ['DNN 92', 6, 92, 92, 92, 5.2, 6.8],
+                    ['DNN 93', 5, 93, 93, 93, 4.2, 5.8], ['DNN 93', 7, 93, 93, 93, 6.2, 7.8],
+                    ['DNN 94', 5, 94, 94, 94, 4.2, 5.8], ['DNN 94', 8, 94, 94, 94, 6.4, 9.6],
+                    ['DNN 95', 5, 95, 95, 95, 4.2, 5.8], ['DNN 95', 9, 95, 95, 95, 7.4, 10.6],
+                    ['DNN 96', 5, 96, 96, 96, 4.2, 5.8], ['DNN 96', 10, 96, 96, 96, 8.4, 11.6],
+                    ['DNN 97', 5, 97, 97, 97, 4.2, 5.8], ['DNN 97', 11, 97, 97, 97, 9.4, 12.6],
+                    ['DNN 98', 5, 98, 98, 98, 4.2, 5.8], ['DNN 98', 9, 98, 98, 98, 7.4, 10.6],
+                    ['DNN 99', 6, 99, 99, 99, 5.2, 6.8], ['DNN 99', 7, 99, 99, 99, 6.2, 7.8],
+                ];
+
+                function renderItem(params, api) {
+                    var children = [];
+                    var coordDims = ['x', 'y'];
+
+                    for (var baseDimIdx = 0; baseDimIdx < 2; baseDimIdx++) {
+                        var otherDimIdx = 1 - baseDimIdx;
+                        var encode = params.encode;
+                        var baseValue = api.value(encode[coordDims[baseDimIdx]][0]);
+                        var param = [];
+                        param[baseDimIdx] = baseValue;
+                        param[otherDimIdx] = api.value(encode[coordDims[otherDimIdx]][1]);
+                        var highPoint = api.coord(param);
+                        param[otherDimIdx] = api.value(encode[coordDims[otherDimIdx]][2]);
+                        var lowPoint = api.coord(param);
+                        var halfWidth = 5;
+
+                        var style = api.style({
+                            stroke: api.visual('color'),
+                            fill: null
+                        });
+
+                        children.push({
+                            type: 'line',
+                            shape: makeShape(
+                                baseDimIdx,
+                                highPoint[baseDimIdx] - halfWidth, highPoint[otherDimIdx],
+                                highPoint[baseDimIdx] + halfWidth, highPoint[otherDimIdx]
+                            ),
+                            style: style
+                        }, {
+                                type: 'line',
+                                shape: makeShape(
+                                    baseDimIdx,
+                                    highPoint[baseDimIdx], highPoint[otherDimIdx],
+                                    lowPoint[baseDimIdx], lowPoint[otherDimIdx]
+                                ),
+                                style: style
+                            }, {
+                                type: 'line',
+                                shape: makeShape(
+                                    baseDimIdx,
+                                    lowPoint[baseDimIdx] - halfWidth, lowPoint[otherDimIdx],
+                                    lowPoint[baseDimIdx] + halfWidth, lowPoint[otherDimIdx]
+                                ),
+                                style: style
+                            });
+                    }
+
+                    function makeShape(baseDimIdx, base1, value1, base2, value2) {
+                        var shape = {};
+                        shape[coordDims[baseDimIdx] + '1'] = base1;
+                        shape[coordDims[1 - baseDimIdx] + '1'] = value1;
+                        shape[coordDims[baseDimIdx] + '2'] = base2;
+                        shape[coordDims[1 - baseDimIdx] + '2'] = value2;
+                        return shape;
+                    }
+
+                    return {
+                        type: 'group',
+                        children: children
+                    };
+                }
+
+
+                option5 = {
+                    tooltip: {
+                        formatter: "<a>"
+                    },
+                    legend: {
+                        data: ['Modification']
+                    },
+                    dataZoom: [{
+                        type: 'slider',
+                        height: 8,
+                        bottom: 20,
+                        borderColor: 'transparent',
+                        backgroundColor: '#e2e2e2',
+                        handleIcon: 'M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7v-1.2h6.6z M13.3,22H6.7v-1.2h6.6z M13.3,19.6H6.7v-1.2h6.6z', // jshint ignore:line
+                        handleSize: 20,
+                        handleStyle: {
+                            shadowBlur: 6,
+                            shadowOffsetX: 1,
+                            shadowOffsetY: 2,
+                            shadowColor: '#aaa'
+                        }
+                    }, {
+                        type: 'inside'
+                    }],
+                    grid: {
+                        bottom: 80
+                    },
+                    xAxis: {
+                        type: 'value',
+                        scale: true,
+                        name: 'DNN',
+                        max: 100,
+                        min: 0,
+                        nameTextStyle: {
+                            fontSize: 16
+                        },
+                        axisLabel: {
+                            show: true,
+                            textStyle: {
+                                fontSize: '15'    // y轴字体大小
+                            }
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        scale: true,
+                        name: 'Conv layer',
+                        max: 13,
+                        min: 0,
+                        nameTextStyle: {
+                            fontSize: 16
+                        },
+                        axisLabel: {
+                            show: true,
+                            textStyle: {
+                                fontSize: '15'    // y轴字体大小
+                            }
+                        }
+                    },
+                    series: [{
+                        type: 'scatter',
+                        name: 'Modification',
+                        data: data,
+                        //dimensions: dimensions,
+                        encode: {
+                            x: 2,
+                            y: 1,
+                            tooltip: [2, 1, 3, 4, 5, 6],
+                            itemName: 0
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: '#77bef7'
+                            }
+                        }
+                    }, {
+                        type: 'custom',
+                        name: 'larger filter size',
+                        renderItem: renderItem,
+                        //dimensions: dimensions,
+                        encode: {
+                            x: [2, 3, 4],
+                            y: [1, 5, 6],
+                            tooltip: [2, 1, 3, 4, 5, 6],
+                            itemName: 0
+                        },
+                        data: data,
+                        z: 100
+                    }]
+                };
+            }
+            else if (preTrain === 3) {
+                var hours = ['18-layer', '34-layer', '50-layer', '101-layer', '152-layer'];
+                var days = ['Original', 'Double filter\nnum on\nodd layers', 'Double filter\nnum on\neven layers',
+                    'Increase filter\nnum by 2 on\nodd layers', 'Increase filter\nnum by 2 on\neven layers'];
+
+                var data = [
+                    [0, 0, 18], [0, 1, 18], [0, 2, 18], [0, 3, 18], [0, 4, 18],
+                    [1, 0, 34], [1, 1, 34], [1, 2, 34], [1, 3, 34], [1, 4, 34],
+                    [2, 0, 50], [2, 1, 50], [2, 2, 50], [2, 3, 50], [2, 4, 50],
+                    [3, 0, 101], [3, 1, 101], [3, 2, 101], [3, 3, 101], [3, 4, 101],
+                    [4, 0, 152], [4, 1, 152], [4, 2, 152], [4, 3, 152], [4, 4, 152]
+                ];
+
+                data = data.map(function (item) {
+                    return [item[1], item[0], item[2] || '-'];
+                });
+
+                option5 = {
+                    tooltip: {
+                        position: 'top'
+                    },
+                    title: [],
+                    visualMap: {
+                        show: false,
+                        dimension: -1,
+                        pieces: [{
+                            lte: 0,
+                            color: 'rgb(115,119,119)'
+                        }, {
+                            gt: 0,
+                            lte: 1,
+                            color: '#7091C4'
+                        }, {
+                            gt: 1,
+                            lte: 2,
+                            color: '#3FA7DC'
+                        }, {
+                            gt: 2,
+                            lte: 3,
+                            color: '#5170A2'
+                        }, {
+                            gt: 3,
+                            lte: 20,
+                            color: '#ad46f3'
+                        },]
+                    },
+                    singleAxis: [],
+                    series: []
+                };
+
+                echarts.util.each(days, function (day, idx) {
+                    option5.title.push({
+                        textBaseline: 'middle',
+                        top: (idx + 0.5) * 100 / 7 + '%',
+                        text: day
+                    });
+                    option5.singleAxis.push({
+                        left: 150,
+                        type: 'category',
+                        boundaryGap: false,
+                        data: hours,
+                        top: (idx * 100 / 7 + 5) + '%',
+                        height: (100 / 7 - 10) + '%',
+                        axisLabel: {
+                            show: true,
+                            textStyle: {
+                                fontSize: '16'    // x轴字体大小
+                            }
+                        }
+                    });
+                    option5.series.push({
+                        singleAxisIndex: idx,
+                        coordinateSystem: 'singleAxis',
+                        type: 'scatter',
+                        data: [],
+                        symbolSize: function (dataItem) {
+                            return dataItem[1];
+                        }
+                    });
+                });
+                echarts.util.each(data, function (dataItem) {
+                    option5.series[dataItem[0]].data.push([dataItem[1], dataItem[2]]);
+                });;
+            }
+
+            if (option5 && typeof option5 === "object") {
+                GMN.setOption(option5, false);
+            }
+            tmp = preTrain;
+        }, 500);
+
+
+    }
+
+    function chart6(ec) {
+        var asteriskCNT = asteriskCount2;
+        var Ensemble_Acc = echarts.init(document.getElementById("container6"));
+        var app = {};
+        option6 = null;
+        option6 = {
+            title: {
+                text: 'Generalization accuracy',
+                subtext: '',
+                textStyle: {
+                    fontSize: 24
+                },
+            },
+            tooltip: {
+                trigger: 'item',
+            },
+            legend: {
+                orient: 'vertical',
+                textStyle: {
+                    fontSize: 20
+                },
+                data: ['MotherNets', 'Baseline']
+            },
+            grid: {
+                tooltip: {
+                    axisPointer: {
+                        label: {
+                            fontSize: 18
+                        }
+                    }
+                }
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    name: '\n Ensemble size',
+                    nameLocation: 'middle',
+                    boundaryGap: true,
+                    nameTextStyle: {
+                        fontSize: 16
+                    },
+                    axisLabel: {
+                        show: true,
+                        textStyle: {
+                            fontSize: '15'    // x轴字体大小
+                        }
+                    },
+                    data: ['1', '2', '3', '4', '5']
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    scale: true,
+                    name: 'Ensemble accuracy',
+                    max: 1,
+                    min: 0.5,
+                    nameTextStyle: {
+                        fontSize: 16
+                    },
+                    axisLabel: {
+                        show: true,
+                        textStyle: {
+                            fontSize: '15'    // y轴字体大小
+                        }
+                    },
+                    boundaryGap: [0.2, 0.2]
+                }
+            ],
+            dataZoom: [{
+                type: 'inside',
+                start: 0,
+                end: 100
+            }, {
+                start: 0,
+                end: 100,
+                handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+                handleSize: '80%',
+                handleStyle: {
+                    color: '#fff',
+                    shadowBlur: 3,
+                    shadowColor: 'rgba(0, 0, 0, 0.6)',
+                    shadowOffsetX: 2,
+                    shadowOffsetY: 2
+                }
+            }],
+            series: [
+                {
+                    name: 'MotherNets',
+                    type: 'bar',
+                    itemStyle: {
+                        color: 'rgb(12,84,83)'
+                    },
+                    barWidth: 30,
+                    data: [0.5, 0.5, 0.5, 0.5, 0.5]
+                },
+                {
+                    name: 'Baseline',
+                    type: 'bar',
+                    barWidth: 30,
+                    itemStyle: {
+                        color: 'rgb(153,205,204)'
+                    },
+                    data: [0.5, 0.5, 0.5, 0.5, 0.5]
+                }
+            ]
+        };
+
+        var draw_HN = new Array(100);
+        var draw_DNN = new Array(100);
+        for (var i = 0; i < 100; i++) {
+            draw_HN[i] = false;
+            draw_DNN[i] = false;
+        }
+
+        var CNT = 0;
+
+        function F3() {
+            if (StartDraw === true) {
+                if (asteriskCount1 > (CNT + 1) && asteriskCount2 > CNT && draw_HN[CNT] === false && draw_DNN[CNT] === false && CNT <= 4) {
+                    option6.series[0].data[CNT] = lines3[CNT][0];
+                    option6.series[1].data[CNT] = lines3[CNT][1];
+                    draw_HN[CNT] = true;
+                    draw_DNN[CNT] = true;
+                    CNT++;
+                }
+                if (preTrain != 1 && CNT > 4) {
+                    if (asteriskCount1 > (CNT + 1) && asteriskCount2 > CNT) {
+                        option6.series[0].data.push(lines3[CNT][0]);
+                        option6.series[1].data.push(lines3[CNT][1]);
+                        CNT++;
+                    }
+                }
+            }
+
+            if ((asteriskCNT != asteriskCount2 && asteriskCount2 > 5) && (StartDraw === true) && ((preTrain === 1 && asteriskCount2 < 5) || (preTrain === 2 && asteriskCount2 < 100) || (preTrain === 3 && asteriskCount2 <= 25))) {
+                asteriskCNT = asteriskCount2;
+                option6.xAxis[0].data.push(asteriskCount2);
+            }
+
+            if (asteriskCount2 > 9) {
+                option6.dataZoom[0].start = 80;
+                option6.dataZoom[1].start = 80;
+            }
+            else if (asteriskCount2 > 38) {
+                option6.dataZoom[0].start = 90;
+                option6.dataZoom[1].start = 90;
+            }
+
+
+            Ensemble_Acc.setOption(option6, true);
+
+            if (plotSPEED3 != SPEED) {
+                clearInterval(Interval3);
+                plotSPEED3 = SPEED;
+                Interval3 = setInterval(F3, plotSPEED3);
+            }
+
+            if((preTrain === 1 && asteriskCount2 === 5) || (preTrain === 2 && asteriskCount2 === 100) || (preTrain === 3 && asteriskCount2 === 25)){
+                clearInterval(Interval3);
+            }
+        }
+
+        var Interval3 = setInterval(F3, plotSPEED3);
+        ;
+        if (option6 && typeof option6 === "object") {
+            Ensemble_Acc.setOption(option6, true);
+        }
+    }
+
+
+
+
+</script>
+
+</html>
