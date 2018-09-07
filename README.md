@@ -1,4 +1,4 @@
-# MotherNetwork-Demo
+# MotherNets-Demo
 A showcase of MotherNets
 
 There are two demos, a real-time-training demo and a pre-trained demo.
